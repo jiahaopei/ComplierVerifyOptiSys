@@ -34,6 +34,14 @@ public class AssemblerDTO {
 				
 	}
 	
+	public void addToMemAdress(int tmp) {
+		this.memAdress += tmp;
+	}
+	
+	public void addToLabelCnt(int tmp) {
+		this.labelCnt += tmp;
+	}
+	
 	public AssemblerFileHandler getAssFileHandler() {
 		return assFileHandler;
 	}

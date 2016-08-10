@@ -20,21 +20,14 @@ public class AssemblerExpression {
 	// 操作符和操作数栈
 	private static Stack<Map<String, String>> optAndOpdStack = new Stack<>();
 	
-	// 要生成的汇编文件管理器
-	private static AssemblerFileHandler assFileHandler;
-		
-	// 符号表
-	private static Map<String, Map<String, String>> symbolTable;
-	
-	private static boolean isVariableSymbolOrNumber = true;
+	private static AssemblerDTO assemblerDTO;
 	
 	private static int memAdress;
 	
 	private static int bss_tmp_cnt;
 	
 	// 处理表达式
-	public static Map<String, String> handle(SyntaxTreeNode node, int memAdress, AssemblerFileHandler assFileHandler,
-			boolean isVariableSymbolOrNumber, Map<String, Map<String, String>> symbolTable) {
+	public static Map<String, String> handle(SyntaxTreeNode node, AssemblerDTO assemblerDTO) {
 		// 处理常量
 		if(node.getType().equals("Constant")) {
 			Map<String, String> tmpMap = new HashMap<>();
@@ -47,12 +40,10 @@ public class AssemblerExpression {
 		operandStack.clear();
 		optAndOpdStack.clear();
 		
-		// 把Assembler中传过来的变量保存到静态变量中
-		AssemblerExpression.assFileHandler = assFileHandler;
-		AssemblerExpression.isVariableSymbolOrNumber = isVariableSymbolOrNumber;
-		AssemblerExpression.symbolTable = symbolTable;
-		AssemblerExpression.memAdress = memAdress;
-		AssemblerExpression.bss_tmp_cnt = 1;
+		// 初始化
+		AssemblerExpression.assemblerDTO = assemblerDTO;
+		memAdress = assemblerDTO.getMemAdress();
+		bss_tmp_cnt = 1;
 		
 		// 遍历该表达式
 		traverseExpression(node);
@@ -79,7 +70,7 @@ public class AssemblerExpression {
 					}
 					
 				}
-				assFileHandler.insert("", "TEXT");
+				assemblerDTO.getAssFileHandler().insert("", "TEXT");
 				
 			// 变量直接放入操作数栈
 			} else if (item.get("type").equals("VARIABLE")) {
@@ -160,15 +151,10 @@ public class AssemblerExpression {
 		
 	}
 	
-	private static String getVariableSymbolOrNumber(String parameter) {
-		return (isVariableSymbolOrNumber ? symbolTable.get(parameter).get("register") : parameter);
-				
-	}
-	
 	// 判断一个变量是不是float类型
 	private static boolean isFloat(Map<String, String> operand) {
 		return operand.get("type").equals("VARIABLE")
-				&& symbolTable.get(operand.get("operand")).get("field_type").equals("float");
+				&& assemblerDTO.getSymbolTable().get(operand.get("operand")).get("field_type").equals("float");
 	}
 
 	// 判断两个操作数中是否含有float类型的数
@@ -191,12 +177,12 @@ public class AssemblerExpression {
 			} else {
 				// 第一个操作数
 				if (operand_a.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if (operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -210,12 +196,12 @@ public class AssemblerExpression {
 				
 				// 第二个操作数
 				if (operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if (operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -230,7 +216,7 @@ public class AssemblerExpression {
 				
 				// 执行加法
 				line = "	add 0,9,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -241,10 +227,12 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				
+				
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -259,12 +247,12 @@ public class AssemblerExpression {
 			} else {
 				// 被减数
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -278,12 +266,12 @@ public class AssemblerExpression {
 				
 				// 减数
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 	
 				} else {
 					try {
@@ -297,7 +285,7 @@ public class AssemblerExpression {
 				
 				// 执行减操作
 				line = "	subf 0,9,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -308,10 +296,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -326,12 +314,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");				
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");				
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -344,12 +332,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -363,7 +351,7 @@ public class AssemblerExpression {
 				
 				// 执行乘法指令
 				line = "	mullw 0,9,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -374,10 +362,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp)  + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp)  + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -393,12 +381,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -411,13 +399,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 0," + 
-							(isVariableSymbolOrNumber ? symbolTable.get(operand_b.get("operand")).get("register") : operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -431,7 +418,7 @@ public class AssemblerExpression {
 				
 				// 执行除法指令
 				line = "	divw 0,9,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -442,10 +429,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + (isVariableSymbolOrNumber ? symbolTable.get(bss_tmp).get("register") : bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -461,12 +448,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -479,12 +466,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -498,11 +485,11 @@ public class AssemblerExpression {
 				
 				// 取余操作转化为除法、减法等指令来操作
 				line = "	divw 11,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	mullw 9,11,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	subf 0,9,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -513,10 +500,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -532,12 +519,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -550,13 +537,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," 
-							+ (isVariableSymbolOrNumber ? symbolTable.get(operand_b.get("operand")).get("register") : operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -570,11 +556,11 @@ public class AssemblerExpression {
 				
 				// 比较操作
 				line = "	cmp 7,0,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 0,1";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	isel 0,0,0,28";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -585,10 +571,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -604,12 +590,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -622,12 +608,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -641,13 +627,13 @@ public class AssemblerExpression {
 				
 				// 比较指令
 				line = "	cmp 7,0,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 0,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 9,1";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	isel 0,9,0,29";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -658,11 +644,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," 
-						+ (isVariableSymbolOrNumber ? symbolTable.get(bss_tmp).get("register") : bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -678,12 +663,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand"))  + "(31)";
-					assFileHandler.insert(line, "TEXT");							
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand"))  + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");							
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -696,12 +681,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -715,11 +700,11 @@ public class AssemblerExpression {
 				
 				// 执行比较操作
 				line = "	cmp 7,0,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 0,1";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	isel 0,0,0,29";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -730,10 +715,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -749,12 +734,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -767,12 +752,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -786,14 +771,14 @@ public class AssemblerExpression {
 				
 				// 比较操作
 				line = "	cmp 7,0,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 0,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 9,1";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	isel 0,9,0,28";   // 28   CR7 = CR[28, 29, 30, 31] 
 											  // (cr[crfD] : 有4位 : LT,GT,EQ,SO)
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -804,10 +789,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -823,12 +808,12 @@ public class AssemblerExpression {
 				
 			} else {
 				if(operand_a.get("type").equals("VARIABLE")) {						
-					line = "	lwz 0," + getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_a.get("type").equals("CONSTANT")) {
 					line = "	li 0," + operand_a.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -841,12 +826,12 @@ public class AssemblerExpression {
 				}
 				
 				if(operand_b.get("type").equals("VARIABLE")) {
-					line = "	lwz 9," + getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					line = "	lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(operand_b.get("type").equals("CONSTANT")) {
 					line = "	li 9," + operand_b.get("operand");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else {
 					try {
@@ -860,13 +845,13 @@ public class AssemblerExpression {
 				
 				// 比较操作
 				line = "	cmp 7,0,0,9";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 0,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	li 9,1";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	isel 0,9,0,30";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 赋值给临时操作数
 				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
@@ -877,10 +862,10 @@ public class AssemblerExpression {
 				tmpMap.put("field_type", "int");
 				tmpMap.put("register", Integer.toString(memAdress));
 				memAdress += 4;
-				symbolTable.put(bss_tmp, tmpMap);
+				assemblerDTO.getSymbolTable().put(bss_tmp, tmpMap);
 				
-				line = "	stw 0," + getVariableSymbolOrNumber(bss_tmp) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				// 计算结果压栈
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
@@ -907,20 +892,20 @@ public class AssemblerExpression {
 		Map<String, String> operand = operandStack.peek();
 		String line = null;
 		if(operator.equals("++")) {
-			line = "	lwz 0," + getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assFileHandler.insert(line, "TEXT");
+			line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			line = "	addic 0,0,1";
-			assFileHandler.insert(line, "TEXT");
-			line = "	stw 0," + getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
+			line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			
 		} else if(operator.equals("--")) {
-			line = "	lwz 0," + getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assFileHandler.insert(line, "TEXT");
+			line = "	lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			line = "	addic 0,0,-1";
-			assFileHandler.insert(line, "TEXT");
-			line = "	stw 0," + getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
+			line = "	stw 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			
 		} else {
 			try {
