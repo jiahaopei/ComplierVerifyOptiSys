@@ -741,7 +741,7 @@ public class Assembler {
 
 	// return语句
 	private void _return(SyntaxTreeNode node) {
-		// 语法检验
+		// return语句的语法检验
 		if (!node.getFirstSon().getValue().equals("return")
 				|| !node.getFirstSon().getRight().getValue().equals("Expression")) {
 			try {
