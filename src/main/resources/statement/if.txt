@@ -1,0 +1,5 @@
+	<LOG-EXP>
+    cmpi 7,0,0,0
+	beq 7,.L1
+	<STA-LIST>
+.L1:

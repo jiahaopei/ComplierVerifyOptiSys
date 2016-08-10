@@ -1,0 +1,1 @@
+<LOG-EXP> != 0 -> σ(<STA-LIST_1>) || <LOG-EXP> == 0 -> σ(<STA-LIST_2>)

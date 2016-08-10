@@ -1,0 +1,8 @@
+tmp 20
+bss_tmp2 28
+.LC5 null
+i 12
+bss_tmp1 24
+sum 16
+.LC0 null
+n 8

@@ -1,0 +1,43 @@
+======================结果输出=======================
+语句 : if
+
+目标码模式 :
+<LOG-EXP>
+cmpi 7,0,0,0
+beq 7,.L1
+<STA-LIST>
+.L1:
+
+目标码模式命题 :
+GPR[0] = <LOG-EXP>
+GPR[0] < 0 -> CR[7] = b100
+GPR[0] > 0 -> CR[7] = b010
+GPR[0] == 0 -> CR[7] = b001
+CR[7] == b100 -> PC = PC + 4
+CR[7] == b010 -> PC = PC + 4
+CR[7] == b001 -> PC = PC + @.L1
+<STA-LIST>
+.L1:
+
+命题推理结果 :
+<LOG-EXP> < 0 -> PC = PC + 4
+<LOG-EXP> > 0 -> PC = PC + 4
+<LOG-EXP> == 0 -> PC = PC + @.L1
+<STA-LIST>
+.L1:
+
+推理出的语义为 :
+<LOG-EXP> != 0 -> <STA-LIST>
+<LOG-EXP> == 0 -> null
+
+σ-transfer : 
+
+<LOG-EXP> != 0 -> σ(<STA-LIST>)
+<LOG-EXP> == 0 -> skip
+
+给定的目标语义为 :
+<LOG-EXP> != 0 -> σ(<STA-LIST>)
+<LOG-EXP> == 0 -> skip
+
+给定的目标语义和推理出的语义是否一致 :
+true

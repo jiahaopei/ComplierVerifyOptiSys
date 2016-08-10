@@ -1,0 +1,2 @@
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** n || <LOG-EXP> == 0 -> skip

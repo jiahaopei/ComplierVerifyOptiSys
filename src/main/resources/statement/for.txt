@@ -1,0 +1,9 @@
+	<ASS-EXP_1>
+	b .L2
+.L1:
+	<STA-LIST>
+	<ASS-EXP_2>
+.L2:
+	<LOG-EXP>
+	cmpi 7,0,0,0
+	bne 7,.L1

@@ -1,0 +1,112 @@
+	.file	"evenSum.c"
+	.section .rodata
+	.align 2
+.LC0:
+	.string	"%d"
+	.align 2
+.LC5:
+	.string	"sum is %d"
+	.section ".text"
+	.align 2
+	.globl main
+	.type main, @function
+main:
+	stwu 1,-16(1)
+	stw 31,12(1)
+	mr 31,1
+
+	lis 0,.LC0@ha
+	addic 10,0,.LC0@l
+	mr 3,10
+	addi 11,31,8
+	mr 4,11
+	crxor 6,6,6
+	bl __isoc99_scanf
+
+	li 0,0
+	stw 0,16(31)
+
+	li 0,1
+	stw 0,12(31)
+
+	b .L1
+.L2:
+	lwz 0,12(31)
+	li 9,2
+	divw 11,0,9
+	mullw 9,11,9
+	subf 0,9,0
+	stw 0,24(31)
+
+	lwz 0,24(31)
+	stw 0,20(31)
+
+	lwz 0,20(31)
+	li 9,0
+	cmp 7,0,0,9
+	li 0,0
+	li 9,1
+	isel 0,9,0,30
+	stw 0,24(31)
+
+	lwz 0,24(31)
+	cmpi 7,0,0,0
+	beq 7,.L3
+
+	lwz 9,16(31)
+	lwz 0,12(31)
+	add 0,9,0
+	stw 0,24(31)
+
+	lwz 0,24(31)
+	stw 0,16(31)
+
+	b .L4
+.L3:
+
+	lwz 9,12(31)
+	li 0,2
+	mullw 0,9,0
+	stw 0,24(31)
+
+	lwz 9,16(31)
+	lwz 0,24(31)
+	subf 0,9,0
+	stw 0,28(31)
+
+	lwz 0,28(31)
+	stw 0,16(31)
+
+.L4:
+
+	lwz 0,12(31)
+	addic 0,0,1
+	stw 0,12(31)
+
+.L1:
+	lwz 0,12(31)
+	lwz 9,8(31)
+	cmp 7,0,0,9
+	li 0,1
+	isel 0,0,0,29
+	stw 0,24(31)
+
+	lwz 0,24(31)
+	cmpi 7,0,0,0
+	bne 7,.L2
+
+	lis 0,.LC5@ha
+	addic 0,0,.LC5@l
+	mr 3,0
+	lwz 4,16(31)
+	crxor 6,6,6
+	bl printf
+
+	li 0,0
+	mr 3,0
+	addi 11,31,16
+	lwz 31,-4(11)
+	mr 1,11
+	blr
+	.size	main, .-main
+	.ident	"powerpc-e500v2-linux-gnuspe-gcc"

@@ -1,0 +1,75 @@
+======================结果输出=======================
+语句 : for
+
+目标码模式 :
+<ASS-EXP_1>
+b .L2
+.L1:
+<STA-LIST>
+<ASS-EXP_2>
+.L2:
+<LOG-EXP>
+cmpi 7,0,0,0
+bne 7,.L1
+
+目标码模式命题 :
+<ASS-EXP_1>
+PC = PC + @.L2
+.L1:
+<STA-LIST>
+<ASS-EXP_2>
+.L2:
+GPR[0] = <LOG-EXP>
+GPR[0] < 0 -> CR[7] = b100
+GPR[0] > 0 -> CR[7] = b010
+GPR[0] == 0 -> CR[7] = b001
+CR[7] == b100 -> PC = PC + @.L1
+CR[7] == b010 -> PC = PC + @.L1
+CR[7] == b001 -> PC = PC + 4
+
+源目标语义 :
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** n
+<LOG-EXP> == 0 -> skip
+
+(1) n == 1
+目标语义取 n = 1 :
+σ(<ASS-EXP_1>)
+<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]
+<LOG-EXP> == 0 -> skip
+
+推理出的语义为 :
+<ASS-EXP_1>
+<LOG-EXP> != 0 -> <STA-LIST>; <ASS-EXP_2>
+<LOG-EXP> == 0 -> null
+
+σ-transfer :
+σ(<ASS-EXP_1>)
+<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]
+<LOG-EXP> == 0 -> skip
+
+结论 :
+n = 1时, 目标语义和推理出的语义一致
+
+(2) n = N
+假设成立 :
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** N
+<LOG-EXP> == 0 -> skip
+
+(3) n = N + 1
+目标语义 :
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** (N + 1)
+<LOG-EXP> == 0 -> skip
+
+合并推理出的 n = 1 和 假设的 n = N 的语义 :
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** (N + 1)
+<LOG-EXP> == 0 -> skip
+
+结论 :
+n = N + 1时, 目标语义和推理出的语义一致
+
+综上，给定的目标语义和推理出的语义是否一致 :
+true
