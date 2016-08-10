@@ -213,8 +213,9 @@ public class Assembler {
 				Map<String, String> tmpMap = new HashMap<String, String>();
 				tmpMap.put("type", variableType);
 				tmpMap.put("field_type", variableFieldType);
-				tmpMap.put("register", Integer.toString(memAdress));
+				tmpMap.put("register", Integer.toString(assemblerDTO.getMemAdress()));
 				memAdress += 4;
+				
 				symbolTable.put(variableName, tmpMap);
 						
 			// 数组元素
