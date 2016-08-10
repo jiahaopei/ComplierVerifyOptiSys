@@ -18,30 +18,21 @@ public class Assembler {
 	// 语法分析传过来的语法树
 	private SyntaxTree tree;
 	
-	// 要生成的汇编文件管理器
-	private AssemblerFileHandler assFileHandler;
-	
-	// 符号表
-	private Map<String, Map<String, String>> symbolTable;
-	
-	// 已经声明了多少个label
-	private int labelCnt;
-	
-	// 已经使用了多少个相对地址
-	private int memAdress;							
-	
-	// 控制生成的汇编代码中，变量是以数字还是原始名称出现，
-	// 默认false，为原始名称出现
-	private boolean isVariableSymbolOrNumber = true;
+	// 汇编代码生成过程中需要用到的公共数据
+	private AssemblerDTO assemblerDTO;
 	
 	private static final Logger logger = LoggerFactory.getLogger(Assembler.class);
 	
 	public Assembler(SyntaxTree tree) {
 		this.tree = tree;
-		this.assFileHandler = new AssemblerFileHandler();
-		this.symbolTable = new HashMap<>();
-		this.labelCnt = 0;
-		this.memAdress = 8;		// 以8号地址起始
+		
+		AssemblerDTO assemblerDTO = new AssemblerDTO();
+		assemblerDTO.setAssFileHandler(new AssemblerFileHandler());
+		assemblerDTO.setSymbolTable(new HashMap<>());
+		assemblerDTO.setLabelCnt(0);
+		assemblerDTO.setMemAdress(8);	// 以8号地址起始
+		assemblerDTO.setVariableSymbolOrNumber(true);	// true，表示以数字出现
+		this.assemblerDTO = assemblerDTO;
 		
 	}
 	
@@ -49,11 +40,6 @@ public class Assembler {
 		// 从语法树的根节点开始遍历
 		traverse(tree.getRoot());
 		
-	}
-	
-	private String getVariableSymbolOrNumber(String parameter) {
-		return (isVariableSymbolOrNumber ? symbolTable.get(parameter).get("register") : parameter);
-				
 	}
 	
 	// 从左向右遍历某一层的全部节点
@@ -163,14 +149,14 @@ public class Assembler {
 			if(currentNode.getValue().equals("FunctionName")) {
 				funcName = currentNode.getFirstSon().getValue();
 				if (funcName.equals("main")) {
-					assFileHandler.insert("	.align 2", "TEXT");
-					assFileHandler.insert("	.globl main", "TEXT");
-					assFileHandler.insert("	.type main, @function", "TEXT");
-					assFileHandler.insert("main:", "TEXT");
-					assFileHandler.insert("	stwu 1,-16(1)", "TEXT");
-					assFileHandler.insert("	stw 31,12(1)", "TEXT");
-					assFileHandler.insert("	mr 31,1", "TEXT");
-					assFileHandler.insert("", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	.align 2", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	.globl main", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	.type main, @function", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("main:", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	stwu 1,-16(1)", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	stw 31,12(1)", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("	mr 31,1", "TEXT");
+					assemblerDTO.getAssFileHandler().insert("", "TEXT");
 					
 				} else {
 					try {
@@ -190,11 +176,11 @@ public class Assembler {
 		}
 		
 		if (funcName != null && funcName.equals("main")) {
-			assFileHandler.insert("	addi 11,31,16", "TEXT");
-			assFileHandler.insert("	lwz 31,-4(11)", "TEXT");
-			assFileHandler.insert("	mr 1,11", "TEXT");
-			assFileHandler.insert("	blr", "TEXT");
-			assFileHandler.insert("	.size	main, .-main", "TEXT");
+			assemblerDTO.getAssFileHandler().insert("	addi 11,31,16", "TEXT");
+			assemblerDTO.getAssFileHandler().insert("	lwz 31,-4(11)", "TEXT");
+			assemblerDTO.getAssFileHandler().insert("	mr 1,11", "TEXT");
+			assemblerDTO.getAssFileHandler().insert("	blr", "TEXT");
+			assemblerDTO.getAssFileHandler().insert("	.size	main, .-main", "TEXT");
 			
 		}
 		
@@ -234,14 +220,14 @@ public class Assembler {
 			// 数组元素
 			} else if (currentNode.getValue().equals("ConstantList")) {
 				line = "	.align 2";
-				assFileHandler.insert(line, "DATA");
+				assemblerDTO.getAssFileHandler().insert(line, "DATA");
 				line = "." + variableName + ":";
-				assFileHandler.insert(line, "DATA");
+				assemblerDTO.getAssFileHandler().insert(line, "DATA");
 							
 				SyntaxTreeNode tmpNode = currentNode.getFirstSon();
 				while (tmpNode != null) {
 					line = "." + variableFieldType + "	" + tmpNode.getValue();
-					assFileHandler.insert(line, "DATA");
+					assemblerDTO.getAssFileHandler().insert(line, "DATA");
 					tmpNode = tmpNode.getRight();
 					
 				}
@@ -285,11 +271,11 @@ public class Assembler {
 						
 						// 把字符常量添加到.data域
 						line = "	.align 2";
-						assFileHandler.insert(line, "DATA");
+						assemblerDTO.getAssFileHandler().insert(line, "DATA");
 						line = label + ":";
-						assFileHandler.insert(line, "DATA");
+						assemblerDTO.getAssFileHandler().insert(line, "DATA");
 						line = "	.string	\"" + tmpNode.getValue() + "\"";
-						assFileHandler.insert(line, "DATA");
+						assemblerDTO.getAssFileHandler().insert(line, "DATA");
 						
 						// 添加到符号表
 						Map<String, String> tmpMap = new HashMap<>();
@@ -337,12 +323,12 @@ public class Assembler {
 				// 参数的类型是字符串常量
 				if(parameterType.equals("STRING_CONSTANT")) {
 					line = "	lis 0," + parameter + "@ha";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = "	addic 0,0," + parameter + "@l";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line =  "	mr " + num + ",0";
 					num++;
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				// 参数为变量
 				} else if (parameterType.equals("VARIABLE")) {
@@ -350,7 +336,7 @@ public class Assembler {
 					if(fieldType.equals("int") || fieldType.equals("long")) {
 						line = "	lwz " + num +  "," + getVariableSymbolOrNumber(parameter) + "(31)";
 						num++;
-						assFileHandler.insert(line, "TEXT");
+						assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 						
 					} else if (fieldType.equals("float") || fieldType.equals("double")) {
 						logger.debug("printf parameter type : " + fieldType);
@@ -372,9 +358,9 @@ public class Assembler {
 				
 			}
 			line = "	crxor 6,6,6";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			line = "	bl printf";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		
 		// 	如果是scanf函数
 		} else if (funcName.equals("scanf")) {
@@ -384,21 +370,21 @@ public class Assembler {
 				String parameterType = symbolTable.get(parameter).get("type");
 				if(parameterType.equals("STRING_CONSTANT")) {
 					line = "	lis 0," + parameter + "@ha";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = "	addic " + (num + 7) + ",0," + parameter + "@l";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = "	mr " + num + "," + (num + 7);
 					num++;
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 				} else if(parameterType.equals("VARIABLE")) {
 					String fieldType = symbolTable.get(parameter).get("field_type");
 					if(fieldType.equals("int") || fieldType.equals("long")) {
 						line = "	addi " + (num + 7) + ",31," + getVariableSymbolOrNumber(parameter);
-						assFileHandler.insert(line, "TEXT");
+						assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 						line = "	mr " + num + "," + (num + 7);
 						num++;
-						assFileHandler.insert(line, "TEXT");
+						assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 						
 					} else if(fieldType.equals("float")) {
 						logger.debug("scanf float");
@@ -426,16 +412,16 @@ public class Assembler {
 			}
 			
 			line = "	crxor 6,6,6";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			line = "	bl __isoc99_scanf";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			
 		} else {
 			logger.debug("_functionCall funcName : " + funcName);
 			
 		}
 		
-		assFileHandler.insert("", "TEXT");	// 增加一个空行
+		assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 增加一个空行
 	}
 	
 	// 赋值语句
@@ -453,17 +439,17 @@ public class Assembler {
 				// 常数
 				if(expres.get("type").equals("CONSTANT")) {
 					line = "	li 0," + expres.get("value");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = "	stw 0," + getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 
 				// 变量
 				} else if(expres.get("type").equals("VARIABLE")) {
 					// 把数放到r0中，再把r0总的数转到目标寄存器中, 同float
 					line = "	lwz 0," + getVariableSymbolOrNumber(expres.get("value")) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = "	stw 0," + getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 				} else {
 					try {
@@ -498,7 +484,7 @@ public class Assembler {
 			
 		}
 		
-		assFileHandler.insert("", "TEXT");
+		assemblerDTO.getAssFileHandler().insert("", "TEXT");
 	}
 	
 	// if-else语句
@@ -528,24 +514,24 @@ public class Assembler {
 				
 				Map<String, String> expres =  _expression(currentNode.getFirstSon());;
 				line = "	lwz 0," + getVariableSymbolOrNumber(expres.get("value")) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	cmpi 7,0,0,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	beq 7," + labelsIfelse.get("label_else");
-				assFileHandler.insert(line, "TEXT");
-				assFileHandler.insert("", "TEXT");	// 插入一个空行
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 插入一个空行
 				traverse(currentNode.getFirstSon().getRight().getFirstSon());
 				line = "	b " + labelsIfelse.get("label_end");
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = labelsIfelse.get("label_else") + ":";
-				assFileHandler.insert(line, "TEXT");
-				assFileHandler.insert("", "TEXT");	// 插入一个空行
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 插入一个空行
 				
 			} else if (currentNode.getValue().equals("ElseControl")) {
 				traverse(currentNode.getFirstSon());
 				line = labelsIfelse.get("label_end") + ":";
-				assFileHandler.insert(line, "TEXT");
-				assFileHandler.insert("", "TEXT");	// 插入一个空行
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 插入一个空行
 				
 				
 			} else {
@@ -592,9 +578,9 @@ public class Assembler {
 				if (cnt == 2) {
 					cnt++;
 					line = "	b " + labelsFor.get("label1");
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					line = labelsFor.get("label2") + ":";
-					assFileHandler.insert(line, "TEXT");
+					assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 					
 					// 留到后面再处理
 					forCondition = currentNode;
@@ -624,17 +610,17 @@ public class Assembler {
 		}
 		
 		line = labelsFor.get("label1") + ":";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		// 延迟到此处才处理条件表达式
 		Map<String, String> expres =  _expression(forCondition);
 		line = "	lwz 0," + getVariableSymbolOrNumber(expres.get("value")) + "(31)";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		line = "	cmpi 7,0,0,0";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		line = "	bne 7," + labelsFor.get("label2");
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		
-		assFileHandler.insert("", "TEXT");	// 增加一个空行
+		assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 增加一个空行
 	}
 	
 	// while语句
@@ -664,9 +650,9 @@ public class Assembler {
 			// while第一部分
 			if (currentNode.getValue().equals("Expression")) {
 				line = "	b " + labelsWhile.get("label1");
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = labelsWhile.get("label2") + ":";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				whileCondition = currentNode;
 				
 			// while循环体
@@ -687,16 +673,16 @@ public class Assembler {
 		}
 		
 		line = labelsWhile.get("label1") + ":";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		Map<String, String> expres =  _expression(whileCondition);
 		line = "	lwz 0," + getVariableSymbolOrNumber(expres.get("value")) + "(31)";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		line = "	cmpi 7,0,0,0";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		line = "	bne 7," + labelsWhile.get("label2");
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		
-		assFileHandler.insert("", "TEXT");	// 增加一个空行
+		assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 增加一个空行
 	}
 	
 	// do-while语句
@@ -720,7 +706,7 @@ public class Assembler {
 		
 		String line = null;
 		line = labelsDoWhile.get("label1") + ":";
-		assFileHandler.insert(line, "TEXT");
+		assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 		
 		SyntaxTreeNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
@@ -732,11 +718,11 @@ public class Assembler {
 			} else if (currentNode.getValue().equals("Expression")) {
 				Map<String, String> expres =  _expression(currentNode);
 				line = "	lwz 0," + getVariableSymbolOrNumber(expres.get("value")) + "(31)";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	cmpi 7,0,0,0";
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				line = "	bne 7," + labelsDoWhile.get("label1");
-				assFileHandler.insert(line, "TEXT");
+				assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 				
 			} else {
 				try {
@@ -751,7 +737,7 @@ public class Assembler {
 			currentNode = currentNode.getRight();
 		}
 		
-		assFileHandler.insert("", "TEXT");	// 增加一个空行
+		assemblerDTO.getAssFileHandler().insert("", "TEXT");	// 增加一个空行
 	}
 	
 	// return语句
@@ -771,9 +757,9 @@ public class Assembler {
 		Map<String, String> expres = _expression(currentNode);
 		if(expres.get("type").equals("CONSTANT")) {
 			String line = "	li 0," + expres.get("value");
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			line = "	mr 3,0";
-			assFileHandler.insert(line, "TEXT");
+			assemblerDTO.getAssFileHandler().insert(line, "TEXT");
 			
 		} else {
 			try {
@@ -794,19 +780,19 @@ public class Assembler {
 	}
 	
 	private void generateAssemblerFile(String fileName) {
-		assFileHandler.generateAssemblerFile(fileName);
+		assemblerDTO.getAssFileHandler().generateAssemblerFile(fileName);
 		
 	}
 	
 	
 	private void generateSymbolTableFile() {
-		assFileHandler.generateSymbolTableFile(symbolTable);
+		assemblerDTO.getAssFileHandler().generateSymbolTableFile(symbolTable);
 		
 	}
 	
 	private void outputAssembler() {
 		System.out.println("===================Assembler==================");
-		assFileHandler.dispalyResult();
+		assemblerDTO.getAssFileHandler().dispalyResult();
 		
 	}
 	
