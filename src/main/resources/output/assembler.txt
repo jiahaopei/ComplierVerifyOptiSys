@@ -6,14 +6,15 @@
 	.align 2
 .LC5:
 	.string	"sum is %d"
+
 	.section ".text"
-	.align 2
-	.globl main
-	.type main, @function
-main:
-	stwu 1,-16(1)
-	stw 31,12(1)
-	mr 31,1
+	.align 2                               # 2
+	.globl main                            # 2
+	.type main, @function                  # 2
+main:	                                  # 2
+	stwu 1,-16(1)                          # 2
+	stw 31,12(1)                           # 2
+	mr 31,1                                # 2
 
 	lis 0,.LC0@ha
 	addic 10,0,.LC0@l
@@ -104,9 +105,9 @@ main:
 
 	li 0,0
 	mr 3,0
-	addi 11,31,16
-	lwz 31,-4(11)
-	mr 1,11
-	blr
-	.size	main, .-main
+	addi 11,31,16                          # 2
+	lwz 31,-4(11)                          # 2
+	mr 1,11                                # 2
+	blr                                    # 2
+	.size main,.-main                      # 2
 	.ident	"powerpc-e500v2-linux-gnuspe-gcc"

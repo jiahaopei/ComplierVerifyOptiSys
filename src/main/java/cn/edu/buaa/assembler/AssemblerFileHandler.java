@@ -23,10 +23,12 @@ public class AssemblerFileHandler {
 	public AssemblerFileHandler() {
 		this.result = new ArrayList<>();
 		this.result.add("	.section .rodata");
+		// 加一行空格，分开数据域和代码域
+		this.result.add("");
 		this.result.add("	.section \".text\"");
 		
 		this.dataPointer = 1;
-		this.textPointer = 2;
+		this.textPointer = 3;
 		
 	}
 	

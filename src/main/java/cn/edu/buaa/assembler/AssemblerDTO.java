@@ -1,5 +1,6 @@
 package cn.edu.buaa.assembler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,12 @@ public class AssemblerDTO {
 	// 控制生成的汇编代码中，变量是以数字还是原始名称出现, 默认false，为原始名称出现
 	private boolean isVariableSymbolOrNumber = true;
 	
+	public AssemblerDTO() {
+		assFileHandler = new AssemblerFileHandler();
+		symbolTable = new HashMap<>();
+		
+	}
+	
 	/**
 	 * 获得参数的原始名称或数字
 	 * @param parameter
@@ -34,28 +41,80 @@ public class AssemblerDTO {
 				
 	}
 	
+	/**
+	 * add to MemAdress
+	 * @param tmp
+	 */
 	public void addToMemAdress(int tmp) {
 		this.memAdress += tmp;
 	}
 	
+	/**
+	 * add to labelCnt
+	 * @param tmp
+	 */
 	public void addToLabelCnt(int tmp) {
 		this.labelCnt += tmp;
 	}
 	
-	public AssemblerFileHandler getAssFileHandler() {
-		return assFileHandler;
+	/**
+	 * 把line插入data域
+	 * @param line
+	 * @param label
+	 */
+	public void insertIntoData(String line, String label) {
+		if (label != null && label.trim().length() != 0) {
+			line = AssemblerUtils.generateLabel(line, label);
+		}
+		assFileHandler.insert(line, "DATA");
+		
 	}
-
-	public void setAssFileHandler(AssemblerFileHandler assFileHandler) {
-		this.assFileHandler = assFileHandler;
+	
+	/**
+	 * 把line插入text域
+	 * @param line
+	 * @param label
+	 */
+	public void insertIntoText(String line, String label) {
+		if (label != null && label.trim().length() != 0) {
+			line = AssemblerUtils.generateLabel(line, label);
+		}
+		assFileHandler.insert(line, "TEXT");
+		
 	}
-
-	public Map<String, Map<String, String>> getSymbolTable() {
-		return symbolTable;
+	
+	/**
+	 * 插入符号表
+	 * @param key
+	 * @param value
+	 */
+	public void putIntoSymbolTable(String key, Map<String, String> value) {
+		symbolTable.put(key, value);
+		
 	}
-
-	public void setSymbolTable(Map<String, Map<String, String>> symbolTable) {
-		this.symbolTable = symbolTable;
+	
+	/**
+	 * 产生汇编文件
+	 * @param fileName
+	 */
+	public void generateAssemblerFile(String fileName) {
+		assFileHandler.generateAssemblerFile(fileName);
+	}
+	
+	/**
+	 * 保存符号表中的内容
+	 */
+	public void generateSymbolTableFile() {
+		assFileHandler.generateSymbolTableFile(symbolTable);
+		
+	}
+	
+	/**
+	 * 在控制台打印汇编结果
+	 */
+	public void dispalyResult() {
+		assFileHandler.dispalyResult();
+		
 	}
 
 	public int getLabelCnt() {
@@ -73,7 +132,7 @@ public class AssemblerDTO {
 	public void setMemAdress(int memAdress) {
 		this.memAdress = memAdress;
 	}
-
+	
 	public boolean isVariableSymbolOrNumber() {
 		return isVariableSymbolOrNumber;
 	}

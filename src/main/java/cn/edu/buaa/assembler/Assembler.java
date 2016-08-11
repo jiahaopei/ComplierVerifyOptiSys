@@ -27,8 +27,6 @@ public class Assembler {
 		this.tree = tree;
 
 		AssemblerDTO assemblerDTO = new AssemblerDTO();
-		assemblerDTO.setAssFileHandler(new AssemblerFileHandler());
-		assemblerDTO.setSymbolTable(new HashMap<>());
 		assemblerDTO.setLabelCnt(0);
 		assemblerDTO.setMemAdress(8); // 以8号地址起始
 		assemblerDTO.setVariableSymbolOrNumber(true); // true，表示以数字出现
@@ -41,13 +39,14 @@ public class Assembler {
 		traverse(tree.getRoot());
 
 	}
-
+	
 	// 从左向右遍历某一层的全部节点
 	private void traverse(SyntaxTreeNode node) {
 		while (node != null) {
 			handlerSentenceblock(node);
 			node = node.getRight();
 		}
+		
 	}
 
 	// 处理某一种句型
@@ -145,18 +144,30 @@ public class Assembler {
 	private void _functionStatement(SyntaxTreeNode node) {
 		SyntaxTreeNode currentNode = node.getFirstSon(); // 第一个儿子
 		String funcName = null;
+		String label = null;
+		String line = null;
 		while (currentNode != null) {
 			if (currentNode.getValue().equals("FunctionName")) {
 				funcName = currentNode.getFirstSon().getValue();
+				label = currentNode.getFirstSon().getLabel();
 				if (funcName.equals("main")) {
-					assemblerDTO.getAssFileHandler().insert("	.align 2", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("	.globl main", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("	.type main, @function", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("main:", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("	stwu 1,-16(1)", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("	stw 31,12(1)", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("	mr 31,1", "TEXT");
-					assemblerDTO.getAssFileHandler().insert("", "TEXT");
+					line = AssemblerUtils.PREFIX + ".align 2";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".globl main";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".type main, @function";
+					assemblerDTO.insertIntoText(line, label);
+					line = "main:";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stwu 1,-16(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 31,12(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "mr 31,1";
+					assemblerDTO.insertIntoText(line, label);
+					
+					// 增加空行
+					assemblerDTO.insertIntoText("", null);
 
 				} else {
 					try {
@@ -176,12 +187,17 @@ public class Assembler {
 		}
 
 		if (funcName != null && funcName.equals("main")) {
-			assemblerDTO.getAssFileHandler().insert("	addi 11,31,16", "TEXT");
-			assemblerDTO.getAssFileHandler().insert("	lwz 31,-4(11)", "TEXT");
-			assemblerDTO.getAssFileHandler().insert("	mr 1,11", "TEXT");
-			assemblerDTO.getAssFileHandler().insert("	blr", "TEXT");
-			assemblerDTO.getAssFileHandler().insert("	.size	main, .-main", "TEXT");
-
+			line = AssemblerUtils.PREFIX + "addi 11,31,16";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "mr 1,11";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "blr";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + ".size main,.-main";
+			assemblerDTO.insertIntoText(line, label);
+			
 		}
 
 	}
@@ -215,7 +231,7 @@ public class Assembler {
 				tmpMap.put("field_type", variableFieldType);
 				tmpMap.put("register", Integer.toString(assemblerDTO.getMemAdress()));
 				assemblerDTO.addToMemAdress(4);
-				assemblerDTO.getSymbolTable().put(variableName, tmpMap);
+				assemblerDTO.putIntoSymbolTable(variableName, tmpMap);
 
 				// 数组元素
 			} else if (currentNode.getValue().equals("ConstantList")) {
@@ -778,18 +794,18 @@ public class Assembler {
 	}
 
 	private void generateAssemblerFile(String fileName) {
-		assemblerDTO.getAssFileHandler().generateAssemblerFile(fileName);
+		assemblerDTO.generateAssemblerFile(fileName);
 
 	}
 
 	private void generateSymbolTableFile() {
-		assemblerDTO.getAssFileHandler().generateSymbolTableFile(assemblerDTO.getSymbolTable());
+		assemblerDTO.generateSymbolTableFile();
 
 	}
 
 	private void outputAssembler() {
 		System.out.println("===================Assembler==================");
-		assemblerDTO.getAssFileHandler().dispalyResult();
+		assemblerDTO.dispalyResult();
 
 	}
 
