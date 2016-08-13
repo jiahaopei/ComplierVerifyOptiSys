@@ -94,6 +94,15 @@ public class AssemblerDTO {
 	}
 	
 	/**
+	 * 由key获得符号表中的value (Map)
+	 * @param key
+	 * @return
+	 */
+	public Map<String, String> getMapFromSymbolTable(String key) {
+		return symbolTable.get(key);
+	}
+	
+	/**
 	 * 产生汇编文件
 	 * @param fileName
 	 */

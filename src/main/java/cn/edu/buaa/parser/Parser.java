@@ -425,10 +425,10 @@ public class Parser {
 	}
 	
 	// while语句
-	private void _while(SyntaxTreeNode father) {
+	private void _while(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree whileTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "WhileControl", null, null);
+		SyntaxTreeNode root = new SyntaxTreeNode("Control", "WhileControl", null, label);
 		whileTree.setRoot(root);
 		whileTree.setCurrent(root);
 		tree.addChildNode(root, father);
@@ -469,10 +469,10 @@ public class Parser {
 	}
 	
 	// do-while语句
-	private void _doWhile(SyntaxTreeNode father) {
+	private void _doWhile(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree doWhileTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "DoWhileControl", null, null);
+		SyntaxTreeNode root = new SyntaxTreeNode("Control", "DoWhileControl", null, label);
 		doWhileTree.setRoot(root);
 		doWhileTree.setCurrent(root);
 		tree.addChildNode(root, father);
@@ -525,7 +525,7 @@ public class Parser {
 	}
 	
 	// if语句
-	private void _if_else(SyntaxTreeNode father) {
+	private void _if_else(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree ifElseTree = new SyntaxTree();
 		SyntaxTreeNode root = new SyntaxTreeNode("Control", "IfElseControl", null, null);
@@ -534,7 +534,7 @@ public class Parser {
 		tree.addChildNode(root, father);
 		
 		SyntaxTree ifTree = new SyntaxTree();
-		SyntaxTreeNode ifRoot = new SyntaxTreeNode("IfControl");
+		SyntaxTreeNode ifRoot = new SyntaxTreeNode("IfControl", null, null, label);
 		ifTree.setRoot(ifRoot);
 		ifTree.setCurrent(ifRoot);
 		ifElseTree.addChildNode(ifRoot, root);
@@ -593,7 +593,7 @@ public class Parser {
 			index++;
 			
 			SyntaxTree elseTree = new SyntaxTree();
-			SyntaxTreeNode elseRoot = new SyntaxTreeNode("ElseControl");
+			SyntaxTreeNode elseRoot = new SyntaxTreeNode("ElseControl", null, null, getTokenLabel(index));
 			elseTree.setRoot(elseRoot);
 			elseTree.setCurrent(elseRoot);
 			ifElseTree.addChildNode(elseRoot, root);
@@ -617,10 +617,10 @@ public class Parser {
 	}
 	
 	// for语句
-	private void _for(SyntaxTreeNode father) {
+	private void _for(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree forTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "ForControl", null, null);
+		SyntaxTreeNode root = new SyntaxTreeNode("Control", "ForControl", null, label);
 		forTree.setRoot(root);
 		forTree.setCurrent(root);
 		forTree.addChildNode(root, father);
@@ -694,16 +694,16 @@ public class Parser {
 		String tokenType = getTokenType(index);
 		
 		if(tokenType.equals("WHILE")) {
-			_while(father);
+			_while(father, getTokenLabel(index));
 			
 		} else if (tokenType.equals("DO")) { 
-			_doWhile(father);
+			_doWhile(father, getTokenLabel(index));
 			
 		} else if(tokenType.equals("IF")) {
-			_if_else(father);
+			_if_else(father, getTokenLabel(index));
 			
 		} else if(tokenType.equals("FOR")) {
-			_for(father);
+			_for(father, getTokenLabel(index));
 			
 		} else {
 			try {
@@ -729,7 +729,8 @@ public class Parser {
 		returnTree.addChildNode(root, father);
 		
 		if (getTokenType(index).equals("RETURN")) {
-			SyntaxTreeNode returnNode = new SyntaxTreeNode(getTokenValue(index));
+			SyntaxTreeNode returnNode = new SyntaxTreeNode(
+					getTokenValue(index), getTokenType(index), null, getTokenLabel(index));
 			returnTree.addChildNode(returnNode, root);
 			index++;	
 		} else {
