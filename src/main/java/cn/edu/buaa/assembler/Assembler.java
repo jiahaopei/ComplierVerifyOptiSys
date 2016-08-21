@@ -12,6 +12,8 @@ import cn.edu.buaa.lexer.Lexer;
 import cn.edu.buaa.parser.Parser;
 import cn.edu.buaa.pojo.SyntaxTree;
 import cn.edu.buaa.pojo.SyntaxTreeNode;
+import cn.edu.buaa.prover.Prover;
+import cn.edu.buaa.recorder.Recorder;
 
 public class Assembler {
 
@@ -20,24 +22,35 @@ public class Assembler {
 
 	// 汇编代码生成过程中需要用到的公共数据
 	private AssemblerDTO assemblerDTO;
+	
+	private Recorder recorder;
+	
+	private Prover prover;
 
-	private static final Logger logger = LoggerFactory.getLogger(Assembler.class);
+	private final Logger logger = LoggerFactory.getLogger(Assembler.class);
 
-	public Assembler(SyntaxTree tree) {
+	public Assembler(SyntaxTree tree, Recorder recorder, Prover prover) {
 		this.tree = tree;
-
+		this.recorder = recorder;
+		this.prover = prover;
+		
 		AssemblerDTO assemblerDTO = new AssemblerDTO();
 		assemblerDTO.setLabelCnt(0);
 		assemblerDTO.setMemAdress(8); // 以8号地址起始
 		assemblerDTO.setVariableSymbolOrNumber(true); // true，表示以数字出现
 		this.assemblerDTO = assemblerDTO;
-
+		
 	}
 
 	public void runAssembler() {
+		logger.info("Assemble.runAssembler");
+		
+		recorder.insertLine("目标码生成开始...");
+		
 		// 从语法树的根节点开始遍历
 		traverse(tree.getRoot());
-
+		
+		recorder.insertLine("目标码生成结束!");
 	}
 	
 	// 从左向右遍历某一层的全部节点
@@ -315,7 +328,7 @@ public class Assembler {
 
 						// 地址符号，不处理
 					} else if (tmpNode.getType().equals("ADDRESS")) {
-						logger.info("ADDRESS : " + tmpNode.getValue());
+						logger.debug("ADDRESS : " + tmpNode.getValue());
 
 					} else {
 						try {
@@ -452,7 +465,8 @@ public class Assembler {
 		String line = null;
 		SyntaxTreeNode currentNode = node.getFirstSon();
 		String label = currentNode.getLabel();
-		if (currentNode.getType().equals("IDENTIFIER") && currentNode.getRight().getValue().equals("Expression")) {
+		if (currentNode.getType().equals("IDENTIFIER") 
+				&& currentNode.getRight().getValue().equals("Expression")) {
 			// 先处理右边的表达式
 			Map<String, String> expres = _expression(currentNode.getRight());
 
@@ -589,6 +603,31 @@ public class Assembler {
 
 			currentNode = currentNode.getRight();
 		}
+		
+		boolean valid = false;
+		if (isIfElse) {
+			recorder.insertLine("if-else语句验证开始...");
+			valid = prover.runProver("if_else");
+			if (valid) {
+				recorder.insertLine("if-else语句验证结果 : 验证成功");
+			} else {
+				recorder.insertLine("if-else语句验证结果 : 验证失败");
+				throw new RuntimeException("if-else语句验证失败");
+			}
+			recorder.insertLine("if-else语句验证结束!");
+			recorder.insertLine(null);
+		} else {
+			recorder.insertLine("if语句验证开始...");
+			valid = prover.runProver("if");
+			if (valid) {
+				recorder.insertLine("if语句验证结果 : 验证成功");
+			} else {
+				recorder.insertLine("if语句验证结果 : 验证失败");
+				throw new RuntimeException("if语句验证失败");
+			}
+			recorder.insertLine("if语句验证结束!");
+			recorder.insertLine(null);
+		}
 
 	}
 
@@ -666,6 +705,19 @@ public class Assembler {
 
 		// 增加一个空行
 		assemblerDTO.insertIntoText("", null);
+		
+		boolean valid = false;
+		recorder.insertLine("for语句验证开始...");
+		valid = prover.runProver("for");
+		if (valid) {
+			recorder.insertLine("for语句验证结果 : 验证成功");
+		} else {
+			recorder.insertLine("for语句验证结果 : 验证失败");
+			throw new RuntimeException("if-else语句验证失败");
+		}
+		recorder.insertLine("for语句验证结束!");
+		recorder.insertLine(null);
+		
 	}
 
 	// while语句
@@ -730,6 +782,19 @@ public class Assembler {
 
 		// 增加一个空行
 		assemblerDTO.insertIntoData("", null);
+		
+		boolean valid = false;
+		recorder.insertLine("while语句验证开始...");
+		valid = prover.runProver("while");
+		if (valid) {
+			recorder.insertLine("while语句验证结果 : 验证成功");
+		} else {
+			recorder.insertLine("while语句验证结果 : 验证失败");
+			throw new RuntimeException("while语句验证失败");
+		}
+		recorder.insertLine("while语句验证结束!");
+		recorder.insertLine(null);
+		
 	}
 
 	// do-while语句
@@ -787,6 +852,18 @@ public class Assembler {
 
 		// 增加一个空行
 		assemblerDTO.insertIntoText("", null);
+		
+		boolean valid = false;
+		recorder.insertLine("do-while语句验证开始...");
+		valid = prover.runProver("do_while");
+		if (valid) {
+			recorder.insertLine("do-while语句验证结果 : 验证成功");
+		} else {
+			recorder.insertLine("do-while语句验证结果 : 验证失败");
+			throw new RuntimeException("do-while语句验证失败");
+		}
+		recorder.insertLine("do-while语句验证结束!");
+		recorder.insertLine(null);
 	}
 
 	// return语句
@@ -829,32 +906,43 @@ public class Assembler {
 
 	}
 
-	private void generateAssemblerFile(String fileName) {
+	public void generateAssemblerFile(String fileName) {
 		assemblerDTO.generateAssemblerFile(fileName);
 
 	}
 
-	private void generateSymbolTableFile() {
+	public void generateSymbolTableFile() {
 		assemblerDTO.generateSymbolTableFile();
 
 	}
 
-	private void outputAssembler() {
-		System.out.println("===================Assembler==================");
-		assemblerDTO.dispalyResult();
+	public void outputAssembler() {
+		recorder.insertLine("===================Assembler==================");
+		List<String> result = assemblerDTO.getResult();
+		for (String line : result) {
+			recorder.insertLine(line);
+		}
 
 	}
 
 	public static void main(String[] args) {
+		// 公共记录
+		Recorder recorder = new Recorder();
 		String fileName = "evenSum.c";
-		Lexer lexer = new Lexer(fileName);
-		lexer.runLexer();
+
+		Lexer lexer = new Lexer(fileName, recorder);
+		lexer.outputSrc();
 		lexer.labelSrc(fileName);
+		lexer.outputLabelSrc(fileName);
+		lexer.runLexer();
+		lexer.outputLexer();
 
-		Parser parser = new Parser(lexer.getTokens());
+		Parser parser = new Parser(lexer.getTokens(), recorder);
 		parser.runParser();
+		parser.outputParser();
 
-		Assembler assembler = new Assembler(parser.getTree());
+		Prover prover = new Prover(recorder);
+		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
 		assembler.runAssembler();
 		assembler.generateAssemblerFile(fileName);
 		assembler.generateSymbolTableFile();

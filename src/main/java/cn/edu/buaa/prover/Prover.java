@@ -12,9 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cn.edu.buaa.constant.CommonsDefine;
 import cn.edu.buaa.constant.ProverDefine;
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
+import cn.edu.buaa.recorder.Recorder;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -27,10 +32,15 @@ public class Prover {
 	private Map<String, List<String>> allObjectCodePatterns;
 	// 所有的循环不变式语句
 	private Map<String, List<Proposition>> loopInvariants;
+	
+	private Recorder recorder;
+	
+	private final Logger logger = LoggerFactory.getLogger(Prover.class);
+	
 	// 中间过程输出结果
 	public BufferedWriter bufferedWriter;
 
-	public Prover() {
+	public Prover(Recorder recorder) {
 		loadAxioms("src/main/resources/axiom/ppcAxiom.xls");
 		// showAxioms();
 
@@ -40,19 +50,31 @@ public class Prover {
 		loadPrecoditions("src/main/resources/precodition/");
 		// showAllLoopInvariants();
 		
+		this.recorder = recorder;
 	}
-
+	
+	public boolean runProver(String key) {
+		logger.info("Prover.runProver");
+		
+		List<String> objectCodePatterns = getObjectCodePatterns(key);
+		createOutputFile(key);
+		return proveProcess(objectCodePatterns, key);
+		
+	}
+	
 	/**
-	 * 对输入的目标模式进行证明： 1) 目标码映射 2) 推理证明 3) 获得语义
+	 * 对输入的目标码模式进行证明： 1) 目标码映射 2) 推理证明 3) 获得语义
 	 * 
 	 * @param objectCodePatterns
 	 * @throws IOException
 	 */
-	public void proveProcess(List<String> objectCodePatterns, String name) {
+	public boolean proveProcess(List<String> objectCodePatterns, String name) {
 		
-		System.out.println("待证 : " + name);
+		// 验证结果
+		boolean isSame = false;
 		
-		System.out.println("\n==============目标码模式===============\n");
+		recorder.insertLine("待证 : " + name);
+		recorder.insertLine("==============目标码模式===============");
 		showSingleObjectCodePatterns(objectCodePatterns);
 		if (bufferedWriter != null) {
 			try {
@@ -65,7 +87,7 @@ public class Prover {
 		}
 		
 		// 命题映射
-		System.out.println("\n==============目标码模式命题===============\n");
+		recorder.insertLine("==============目标码模式命题===============");
 		List<Proposition> propositions = PropositionMappingAlgorithm.process(objectCodePatterns, axioms);
 		showAllProposition(propositions);
 		if (bufferedWriter != null) {
@@ -80,7 +102,7 @@ public class Prover {
 		
 		if (!ProverDefine.LOOPS.contains(name)) {
 			// 非循环命题推导
-			System.out.println("\n==============命题推理结果===============\n");
+			recorder.insertLine("==============命题推理结果===============");
 			List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process(propositions);
 			showAllProposition(simplifiedPropositions);
 			if (bufferedWriter != null) {
@@ -94,10 +116,10 @@ public class Prover {
 			}
 
 			// 获得语义
-			System.out.println("\n=============推理出的语义================\n");
+			recorder.insertLine("=============推理出的语义================");
 			List<Proposition> semantemes = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(simplifiedPropositions);
 			showAllProposition(semantemes);	
-			System.out.println("σ-transfer :\n");
+			recorder.insertLine("σ-transfer :");
 			List<Proposition> sigmaSemantemes = SemantemeObtainAlgorithm.standardSemantemes(semantemes);
 			showAllProposition(sigmaSemantemes);
 			
@@ -114,7 +136,7 @@ public class Prover {
 			}
 			
 			// 给定的目标语义
-			System.out.println("\n=============给定的目标语义================\n");
+			recorder.insertLine("\n=============给定的目标语义================\n");
 			List<Proposition> goals = loopInvariants.get(name);
 			showAllProposition(goals);
 			if (bufferedWriter != null) {
@@ -128,10 +150,10 @@ public class Prover {
 			}
 			
 			// 判断语义是否一致
-			System.out.println("\n===============结论================\n");
-			System.out.println("给定的目标语义和推理出的语义是否一致 : ");
-			boolean isSame = LoopInteractiveProvingAlgorithm.judgeSemantemes(goals, sigmaSemantemes);
-			System.out.println(isSame);
+			recorder.insertLine("===============结论================");
+			recorder.insertLine("给定的目标语义和推理出的语义是否一致 : ");
+			isSame = LoopInteractiveProvingAlgorithm.judgeSemantemes(goals, sigmaSemantemes);
+			recorder.insertLine(Boolean.toString(isSame));
 			if (bufferedWriter != null) {
 				try {
 					bufferedWriter.write("给定的目标语义和推理出的语义是否一致 :\n");
@@ -145,16 +167,18 @@ public class Prover {
 			
 		} else {
 			// 循环交互证明算法
-			System.out.println("\n=================循环交互证明算法===================\n");
+			recorder.insertLine("=================循环交互证明算法===================");
 			try {
-				boolean isSame = LoopInteractiveProvingAlgorithm.process(propositions, name, loopInvariants, bufferedWriter);
-				System.out.println("综上，给定的目标语义和推理出的语义是否一致 :");
-				System.out.println(isSame);
+				isSame = LoopInteractiveProvingAlgorithm.process(propositions, name, loopInvariants, bufferedWriter, recorder);
+				recorder.insertLine("综上，给定的目标语义和推理出的语义是否一致 :");
+				recorder.insertLine(Boolean.toString(isSame));
 				
-				bufferedWriter.write("综上，给定的目标语义和推理出的语义是否一致 :\n");
-				bufferedWriter.write(Boolean.toString(isSame));
-				bufferedWriter.newLine();
-				bufferedWriter.flush();
+				if (bufferedWriter != null) {
+					bufferedWriter.write("综上，给定的目标语义和推理出的语义是否一致 :\n");
+					bufferedWriter.write(Boolean.toString(isSame));
+					bufferedWriter.newLine();
+					bufferedWriter.flush();
+				}
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -162,6 +186,7 @@ public class Prover {
 			
 		}
 		
+		return isSame;
 	}
 
 	public List<String> getObjectCodePatterns(String key) {
@@ -345,23 +370,22 @@ public class Prover {
 	}
 	
 	public void showSingleObjectCodePatterns(List<String> objectCodePatterns) {
-
 		for (String line : objectCodePatterns) {
-			System.out.println(line);
+			recorder.insertLine(line);
 		}
-		System.out.println();
+		recorder.insertLine(null);
 		
 	}
 	
 	public void showAllProposition(List<Proposition> propositions) {
 		for (Proposition proposition : propositions) {
-			System.out.println(proposition);
+			recorder.insertLine(proposition.toString());
 		}
 	}
 
 	public void createOutputFile(String key) {
 		try {
-			bufferedWriter = new BufferedWriter(new FileWriter("src/main/resources/output/" + key + ".txt"));
+			bufferedWriter = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + key + ".txt"));
 			bufferedWriter.write("======================结果输出=======================\n");
 			bufferedWriter.write("语句 : " + key + "\n");
 			bufferedWriter.newLine();
@@ -381,10 +405,8 @@ public class Prover {
 	}
 
 	public static void main(String[] args) {
-		Prover prover = new Prover();
-		String key = "if";
-		List<String> objectCodePatterns = prover.getObjectCodePatterns(key);
-		prover.createOutputFile(key);
-		prover.proveProcess(objectCodePatterns, key);
+		Recorder recorder = new Recorder();
+		Prover prover = new Prover(recorder);
+		prover.runProver("for");
 	}
 }
