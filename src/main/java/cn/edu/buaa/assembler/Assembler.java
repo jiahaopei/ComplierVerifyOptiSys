@@ -43,14 +43,15 @@ public class Assembler {
 	}
 
 	public void runAssembler() {
-		logger.info("Assemble.runAssembler");
-		
+		logger.info("=========Assemble=========");
+		logger.info("目标码生成开始...");
 		recorder.insertLine("目标码生成开始...");
 		
 		// 从语法树的根节点开始遍历
 		traverse(tree.getRoot());
 		
 		recorder.insertLine("目标码生成结束!");
+		logger.info("目标码生成结束!");
 	}
 	
 	// 从左向右遍历某一层的全部节点
@@ -607,26 +608,36 @@ public class Assembler {
 		boolean valid = false;
 		if (isIfElse) {
 			recorder.insertLine("if-else语句验证开始...");
+			logger.info("if-else语句验证开始...");
 			valid = prover.runProver("if_else");
 			if (valid) {
 				recorder.insertLine("if-else语句验证结果 : 验证成功");
+				logger.info("if-else语句验证结果 : 验证成功");
 			} else {
 				recorder.insertLine("if-else语句验证结果 : 验证失败");
+				logger.info("if-else语句验证结果 : 验证失败");
 				throw new RuntimeException("if-else语句验证失败");
 			}
 			recorder.insertLine("if-else语句验证结束!");
 			recorder.insertLine(null);
+			logger.info("if-else语句验证结束!");
+			
 		} else {
 			recorder.insertLine("if语句验证开始...");
+			logger.info("if语句验证开始...");
 			valid = prover.runProver("if");
 			if (valid) {
 				recorder.insertLine("if语句验证结果 : 验证成功");
+				logger.info("if语句验证结果 : 验证成功");
 			} else {
 				recorder.insertLine("if语句验证结果 : 验证失败");
+				logger.info("if语句验证结果 : 验证失败");
 				throw new RuntimeException("if语句验证失败");
 			}
 			recorder.insertLine("if语句验证结束!");
 			recorder.insertLine(null);
+			logger.info("if语句验证结束!");
+			
 		}
 
 	}
@@ -708,15 +719,19 @@ public class Assembler {
 		
 		boolean valid = false;
 		recorder.insertLine("for语句验证开始...");
+		logger.info("for语句验证开始...");
 		valid = prover.runProver("for");
 		if (valid) {
 			recorder.insertLine("for语句验证结果 : 验证成功");
+			logger.info("for语句验证结果 : 验证成功");
 		} else {
 			recorder.insertLine("for语句验证结果 : 验证失败");
+			logger.info("for语句验证结果 : 验证失败");
 			throw new RuntimeException("if-else语句验证失败");
 		}
 		recorder.insertLine("for语句验证结束!");
 		recorder.insertLine(null);
+		logger.info("for语句验证结束!");
 		
 	}
 
@@ -785,15 +800,19 @@ public class Assembler {
 		
 		boolean valid = false;
 		recorder.insertLine("while语句验证开始...");
+		logger.info("while语句验证开始...");
 		valid = prover.runProver("while");
 		if (valid) {
 			recorder.insertLine("while语句验证结果 : 验证成功");
+			logger.info("while语句验证结果 : 验证成功");
 		} else {
 			recorder.insertLine("while语句验证结果 : 验证失败");
+			logger.info("while语句验证结果 : 验证失败");
 			throw new RuntimeException("while语句验证失败");
 		}
 		recorder.insertLine("while语句验证结束!");
 		recorder.insertLine(null);
+		logger.info("while语句验证结束!");
 		
 	}
 
@@ -855,15 +874,20 @@ public class Assembler {
 		
 		boolean valid = false;
 		recorder.insertLine("do-while语句验证开始...");
+		logger.info("do-while语句验证开始...");
 		valid = prover.runProver("do_while");
 		if (valid) {
 			recorder.insertLine("do-while语句验证结果 : 验证成功");
+			logger.info("do-while语句验证结果 : 验证成功");
 		} else {
 			recorder.insertLine("do-while语句验证结果 : 验证失败");
+			logger.info("do-while语句验证结果 : 验证失败");
 			throw new RuntimeException("do-while语句验证失败");
 		}
 		recorder.insertLine("do-while语句验证结束!");
 		recorder.insertLine(null);
+		logger.info("do-while语句验证结束!");
+		
 	}
 
 	// return语句

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
 
@@ -14,9 +17,13 @@ import cn.edu.buaa.pojo.Proposition;
  *
  */
 public class PropositionMappingAlgorithm {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PropositionMappingAlgorithm.class);
 
 	public static List<Proposition> process(List<String> objectCodePatterns, Map<String, Proposition> axioms) {
-
+		
+		logger.info("PropositionMappingAlgorithm.process");
+		
 		List<Proposition> propositions = new ArrayList<>();
 		String regex = "\t| |,|\\(|\\)";
 

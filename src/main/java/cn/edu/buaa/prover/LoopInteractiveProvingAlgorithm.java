@@ -7,15 +7,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
 import cn.edu.buaa.recorder.Recorder;
 
 public class LoopInteractiveProvingAlgorithm {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoopInteractiveProvingAlgorithm.class);
+	
 	public static boolean process(List<Proposition> srcPropositions, String name, Map<String, 
 			List<Proposition>> loopInvariants, BufferedWriter bufferedWriter, Recorder recorder) throws IOException {
+		
+		logger.info("LoopInteractiveProvingAlgorithm.process");
 		
 		// 拷贝一个副本
 		List<Proposition> propositions = new ArrayList<>();

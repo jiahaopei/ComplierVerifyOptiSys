@@ -354,9 +354,7 @@ PC = PC + @.L2
 <LOG-EXP> != 0 -> σ(<STA-LIST_1>)
 <LOG-EXP> == 0 -> σ(<STA-LIST_2>)
 
-
 =============给定的目标语义================
-
 <LOG-EXP> != 0 -> σ(<STA-LIST_1>)
 <LOG-EXP> == 0 -> σ(<STA-LIST_2>)
 

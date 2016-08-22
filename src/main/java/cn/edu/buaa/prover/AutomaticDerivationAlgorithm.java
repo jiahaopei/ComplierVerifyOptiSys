@@ -3,6 +3,9 @@ package cn.edu.buaa.prover;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
 
@@ -13,8 +16,12 @@ import cn.edu.buaa.pojo.Proposition;
  *
  */
 public class AutomaticDerivationAlgorithm {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(AutomaticDerivationAlgorithm.class);
+	
 	public static List<Proposition> process(List<Proposition> srcPropositions) {
+		
+		logger.info("AutomaticDerivationAlgorithm.process");
 		
 		List<Proposition> propositions = new ArrayList<>();
 		for (Proposition proposition : srcPropositions) {

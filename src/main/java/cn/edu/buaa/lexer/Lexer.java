@@ -41,8 +41,8 @@ public class Lexer {
 	}
 
 	public void runLexer() {
-		logger.info("Lexer.runLexer");
-		
+		logger.info("=========Lexer=========");
+		logger.info("词法分析开始...");
 		recorder.insertLine("词法分析开始...");
 		
 		Stack<Integer> stack = new Stack<>();
@@ -74,6 +74,7 @@ public class Lexer {
 		}
 		
 		recorder.insertLine("词法分析结束!");
+		logger.info("词法分析结束!");
 	}
 
 	private String generateLabel(Stack<Integer> stack) {
@@ -267,6 +268,7 @@ public class Lexer {
 
 
 	private List<String> getContent(String fileName) {
+		logger.info("预处理源代码开始...");
 		recorder.insertLine("预处理源代码开始...");
 		
 		BufferedReader reader = null;
@@ -295,6 +297,7 @@ public class Lexer {
 
 		codes = delComments(codes);
 		recorder.insertLine("预处理源代码结束");
+		logger.info("预处理源代码结束");
 		
 		return codes;
 	}
@@ -391,7 +394,7 @@ public class Lexer {
 
 
 	public void labelSrc(String fileName) {
-		
+		logger.info("源代码标号开始...");
 		recorder.insertLine("源代码标号开始...");
 		
 		BufferedWriter writer = null;
@@ -454,6 +457,7 @@ public class Lexer {
 		}
 		
 		recorder.insertLine("源代码编号结束!");
+		logger.info("源代码编号结束!");
 		
 	}
 	

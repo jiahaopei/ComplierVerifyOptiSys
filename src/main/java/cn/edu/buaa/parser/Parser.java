@@ -87,8 +87,10 @@ public class Parser {
 		
 		if (index < tokens.size()) {
 			recorder.insertLine(Recorder.TAB + "include语句 : 语法合法");
+			logger.info("include语句 : 语法合法");
 		} else {
 			recorder.insertLine(Recorder.TAB + "include语句 : 语法非法");
+			logger.info("include语句 : 语法非法");
 			throw new RuntimeException("include语句未正确结束");
 		}
 		
@@ -174,6 +176,7 @@ public class Parser {
 									param);
 						} else {
 							recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
+							logger.info("函数定义 : 语法非法");
 							try {
 								throw new Exception("函数定义参数错误");
 							} catch (Exception e) {
@@ -195,6 +198,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
+				logger.info("函数定义 : 语法非法");
 				try {
 					throw new Exception("Error in functionStatement! : [" + getTokenLabel(index) + "]");
 				} catch (Exception e) {
@@ -207,8 +211,10 @@ public class Parser {
 		
 		if (index == tokens.size()) {
 			recorder.insertLine(Recorder.TAB + "函数定义 : 语法合法");
+			logger.info("函数定义 : 语法合法");
 		} else {
 			recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
+			logger.info("函数定义 : 语法非法");
 		}
 		
 	}
@@ -340,6 +346,7 @@ public class Parser {
 						
 					} else {
 						recorder.insertLine(Recorder.TAB + "变量声明语句 : 语法非法");
+						logger.info("变量声明语句 : 语法非法");
 						try {
 							throw new Exception("Error in array declare! : " + getTokenLabel(index));
 						} catch (Exception e) {
@@ -391,6 +398,8 @@ public class Parser {
 						
 					} else {
 						recorder.insertLine(Recorder.TAB + "变量声明语句 : 语法非法");
+						logger.info("变量声明语句 : 语法非法");
+						
 						try {
 							throw new Exception("Error in multiple variable statmement!");
 						} catch (Exception e) {
@@ -405,6 +414,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "变量声明语句 : 语法非法");
+				logger.info("变量声明语句 : 语法非法");
 				
 				try {
 					throw new Exception("Error in statement!");
@@ -419,6 +429,7 @@ public class Parser {
 		index++;
 		
 		recorder.insertLine(Recorder.TAB + "变量声明语句 : 语法合法");
+		logger.info("变量声明语句 : 语法合法");
 	}
 
 	// 赋值语句
@@ -452,6 +463,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "赋值语句 : 语法非法");
+				logger.info("赋值语句 : 语法非法");
 				
 				try {
 					throw new Exception("非法的赋值语句 : " + getTokenType(index));
@@ -465,6 +477,7 @@ public class Parser {
 		index++;
 		
 		recorder.insertLine(Recorder.TAB + "赋值语句 : 语法合法");
+		logger.info("赋值语句 : 语法合法");
 	}
 	
 	// while语句
@@ -493,6 +506,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "while语句 : 语法非法");
+				logger.info("while语句 : 语法非法");
 				try {
 					throw new Exception("while statement body must be surrouded by '{}'");
 				} catch (Exception e) {
@@ -503,6 +517,7 @@ public class Parser {
 			
 		} else {
 			recorder.insertLine(Recorder.TAB + "while语句 : 语法非法");
+			logger.info("while语句 : 语法非法");
 			try {
 				throw new Exception("while statement error [" + getTokenLabel(index) + "] : " + getTokenType(index));
 			} catch (Exception e) {
@@ -512,6 +527,7 @@ public class Parser {
 		}
 		
 		recorder.insertLine(Recorder.TAB + "while语句 : 语法合法");
+		logger.info("while语句 : 语法合法");
 	}
 	
 	// do-while语句
@@ -534,6 +550,7 @@ public class Parser {
 				index++;
 			} else {
 				recorder.insertLine(Recorder.TAB + "do-while语句 : 语法非法");
+				logger.info("do-while语句 : 语法非法");
 				try {
 					throw new Exception("Invalid do while [" + getTokenLabel(index) + "] : " + getTokenType(index));
 				} catch (Exception e) {
@@ -553,6 +570,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "do-while语句 : 语法非法");
+				logger.info("do-while语句 : 语法非法");
 				try {
 					throw new Exception("do-while statement error [" + getTokenLabel(index) + "] : " + getTokenType(index));
 				} catch (Exception e) {
@@ -563,6 +581,7 @@ public class Parser {
 			
 		} else {
 			recorder.insertLine(Recorder.TAB + "do-while语句 : 语法非法");
+			logger.info("do-while语句 : 语法非法");
 			try {
 				throw new Exception("error in do-while [" + getTokenLabel(index) + "] : " + getTokenType(index));
 			} catch (Exception e) {
@@ -572,6 +591,7 @@ public class Parser {
 		}
 		
 		recorder.insertLine(Recorder.TAB + "do-while语句 : 语法合法");
+		logger.info("do-while语句 : 语法合法");
 	}
 	
 	// if语句
@@ -607,6 +627,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
+				logger.info("if-else语句 : 语法非法");
 				try {
 					throw new Exception("error : lack of left less bracket!");
 				} catch (Exception e) {
@@ -622,6 +643,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
+				logger.info("if-else语句 : 语法非法");
 				try {
 					throw new Exception("if statement must be surrounded by '{}'");
 				} catch (Exception e) {
@@ -633,6 +655,7 @@ public class Parser {
 			
 		} else {
 			recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
+			logger.info("if-else语句 : 语法非法");
 			try {
 				throw new Exception("error : Lack 'if' in if statement!");
 			} catch (Exception e) {
@@ -658,6 +681,7 @@ public class Parser {
 				 
 			 } else {
 				 recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
+				 logger.info("if-else语句 : 语法非法");
 				 try {
 					throw new Exception("else statement must be surrounded by '{}'");
 				} catch (Exception e) {
@@ -669,6 +693,7 @@ public class Parser {
 		}
 		
 		recorder.insertLine(Recorder.TAB + "if-else语句 : 语法合法");
+		logger.info("if-else语句 : 语法合法");
 		
 	}
 	
@@ -706,6 +731,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "for语句 : 语法非法");
+				logger.info("for语句 : 语法非法");
 				try {
 					throw new Exception("error : lack of left less bracket!");
 				} catch (Exception e) {
@@ -722,6 +748,7 @@ public class Parser {
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "for语句 : 语法非法");
+				logger.info("for语句 : 语法非法");
 				try {
 					throw new Exception("for statement must be surrounded by '{}'");
 				} catch (Exception e) {
@@ -737,6 +764,7 @@ public class Parser {
 			
 		} else {
 			recorder.insertLine(Recorder.TAB + "for语句 : 语法非法");
+			logger.info("for语句 : 语法非法");
 			try {
 				throw new Exception("error : lack for in the statement");
 			} catch (Exception e) {
@@ -746,6 +774,7 @@ public class Parser {
 		}
 		
 		recorder.insertLine(Recorder.TAB + "for语句 : 语法合法");
+		logger.info("for语句 : 语法合法");
 	}
 	
 	// 处理控制语句
@@ -795,6 +824,7 @@ public class Parser {
 			index++;	
 		} else {
 			recorder.insertLine(Recorder.TAB + "return语句 : 语法非法");
+			logger.info("return语句 : 语法非法");
 			try {
 				throw new Exception("error : lack return in the statement!");
 			} catch (Exception e) {
@@ -809,6 +839,7 @@ public class Parser {
 		index++;
 		
 		recorder.insertLine(Recorder.TAB + "return语句 : 语法合法");
+		logger.info("return语句 : 语法合法");
 	}
 	
 	// 表达式
@@ -874,6 +905,7 @@ public class Parser {
 						
 					} else {
 						recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
+						logger.info("表达式语句 : 语法非法");
 						try {
 							throw new Exception("error: 数组下表必须为常量或标识符 : " + getTokenType(index));
 						} catch (Exception e) {
@@ -884,6 +916,7 @@ public class Parser {
 					
 				} else {
 					recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
+					logger.info("表达式语句 : 语法非法");
 					try {
 						throw new Exception("not support identifer : " + getTokenType(index + 1));
 					} catch (Exception e) {
@@ -932,6 +965,7 @@ public class Parser {
 				}
 			} else {
 				recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
+				logger.info("表达式语句 : 语法非法");
 				try {
 					throw new Exception("Unsupport character in the expression! : " + getTokenValue(index));
 				} catch (Exception e) {
@@ -960,6 +994,7 @@ public class Parser {
 		tree.addChildNode(newTree.getRoot(), father);
 		
 		recorder.insertLine(Recorder.TAB + "表达式语句 : 语法合法");
+		logger.info("表达式语句 : 语法合法");
 	}
 	
 	// 函数调用
@@ -1027,6 +1062,7 @@ public class Parser {
 						
 					} else {
 						recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法非法");
+						logger.info("函数调用语句 : 语法非法");
 						throw new RuntimeException("functionCall statement not support : " + getTokenType(index));
 						
 					}
@@ -1034,6 +1070,7 @@ public class Parser {
 				}
 			} else {
 				recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法非法");
+				logger.info("函数调用语句 : 语法非法");
 				try {
 					throw new Exception("function call error");
 				} catch (Exception e) {
@@ -1047,6 +1084,7 @@ public class Parser {
 		index++;
 		
 		recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法合法");
+		logger.info("函数调用语句 : 语法合法");
 	}
 	
 	// 根据一个语句的句首判断句型
@@ -1109,8 +1147,8 @@ public class Parser {
 
 	public void runParser() {
 		
-		logger.info("Parser.runParser");
-		
+		logger.info("=========Parser=========");
+		logger.info("语法分析开始...");
 		recorder.insertLine("语法分析开始...");
 		
 		// 创建树的根节点
@@ -1149,6 +1187,7 @@ public class Parser {
 		}
 		
 		recorder.insertLine("语法分析结束!");
+		logger.info("语法分析结束!");
 	}
 	
 	// 递归输出语法树
@@ -1187,7 +1226,6 @@ public class Parser {
 			writer.newLine();
 			
 			recorder.insertLine("====================Parser==================");
-			
 			display(tree.getRoot(), writer);
 			
 		} catch (IOException e) {

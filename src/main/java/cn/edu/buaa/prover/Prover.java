@@ -53,9 +53,7 @@ public class Prover {
 		this.recorder = recorder;
 	}
 	
-	public boolean runProver(String key) {
-		logger.info("Prover.runProver");
-		
+	public boolean runProver(String key) {		
 		List<String> objectCodePatterns = getObjectCodePatterns(key);
 		createOutputFile(key);
 		return proveProcess(objectCodePatterns, key);
@@ -76,6 +74,9 @@ public class Prover {
 		recorder.insertLine("待证 : " + name);
 		recorder.insertLine("==============目标码模式===============");
 		showSingleObjectCodePatterns(objectCodePatterns);
+		
+		logger.info("待证 : " + name);
+		
 		if (bufferedWriter != null) {
 			try {
 				bufferedWriter.write("目标码模式 :\n");
@@ -88,8 +89,10 @@ public class Prover {
 		
 		// 命题映射
 		recorder.insertLine("==============目标码模式命题===============");
+		logger.info("调用命题映射算法");
 		List<Proposition> propositions = PropositionMappingAlgorithm.process(objectCodePatterns, axioms);
 		showAllProposition(propositions);
+				
 		if (bufferedWriter != null) {
 			try {
 				bufferedWriter.write("目标码模式命题 :\n");
@@ -103,6 +106,7 @@ public class Prover {
 		if (!ProverDefine.LOOPS.contains(name)) {
 			// 非循环命题推导
 			recorder.insertLine("==============命题推理结果===============");
+			logger.info("调用自动推理算法");
 			List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process(propositions);
 			showAllProposition(simplifiedPropositions);
 			if (bufferedWriter != null) {
@@ -114,7 +118,7 @@ public class Prover {
 					e.printStackTrace();
 				}
 			}
-
+			
 			// 获得语义
 			recorder.insertLine("=============推理出的语义================");
 			List<Proposition> semantemes = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(simplifiedPropositions);
@@ -136,7 +140,7 @@ public class Prover {
 			}
 			
 			// 给定的目标语义
-			recorder.insertLine("\n=============给定的目标语义================\n");
+			recorder.insertLine("=============给定的目标语义================");
 			List<Proposition> goals = loopInvariants.get(name);
 			showAllProposition(goals);
 			if (bufferedWriter != null) {
@@ -169,6 +173,7 @@ public class Prover {
 			// 循环交互证明算法
 			recorder.insertLine("=================循环交互证明算法===================");
 			try {
+				logger.info("调用循环交互证明算法");
 				isSame = LoopInteractiveProvingAlgorithm.process(propositions, name, loopInvariants, bufferedWriter, recorder);
 				recorder.insertLine("综上，给定的目标语义和推理出的语义是否一致 :");
 				recorder.insertLine(Boolean.toString(isSame));
