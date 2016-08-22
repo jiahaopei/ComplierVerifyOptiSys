@@ -15,16 +15,19 @@ import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.constant.CommonsDefine;
 import cn.edu.buaa.pojo.Token;
+import cn.edu.buaa.recorder.Recorder;
 
 public class Lexer {
 	
-	private static final Logger logger = LoggerFactory.getLogger(Lexer.class);
-	private static final String INPUT_PATH = "src/main/resources/input/";
+	private Recorder recorder;
 	
 	private List<String> src;
 	private List<Token> tokens;
+	
+	private final Logger logger = LoggerFactory.getLogger(Lexer.class);
 
-	public Lexer(String fileName) {
+	public Lexer(String fileName, Recorder recorder) {
+		this.recorder = recorder;
 		tokens = new ArrayList<Token>();
 		src = getContent(fileName);
 	}
@@ -38,8 +41,9 @@ public class Lexer {
 	}
 
 	public void runLexer() {
-		
-		logger.info("Lexer analyze starting...");
+		logger.info("=========Lexer=========");
+		logger.info("词法分析开始...");
+		recorder.insertLine("词法分析开始...");
 		
 		Stack<Integer> stack = new Stack<>();
 		stack.push(1);
@@ -68,6 +72,9 @@ public class Lexer {
 			}
 
 		}
+		
+		recorder.insertLine("词法分析结束!");
+		logger.info("词法分析结束!");
 	}
 
 	private String generateLabel(Stack<Integer> stack) {
@@ -261,11 +268,15 @@ public class Lexer {
 
 
 	private List<String> getContent(String fileName) {
+		logger.info("预处理源代码开始...");
+		recorder.insertLine("预处理源代码开始...");
+		
 		BufferedReader reader = null;
 		List<String> codes = new ArrayList<>();
 
 		try {
-			reader = new BufferedReader(new FileReader(INPUT_PATH + fileName));
+			reader = new BufferedReader(
+					new FileReader(CommonsDefine.INPUT_PATH + fileName));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				codes.add(line);
@@ -285,7 +296,9 @@ public class Lexer {
 		}
 
 		codes = delComments(codes);
-
+		recorder.insertLine("预处理源代码结束");
+		logger.info("预处理源代码结束");
+		
 		return codes;
 	}
 
@@ -381,7 +394,9 @@ public class Lexer {
 
 
 	public void labelSrc(String fileName) {
-
+		logger.info("源代码标号开始...");
+		recorder.insertLine("源代码标号开始...");
+		
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(
@@ -440,28 +455,62 @@ public class Lexer {
 				}
 			}
 		}
+		
+		recorder.insertLine("源代码编号结束!");
+		logger.info("源代码编号结束!");
+		
 	}
-
-	public void outputSrc() {
-		System.out.println("====================Source C Code==================");
-		for (String str : src) {
-			System.out.println(str);
+	
+	public void outputLabelSrc(String fileName) {
+		recorder.insertLine("====================Labeled C Code==================");
+		
+		String path = CommonsDefine.OUTPUT_PATH + "/label_" + fileName;
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(path));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				recorder.insertLine(line);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (recorder != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		System.out.println();
+		
+		recorder.insertLine(null);		// 插入一个空行
 	}
 
+	// 输出源代码
+	public void outputSrc() {
+		recorder.insertLine("====================Source C Code==================");
+		for (String str : src) {
+			recorder.insertLine(str);
+		}
+		recorder.insertLine(null);
+	}
+	
+	// 输出词法分析后的结果
 	public void outputLexer() {
 		BufferedWriter writer = null;
 
 		try {
-			writer = new BufferedWriter(new FileWriter(CommonsDefine.OUTPUT_PATH + "lexer.txt"));
-			System.out.println("====================Lexer==================");
+			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + "lexer.txt"));
+			recorder.insertLine("====================Lexer==================");
 			for (Token e : tokens) {
 				writer.write("(" + e.getValue() + ", " + e.getType() + ", " + e.getLabel() + ")");
 				writer.newLine();
-				System.out.println("(" + e.getValue() + ", " + e.getType() + ", " + e.getLabel() + ")");
+				
+				recorder.insertLine("(" + e.getValue() + ", " + e.getType() + ", " + e.getLabel() + ")");
 			}
-			System.out.println();
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -474,19 +523,22 @@ public class Lexer {
 				}
 			}
 		}
-
+		
+		recorder.insertLine(null);
 	}
 
 	public static void main(String[] args) {
-
+		
+		// 公共记录
+		Recorder recorder = new Recorder();	
 		String fileName = "evenSum.c";
-
-		Lexer lexer = new Lexer(fileName);
+		
+		Lexer lexer = new Lexer(fileName, recorder);
 		lexer.outputSrc();
 		lexer.labelSrc(fileName);
+		lexer.outputLabelSrc(fileName);
 		lexer.runLexer();
 		lexer.outputLexer();
-
 	}
 
 }

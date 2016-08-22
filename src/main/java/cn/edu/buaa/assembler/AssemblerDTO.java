@@ -1,6 +1,7 @@
 package cn.edu.buaa.assembler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ public class AssemblerDTO {
 
 	// 要生成的汇编文件管理器
 	private AssemblerFileHandler assFileHandler;
-
+	
 	// 符号表
 	private Map<String, Map<String, String>> symbolTable;
 
@@ -121,8 +122,8 @@ public class AssemblerDTO {
 	/**
 	 * 在控制台打印汇编结果
 	 */
-	public void dispalyResult() {
-		assFileHandler.dispalyResult();
+	public List<String> getResult() {
+		return assFileHandler.getResult();
 		
 	}
 

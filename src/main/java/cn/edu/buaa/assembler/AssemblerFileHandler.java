@@ -32,6 +32,10 @@ public class AssemblerFileHandler {
 		
 	}
 	
+	public List<String> getResult() {
+		return result;
+	}
+
 	// 插入一行生成的汇编代码
 	public void insert(String value, String type) {
 		// 插入到data域
@@ -61,7 +65,7 @@ public class AssemblerFileHandler {
 		BufferedWriter writer = null; 
 		try {
 			writer = new BufferedWriter(
-					new FileWriter(CommonsDefine.OUTPUT_PATH + "assembler.txt"));
+					new FileWriter(CommonsDefine.DEBUG_PATH + "assembler.txt"));
 			writer.write("	.file	\"" + fileName + "\"");
 			writer.newLine();
 			
@@ -90,7 +94,7 @@ public class AssemblerFileHandler {
 	public void generateSymbolTableFile(Map<String, Map<String, String>> symbolTable) {
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(CommonsDefine.OUTPUT_PATH + "symboltable.txt"));
+			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + "symboltable.txt"));
 			for(String variableName : symbolTable.keySet()) {
 				Map<String, String> value = symbolTable.get(variableName);
 				writer.write(variableName + " " + value.get("register"));
@@ -109,14 +113,6 @@ public class AssemblerFileHandler {
 			}
 		}
 		
-	}
-	
-	// 输出result中保存的汇编代码
-	public void dispalyResult() {
-		for (String line : result) {
-			System.out.println(line);
-		}
-	
 	}
 	
 }
