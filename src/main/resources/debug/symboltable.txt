@@ -1,8 +1,10 @@
-tmp 20
+a 8
+b 12
+c 16
+d 20
+.LC8 null
 bss_tmp2 28
 .LC5 null
-i 12
 bss_tmp1 24
-sum 16
+.LC4 null
 .LC0 null
-n 8
