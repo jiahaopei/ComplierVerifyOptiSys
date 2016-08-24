@@ -32,10 +32,10 @@ public class LoopInteractiveProvingAlgorithm {
 		
 //		List<Proposition> srcGoals = readFromConsole(name);
 		List<Proposition> srcGoals = loopInvariants.get(name);
-		recorder.insertLine("源目标语义 :");
+		recorder.insertLine("用户输入的语义 :");
 		showAllProposition(srcGoals, recorder);
 		if (bufferedWriter != null) {
-			bufferedWriter.write("源目标语义 :\n");
+			bufferedWriter.write("用户输入的语义 :\n");
 			ProverHelper.saveAllProposition(srcGoals, bufferedWriter);
 		}
 		

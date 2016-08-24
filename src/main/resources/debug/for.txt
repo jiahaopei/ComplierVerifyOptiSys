@@ -27,7 +27,7 @@ CR[7] == b100 -> PC = PC + @.L1
 CR[7] == b010 -> PC = PC + @.L1
 CR[7] == b001 -> PC = PC + 4
 
-源目标语义 :
+用户输入的语义 :
 σ(<ASS-EXP_1>)
 {<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** n
 <LOG-EXP> == 0 -> skip
