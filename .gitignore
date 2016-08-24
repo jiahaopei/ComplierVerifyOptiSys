@@ -4,3 +4,4 @@
 /README
 /.classpath
 *.log*
+*.DS_Store*
