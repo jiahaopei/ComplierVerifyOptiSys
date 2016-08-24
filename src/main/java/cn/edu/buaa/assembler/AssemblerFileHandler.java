@@ -65,7 +65,8 @@ public class AssemblerFileHandler {
 		BufferedWriter writer = null; 
 		try {
 			writer = new BufferedWriter(
-					new FileWriter(CommonsDefine.DEBUG_PATH + "assembler.txt"));
+					new FileWriter(
+							CommonsDefine.OUTPUT_PATH + fileName.substring(0, fileName.lastIndexOf(".")) + ".s"));
 			writer.write("	.file	\"" + fileName + "\"");
 			writer.newLine();
 			
