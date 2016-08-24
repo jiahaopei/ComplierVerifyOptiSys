@@ -493,7 +493,7 @@ public class Parser {
 		if (getTokenType(index).equals("LL_BRACKET")) {
 			index++;
 			int tmpIndex = index;
-			while (getTokenType(tmpIndex).equals("RL_BRACKET")) {
+			while (!getTokenType(tmpIndex).equals("RL_BRACKET")) {
 				tmpIndex++;
 			}
 			_expression(root, tmpIndex);
@@ -508,7 +508,7 @@ public class Parser {
 				recorder.insertLine(Recorder.TAB + "while语句 : 语法非法");
 				logger.info("while语句 : 语法非法");
 				try {
-					throw new Exception("while statement body must be surrouded by '{}'");
+					throw new Exception("while statement body must be surrouded by '{}' : " + getTokenValue(index));
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);

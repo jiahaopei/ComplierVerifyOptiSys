@@ -555,6 +555,7 @@ public class Assembler {
 				
 				ifLabel = currentNode.getLabel();
 				if (currentNode.getValue().equals("IfControl") 
+						&& currentNode.getRight() != null 
 						&& currentNode.getRight().getValue().equals("ElseControl")) {
 					isIfElse = true;
 					elseLabel = currentNode.getRight().getLabel();
