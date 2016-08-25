@@ -154,7 +154,7 @@ public class Assembler {
 
 	}
 
-	// 函数定义句型，暂时只能处理main函数
+	// 函数定义句型，处理main函数和其它函数的定义
 	private void _functionStatement(SyntaxTreeNode node) {
 		SyntaxTreeNode currentNode = node.getFirstSon(); // 第一个儿子
 		String funcName = null;
@@ -164,6 +164,8 @@ public class Assembler {
 			if (currentNode.getValue().equals("FunctionName")) {
 				funcName = currentNode.getFirstSon().getValue();
 				label = currentNode.getFirstSon().getLabel();
+				
+				// 处理main函数
 				if (funcName.equals("main")) {
 					line = AssemblerUtils.PREFIX + ".align 2";
 					assemblerDTO.insertIntoText(line, label);
@@ -172,45 +174,86 @@ public class Assembler {
 					line = AssemblerUtils.PREFIX + ".type main, @function";
 					assemblerDTO.insertIntoText(line, label);
 					line = "main:";
+					
 					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "stwu 1,-16(1)";
+					line = AssemblerUtils.PREFIX + "stwu 1,-32(1)";
 					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "stw 31,12(1)";
+					line = AssemblerUtils.PREFIX + "mflr 0";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 31,28(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 0,36(1)";
 					assemblerDTO.insertIntoText(line, label);
 					line = AssemblerUtils.PREFIX + "mr 31,1";
 					assemblerDTO.insertIntoText(line, label);
 					
 					// 增加空行
 					assemblerDTO.insertIntoText("", null);
-
+				
+				// 为其它类型的函数
 				} else {
-					try {
-						throw new Exception("Only support main function!");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
+					line = AssemblerUtils.PREFIX + ".align 2";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".globl " + funcName;
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".type " + funcName + ", @function";
+					assemblerDTO.insertIntoText(line, label);
+					line = funcName + ":";
+					assemblerDTO.insertIntoText(line, label);
+					
+					line = AssemblerUtils.PREFIX + "stwu 1,-32(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 31,28(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "mr 31,1";
+					assemblerDTO.insertIntoText(line, label);
+					
+					// 增加空行
+					assemblerDTO.insertIntoText("", null);
+					
 				}
 
 			} else if (currentNode.getValue().equals("Sentence")) {
 				traverse(currentNode.getFirstSon());
 
+			} else {
+				logger.debug("unknown type : " + currentNode.getValue());
+				
 			}
 
 			currentNode = currentNode.getRight();
 		}
 
-		if (funcName != null && funcName.equals("main")) {
-			line = AssemblerUtils.PREFIX + "addi 11,31,16";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "mr 1,11";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "blr";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + ".size main,.-main";
-			assemblerDTO.insertIntoText(line, label);
+		if (funcName != null) {
+			if (funcName.equals("main")) {
+				line = AssemblerUtils.PREFIX + "lwz 11,0(1)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 0,4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mtlr 0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mr 1,11";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "blr";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + ".size main,.-main";
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else {
+				line = AssemblerUtils.PREFIX + "lwz 11,0(1)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mr 1,11";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "blr";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + ".size " + funcName + ",.-" + funcName;
+				assemblerDTO.insertIntoText(line, label);
+				
+			}
 			
 		}
 
@@ -681,7 +724,7 @@ public class Assembler {
 					forCondition = currentNode;
 					// _expression(currentNode);
 
-					// 第3部分
+				// 第3部分
 				} else {
 					_expression(currentNode);
 
@@ -847,7 +890,7 @@ public class Assembler {
 			if (currentNode.getValue().equals("Sentence")) {
 				traverse(currentNode.getFirstSon());
 
-				// do-while条件表达式
+			// do-while条件表达式
 			} else if (currentNode.getValue().equals("Expression")) {
 				Map<String, String> expres = _expression(currentNode);
 				line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";

@@ -19,7 +19,10 @@ int main() {                                      // 2
         }                                         // 2.7.4
     }                                             // 2.8
 
-    printf("sum is %d", sum);                     // 2.9
+    i = !n;                                       // 2.9
+    i = ~n;                                       // 2.10
 
-    return 0;                                     // 2.10
+    printf("sum is %d", sum);                     // 2.11
+
+    return 0;                                     // 2.12
 }                                                 // 3

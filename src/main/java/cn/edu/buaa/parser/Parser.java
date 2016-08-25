@@ -963,6 +963,7 @@ public class Parser {
 					}
 					operatorStack.add(tmpTree);
 				}
+				
 			} else {
 				recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
 				logger.info("表达式语句 : 语法非法");
@@ -1049,7 +1050,7 @@ public class Parser {
 								paramsList);
 						index++;
 						
-					} else if (getTokenType(index).equals("ADDRESS")) {
+					} else if (getTokenType(index).equals("BIT_AND")) {
 						funcCallTree.addChildNode(
 								new SyntaxTreeNode(
 										getTokenValue(index),

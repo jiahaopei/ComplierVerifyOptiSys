@@ -26,6 +26,9 @@ int main() {
         } // end if
     }   // end for
 
+    i = !n;
+    i = ~n;
+
     printf("sum is %d", sum);
 
     return 0;

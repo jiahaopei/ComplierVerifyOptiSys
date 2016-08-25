@@ -152,7 +152,7 @@ public class Lexer {
 					}
 				}
 
-				// 如果是字母或者是以下划线开头
+			// 如果是字母或者是以下划线开头
 			} else if (Character.isLetter(line.charAt(i)) || line.charAt(i) == '_') {
 
 				String word = "";
@@ -165,7 +165,8 @@ public class Lexer {
 				if (LexerUtils.isKeyword(word)) {
 					token = new Token(0, word, label);
 					tokens.add(token);
-					// 标识符
+				
+				// 标识符
 				} else {
 					token = new Token(1, word, label);
 					tokens.add(token);
@@ -190,10 +191,13 @@ public class Lexer {
 								throw new Exception("float number error [" + label + "] : " + line.substring(i));
 							} catch (Exception e) {
 								e.printStackTrace();
+								System.exit(1);
 							}
-						} else
+						} else {
 							break;
+						}
 					}
+					
 					i++;
 				}
 
@@ -221,28 +225,34 @@ public class Lexer {
 							throw new Exception("Can't find the end character of the string constant [" + label + "]");
 						} catch (Exception e) {
 							e.printStackTrace();
+							System.exit(1);
 						}
+						
 					} else {
 						token = new Token(5, word, label);
 						tokens.add(token);
 						token = new Token(4, '\"', label);
 						tokens.add(token);
+						
 					}
 				}
 				i = LexerUtils.skipBlank(i + 1, line);
 
-				// 如果是运算符
+			// 如果是运算符
 			} else if (LexerUtils.isOperator(line.charAt(i))) {
-
-				// 如果是++或者--
-				if ((line.charAt(i) == '+' || line.charAt(i) == '-') && i + 1 < line.length()
+				// 如果是++、--、<<、>>、&&、||
+				if ((line.charAt(i) == '+' || line.charAt(i) == '-' 
+						|| line.charAt(i) == '<' || line.charAt(i) == '>'
+						|| line.charAt(i) == '&' || line.charAt(i) == '|')
+						&& i + 1 < line.length() 
 						&& line.charAt(i) == line.charAt(i + 1)) {
 					token = new Token(3, line.substring(i, i + 2), label);
 					tokens.add(token);
 					i = LexerUtils.skipBlank(i + 2, line);
 
-					// 如果是>=或者<=
-				} else if ((line.charAt(i) == '>' || line.charAt(i) == '<' || line.charAt(i) == '=')
+					// 如果是>=或者<=或者==或者!=
+				} else if ((line.charAt(i) == '>' || line.charAt(i) == '<' 
+						|| line.charAt(i) == '=' || line.charAt(i) == '!')
 						&& line.charAt(i + 1) == '=') {
 					token = new Token(3, line.substring(i, i + 2), label);
 					tokens.add(token);
