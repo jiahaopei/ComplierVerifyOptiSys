@@ -37,7 +37,6 @@ public class Assembler {
 		AssemblerDTO assemblerDTO = new AssemblerDTO();
 		assemblerDTO.setLabelCnt(0);
 		assemblerDTO.setMemAdress(8); // 以8号地址起始
-		assemblerDTO.setVariableSymbolOrNumber(true); // true，表示以数字出现
 		this.assemblerDTO = assemblerDTO;
 		
 	}

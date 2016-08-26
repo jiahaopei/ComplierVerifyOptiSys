@@ -239,6 +239,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 			}
 			
@@ -306,6 +307,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 			}
 			
@@ -372,6 +374,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -439,6 +442,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -510,6 +514,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -581,6 +586,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -654,6 +660,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -725,6 +732,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -799,6 +807,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			} 
@@ -872,6 +881,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -949,6 +959,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -1015,6 +1026,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -1081,6 +1093,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -1147,6 +1160,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -1213,6 +1227,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 			}
 		
@@ -1278,6 +1293,7 @@ public class AssemblerExpression {
 				tmpMap = new HashMap<>();
 				tmpMap.put("type", "VARIABLE");
 				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
 				operandStack.push(tmpMap);
 				
 			}
@@ -1288,7 +1304,88 @@ public class AssemblerExpression {
 				logger.debug("float &&");
 						
 			} else {
+				Map<String, String> labels = new HashMap<>();
+				labels.put("label1", ".L" + assemblerDTO.getLabelCnt());
+				assemblerDTO.addToLabelCnt(1);
+				labels.put("label2", ".L" + assemblerDTO.getLabelCnt());
+				assemblerDTO.addToLabelCnt(1);
+				
+				if(operand_a.get("type").equals("VARIABLE")) {						
+					line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.insertIntoText(line, operand_a.get("label"));
 					
+				} else if(operand_a.get("type").equals("CONSTANT")) {
+					line = AssemblerUtils.PREFIX + "li 0," + operand_a.get("operand");
+					assemblerDTO.insertIntoText(line, operand_a.get("label"));
+					
+				} else {
+					try {
+						throw new Exception("&& not support type : " + operand_a.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				line = AssemblerUtils.PREFIX + "cmpi 7,0,0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "beq 7," + labels.get("label1");
+				assemblerDTO.insertIntoText(line, label);
+				
+				if(operand_b.get("type").equals("VARIABLE")) {
+					line = AssemblerUtils.PREFIX + "lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.insertIntoText(line, operand_b.get("label"));
+					
+				} else if(operand_b.get("type").equals("CONSTANT")) {
+					line = AssemblerUtils.PREFIX + "li 9," + operand_b.get("operand");
+					assemblerDTO.insertIntoText(line, operand_b.get("label"));
+					
+				} else {
+					try {
+						throw new Exception("&& not support type : " + operand_b.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				line = AssemblerUtils.PREFIX + "cmpi 7,0,0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "beq 7," + labels.get("label1");
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "li 0,1";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "b " + labels.get("label2");
+				assemblerDTO.insertIntoText(line, label);
+				line = labels.get("label1") + ":";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "li 0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = labels.get("label2") + ":";
+				assemblerDTO.insertIntoText(line, label);
+				
+				// 赋值给临时操作数
+				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+				bss_tmp_cnt++;
+				// 记录到符号表中
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "IDENTIFIER");
+				tmpMap.put("field_type", "int");
+				tmpMap.put("register", Integer.toString(memAdress));
+				memAdress += 4;
+				assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+				
+				line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.insertIntoText(line, label);
+				// 计算结果压栈
+				tmpMap = new HashMap<>();
+				tmpMap.put("type", "VARIABLE");
+				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
+				operandStack.push(tmpMap);
+				
 			}
 		
 		// || 符号
@@ -1297,7 +1394,92 @@ public class AssemblerExpression {
 				logger.debug("float ||");
 						
 			} else {
-						
+				Map<String, String> labels = new HashMap<>();
+				labels.put("label1", ".L" + assemblerDTO.getLabelCnt());
+				assemblerDTO.addToLabelCnt(1);
+				labels.put("label2", ".L" + assemblerDTO.getLabelCnt());
+				assemblerDTO.addToLabelCnt(1);
+				labels.put("label3", ".L" + assemblerDTO.getLabelCnt());
+				assemblerDTO.addToLabelCnt(1);
+				
+				if(operand_a.get("type").equals("VARIABLE")) {						
+					line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+					assemblerDTO.insertIntoText(line, operand_a.get("label"));
+					
+				} else if(operand_a.get("type").equals("CONSTANT")) {
+					line = AssemblerUtils.PREFIX + "li 0," + operand_a.get("operand");
+					assemblerDTO.insertIntoText(line, operand_a.get("label"));
+					
+				} else {
+					try {
+						throw new Exception("|| not support type : " + operand_a.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				line = AssemblerUtils.PREFIX + "cmpi 7,0,0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "bne 7," + labels.get("label1");
+				assemblerDTO.insertIntoText(line, label);
+				
+				if(operand_b.get("type").equals("VARIABLE")) {
+					line = AssemblerUtils.PREFIX + "lwz 9," + assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+					assemblerDTO.insertIntoText(line, operand_b.get("label"));
+					
+				} else if(operand_b.get("type").equals("CONSTANT")) {
+					line = AssemblerUtils.PREFIX + "li 9," + operand_b.get("operand");
+					assemblerDTO.insertIntoText(line, operand_b.get("label"));
+					
+				} else {
+					try {
+						throw new Exception("|| not support type : " + operand_b.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				line = AssemblerUtils.PREFIX + "cmpi 7,0,0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "beq 7," + labels.get("label2");
+				assemblerDTO.insertIntoText(line, label);
+				line = labels.get("label1") + ":";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "li 0,1";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "b" + labels.get("label3");
+				assemblerDTO.insertIntoText(line, label);
+				line = labels.get("label2") + ":";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "li 0,0";
+				assemblerDTO.insertIntoText(line, label);
+				line = labels.get("label3") + ":";
+				assemblerDTO.insertIntoText(line, label);
+				
+				// 赋值给临时操作数
+				String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+				bss_tmp_cnt++;
+				// 记录到符号表中
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "IDENTIFIER");
+				tmpMap.put("field_type", "int");
+				tmpMap.put("register", Integer.toString(memAdress));
+				memAdress += 4;
+				assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+				
+				line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+				assemblerDTO.insertIntoText(line, label);
+				// 计算结果压栈
+				tmpMap = new HashMap<>();
+				tmpMap.put("type", "VARIABLE");
+				tmpMap.put("operand", bss_tmp);
+				tmpMap.put("label", operand_a.get("label"));
+				operandStack.push(tmpMap);
+				
 			} 
 		
 		} else {
@@ -1315,11 +1497,11 @@ public class AssemblerExpression {
 	// 处理单目运算
 	private static void solveSingleOperator(String operator, String label) {
 		// 取出操作数
-		Map<String, String> operand = operandStack.peek();
+		Map<String, String> operand = operandStack.pop();
 		String line = null;
 		if(operator.equals("++")) {
 			line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assemblerDTO.insertIntoText(line, operand.get("label"));
+			assemblerDTO.insertIntoText(line, label);
 			line = AssemblerUtils.PREFIX + "addic 0,0,1";
 			assemblerDTO.insertIntoText(line, label);
 			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
@@ -1327,17 +1509,101 @@ public class AssemblerExpression {
 			
 		} else if(operator.equals("--")) {
 			line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
-			assemblerDTO.insertIntoText(line, operand.get("label"));
+			assemblerDTO.insertIntoText(line, label);
 			line = AssemblerUtils.PREFIX + "addic 0,0,-1";
 			assemblerDTO.insertIntoText(line, label);
 			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
 			assemblerDTO.insertIntoText(line, label);
 			
 		} else if(operator.equals("!")) {
+			if(operand.get("type").equals("VARIABLE")) {						
+				line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else if(operand.get("type").equals("CONSTANT")) {
+				line = AssemblerUtils.PREFIX + "li 0," + operand.get("operand");
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else {
+				try {
+					throw new Exception("! not support type : " + operand.get("type"));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				
+			}
 			
+			line = AssemblerUtils.PREFIX + "cmpi 7,0,0,0";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 0,0";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 9,1";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "isel 0,9,0,30";
+			assemblerDTO.insertIntoText(line, label);
+			
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "int");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+			
+			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand.get("label"));
+			operandStack.push(tmpMap);
 			
 		} else if(operator.equals("~")) {
-		
+			if(operand.get("type").equals("VARIABLE")) {						
+				line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(operand.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else if(operand.get("type").equals("CONSTANT")) {
+				line = AssemblerUtils.PREFIX + "li 0," + operand.get("operand");
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else {
+				try {
+					throw new Exception("! not support type : " + operand.get("type"));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				
+			}
+			
+			line = AssemblerUtils.PREFIX + "nor 0,0,0";
+			assemblerDTO.insertIntoText(line, label);
+			
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "int");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand.get("label"));
+			operandStack.push(tmpMap);
 			
 		} else {
 			try {
