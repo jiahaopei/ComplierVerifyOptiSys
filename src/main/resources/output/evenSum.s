@@ -105,14 +105,14 @@ main:	                                  # 2
 	isel 0,9,0,30                          # 2.9
 	stw 0,bss_tmp1(31)                     # 2.9
 
-	lwz 0,n(31)                            # 2.9
+	lwz 0,bss_tmp1(31)                     # 2.9
 	stw 0,i(31)                            # 2.9
 
 	lwz 0,n(31)                            # 2.10
 	nor 0,0,0                              # 2.10
 	stw 0,bss_tmp1(31)                     # 2.10
 
-	lwz 0,n(31)                            # 2.10
+	lwz 0,bss_tmp1(31)                     # 2.10
 	stw 0,i(31)                            # 2.10
 
 	lis 0,.LC5@ha                          # 2.11
