@@ -173,29 +173,29 @@ public class Lexer {
 				}
 				i = LexerUtils.skipBlank(i, line);
 
-				// 如果是数字开头
+			// 如果是数字开头
 			} else if (Character.isDigit(line.charAt(i))) {
 				String word = "";
 				boolean pointExist = false;
+				boolean suffix = false;
 				while (i < line.length()) {
 
 					if (Character.isDigit(line.charAt(i))) {
 						word += line.charAt(i);
+						
 					} else if (!pointExist && line.charAt(i) == '.' 
 							&& Character.isDigit(line.charAt(i + 1))) {
 						pointExist = true;
 						word += line.charAt(i);
+						
+					} else if (!suffix && line.charAt(i) == 'f' || line.charAt(i) == 'F'
+							|| line.charAt(i) == 'l' || line.charAt(i) == 'F') {
+						suffix = true;
+						word += line.charAt(i);
+					
+					// 其它符号表示常量识别结束
 					} else {
-						if (line.charAt(i) == '.') {
-							try {
-								throw new Exception("float number error [" + label + "] : " + line.substring(i));
-							} catch (Exception e) {
-								e.printStackTrace();
-								System.exit(1);
-							}
-						} else {
-							break;
-						}
+						break;
 					}
 					
 					i++;

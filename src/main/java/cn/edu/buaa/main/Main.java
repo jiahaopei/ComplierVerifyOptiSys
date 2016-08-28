@@ -17,7 +17,7 @@ public class Main {
 		
 		// 公共记录
 		Recorder recorder = new Recorder();
-		String fileName = "test3.c";
+		String fileName = "test4.c";
 
 		Lexer lexer = new Lexer(fileName, recorder);
 		lexer.outputSrc();
@@ -36,6 +36,6 @@ public class Main {
 		assembler.generateAssemblerFile(fileName);
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();
-		
+				
 	}
 }

@@ -279,7 +279,7 @@ public class Assembler {
 			if (currentNode.getValue().equals("Type")) {
 				variableFieldType = currentNode.getFirstSon().getValue();
 
-				// 变量名
+			// 变量名
 			} else if (currentNode.getType().equals("IDENTIFIER")) {
 				variableName = currentNode.getValue();
 				variableType = currentNode.getExtraInfo().get("type");
@@ -292,7 +292,7 @@ public class Assembler {
 				assemblerDTO.addToMemAdress(4);
 				assemblerDTO.putIntoSymbolTable(variableName, tmpMap);
 
-				// 数组元素
+			// 数组元素
 			} else if (currentNode.getValue().equals("ConstantList")) {
 				line = AssemblerUtils.PREFIX + ".align 2";
 				assemblerDTO.insertIntoData(line, label);
@@ -336,7 +336,7 @@ public class Assembler {
 					}
 				}
 
-				// 函数参数
+			// 函数参数
 			} else if (currentNode.getValue().equals("CallParameterList")) {
 				SyntaxTreeNode tmpNode = currentNode.getFirstSon();
 				while (tmpNode != null) {
@@ -541,9 +541,60 @@ public class Assembler {
 
 				}
 
-			} else if (fieldType.equals("float")) {
-				logger.debug("float expression!");
+			} else if (fieldType.equals("long")) {
+				logger.debug("long expression!");
+				
+			} else if (fieldType.equals("double")) {
+				// 常数
+				if (expres.get("type").equals("CONSTANT")) {
+					String high = AssemblerExpression.getNumberHigh(expres.get("value"));
+					String low = AssemblerExpression.getNumberLow(expres.get("value"));
+					
+					// 把常量添加到.data域
+					String lc = ".LC" + assemblerDTO.getLabelCnt();
+					assemblerDTO.addToLabelCnt(1);
+					line = AssemblerUtils.PREFIX + ".align 3";
+					assemblerDTO.insertIntoData(line,label);
+					line = lc + ":";
+					assemblerDTO.insertIntoData(line, label);						
+					line = AssemblerUtils.PREFIX + high;
+					assemblerDTO.insertIntoData(line, label);
+					line = AssemblerUtils.PREFIX + low;
+					assemblerDTO.insertIntoData(line, label);
+					// 添加到符号表
+					Map<String, String> tmpMap = new HashMap<>();
+					tmpMap.put("type", "DOUBLE_CONSTANT");
+					tmpMap.put("value", expres.get("value"));
+					assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+					
+					line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "lfd 0," + lc + "@l(9)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfd 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					
+				// 变量
+				} else if (expres.get("type").equals("VARIABLE")) {
+					// 把数放到r0中，再把r0中的数转到目标寄存器中, 同float
+					line = AssemblerUtils.PREFIX + "lfd 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfd 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
 
+				} else {
+					try {
+						throw new Exception("_assignment only support constant and varivale : " + expres.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+
+				}
+				
+			} else if (fieldType.equals("float")) {
+				logger.debug("float expression!"); 
+			
 			} else {
 				try {
 					throw new Exception("Not support this type : " + fieldType);
