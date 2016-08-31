@@ -2,9 +2,11 @@
 a 8
 b 12
 c 16
-bss_tmp4 32
-bss_tmp2 24
-bss_tmp3 28
-bss_tmp1 20
+d 20
+bss_tmp2 28
+.LC3 null
+bss_tmp1 24
+.LC4 null
 .LC1 null
+.LC2 null
 .LC0 null

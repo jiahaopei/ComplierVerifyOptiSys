@@ -5,15 +5,17 @@
 #include <stdlib.h>
 
 int main() {
-    double a;
-    double b;
-    double c;
+    float a, b, c;
+    float d;
 
-    a = 1.2;
-    b = 1.3;
-    c = a;
+    scanf("%f %f %f %f", &a, &b, &c, &d);
+    printf("%f %f %f %f", a, b, c, d);
 
-    a = b + c - a * b / c;
+     a = 1.2f;
+    b = 1.3F;
+    c = a * b + a;
+
+    a > 1;
 
 
     return 0;
@@ -26,18 +28,20 @@ int main() {
 #include <stdlib.h>                               // 2
 
 int main() {                                      // 3
-    double a;                                     // 3.1
-    double b;                                     // 3.2
-    double c;                                     // 3.3
+    float a, b, c;                                // 3.1
+    float d;                                      // 3.2
 
-    a = 1.2;                                      // 3.4
-    b = 1.3;                                      // 3.5
-    c = a;                                        // 3.6
+    scanf("%f %f %f %f", &a, &b, &c, &d);         // 3.3
+    printf("%f %f %f %f", a, b, c, d);            // 3.4
 
-    a = b + c - a * b / c;                        // 3.7
+     a = 1.2f;                                    // 3.5
+    b = 1.3F;                                     // 3.6
+    c = a * b + a;                                // 3.7
+
+    a > 1;                                        // 3.8
 
 
-    return 0;                                     // 3.8
+    return 0;                                     // 3.9
 }                                                 // 4
 
 词法分析开始...
@@ -58,42 +62,73 @@ int main() {                                      // 3
 ((, LL_BRACKET, 3)
 (), RL_BRACKET, 3)
 ({, LB_BRACKET, 3)
-(double, DOUBLE, 3.1)
+(float, FLOAT, 3.1)
 (a, IDENTIFIER, 3.1)
+(,, COMMA, 3.1)
+(b, IDENTIFIER, 3.1)
+(,, COMMA, 3.1)
+(c, IDENTIFIER, 3.1)
 (;, SEMICOLON, 3.1)
-(double, DOUBLE, 3.2)
-(b, IDENTIFIER, 3.2)
+(float, FLOAT, 3.2)
+(d, IDENTIFIER, 3.2)
 (;, SEMICOLON, 3.2)
-(double, DOUBLE, 3.3)
+(scanf, IDENTIFIER, 3.3)
+((, LL_BRACKET, 3.3)
+(", DOUBLE_QUOTE, 3.3)
+(%f %f %f %f, STRING_CONSTANT, 3.3)
+(", DOUBLE_QUOTE, 3.3)
+(,, COMMA, 3.3)
+(&, BIT_AND, 3.3)
+(a, IDENTIFIER, 3.3)
+(,, COMMA, 3.3)
+(&, BIT_AND, 3.3)
+(b, IDENTIFIER, 3.3)
+(,, COMMA, 3.3)
+(&, BIT_AND, 3.3)
 (c, IDENTIFIER, 3.3)
+(,, COMMA, 3.3)
+(&, BIT_AND, 3.3)
+(d, IDENTIFIER, 3.3)
+(), RL_BRACKET, 3.3)
 (;, SEMICOLON, 3.3)
+(printf, IDENTIFIER, 3.4)
+((, LL_BRACKET, 3.4)
+(", DOUBLE_QUOTE, 3.4)
+(%f %f %f %f, STRING_CONSTANT, 3.4)
+(", DOUBLE_QUOTE, 3.4)
+(,, COMMA, 3.4)
 (a, IDENTIFIER, 3.4)
-(=, ASSIGN, 3.4)
-(1.2, DIGIT_CONSTANT, 3.4)
+(,, COMMA, 3.4)
+(b, IDENTIFIER, 3.4)
+(,, COMMA, 3.4)
+(c, IDENTIFIER, 3.4)
+(,, COMMA, 3.4)
+(d, IDENTIFIER, 3.4)
+(), RL_BRACKET, 3.4)
 (;, SEMICOLON, 3.4)
-(b, IDENTIFIER, 3.5)
+(a, IDENTIFIER, 3.5)
 (=, ASSIGN, 3.5)
-(1.3, DIGIT_CONSTANT, 3.5)
+(1.2f, DIGIT_CONSTANT, 3.5)
 (;, SEMICOLON, 3.5)
-(c, IDENTIFIER, 3.6)
+(b, IDENTIFIER, 3.6)
 (=, ASSIGN, 3.6)
-(a, IDENTIFIER, 3.6)
+(1.3F, DIGIT_CONSTANT, 3.6)
 (;, SEMICOLON, 3.6)
-(a, IDENTIFIER, 3.7)
-(=, ASSIGN, 3.7)
-(b, IDENTIFIER, 3.7)
-(+, PLUS, 3.7)
 (c, IDENTIFIER, 3.7)
-(-, MINUS, 3.7)
+(=, ASSIGN, 3.7)
 (a, IDENTIFIER, 3.7)
 (*, MUL, 3.7)
 (b, IDENTIFIER, 3.7)
-(/, DIV, 3.7)
-(c, IDENTIFIER, 3.7)
+(+, PLUS, 3.7)
+(a, IDENTIFIER, 3.7)
 (;, SEMICOLON, 3.7)
-(return, RETURN, 3.8)
-(0, DIGIT_CONSTANT, 3.8)
+(a, IDENTIFIER, 3.8)
+(>, GT, 3.8)
+(1, DIGIT_CONSTANT, 3.8)
 (;, SEMICOLON, 3.8)
+(return, RETURN, 3.9)
+(0, DIGIT_CONSTANT, 3.9)
+(;, SEMICOLON, 3.9)
 (}, RB_BRACKET, 4)
 
 语法分析开始...
@@ -101,7 +136,8 @@ int main() {                                      // 3
   include语句 : 语法合法
   变量声明语句 : 语法合法
   变量声明语句 : 语法合法
-  变量声明语句 : 语法合法
+  函数调用语句 : 语法合法
+  函数调用语句 : 语法合法
   表达式语句 : 语法合法
   赋值语句 : 语法合法
   表达式语句 : 语法合法
@@ -109,7 +145,6 @@ int main() {                                      // 3
   表达式语句 : 语法合法
   赋值语句 : 语法合法
   表达式语句 : 语法合法
-  赋值语句 : 语法合法
   表达式语句 : 语法合法
   return语句 : 语法合法
   函数定义 : 语法合法
@@ -137,70 +172,98 @@ int main() {                                      // 3
 ( self: Sentence null null, father: FunctionStatement, left: StateParameterList, right: null )
 ( self: Statement null null, father: Sentence, left: null, right: Statement )
 ( self: Type null null, father: Statement, left: null, right: a )
-( self: double FIELD_TYPE 3.1, father: Type, left: null, right: null )
+( self: float FIELD_TYPE 3.1, father: Type, left: null, right: null )
 ( self: a IDENTIFIER 3.1, father: Statement, left: Type, right: null )
 ( self: Statement null null, father: Sentence, left: Statement, right: Statement )
 ( self: Type null null, father: Statement, left: null, right: b )
-( self: double FIELD_TYPE 3.2, father: Type, left: null, right: null )
-( self: b IDENTIFIER 3.2, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Assignment )
+( self: float FIELD_TYPE null, father: Type, left: null, right: null )
+( self: b IDENTIFIER 3.1, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
 ( self: Type null null, father: Statement, left: null, right: c )
-( self: double FIELD_TYPE 3.3, father: Type, left: null, right: null )
-( self: c IDENTIFIER 3.3, father: Statement, left: Type, right: null )
-( self: Assignment null null, father: Sentence, left: Statement, right: Assignment )
-( self: a IDENTIFIER 3.4, father: Assignment, left: null, right: Expression )
+( self: float FIELD_TYPE null, father: Type, left: null, right: null )
+( self: c IDENTIFIER 3.1, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: FunctionCall )
+( self: Type null null, father: Statement, left: null, right: d )
+( self: float FIELD_TYPE 3.2, father: Type, left: null, right: null )
+( self: d IDENTIFIER 3.2, father: Statement, left: Type, right: null )
+( self: FunctionCall null null, father: Sentence, left: Statement, right: FunctionCall )
+( self: scanf FUNCTION_NAME 3.3, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: scanf, right: null )
+( self: %f %f %f %f STRING_CONSTANT 3.3, father: CallParameterList, left: null, right: & )
+( self: & ADDRESS 3.3, father: CallParameterList, left: %f %f %f %f, right: a )
+( self: a IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
+( self: & ADDRESS 3.3, father: CallParameterList, left: a, right: b )
+( self: b IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
+( self: & ADDRESS 3.3, father: CallParameterList, left: b, right: c )
+( self: c IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
+( self: & ADDRESS 3.3, father: CallParameterList, left: c, right: d )
+( self: d IDENTIFIER 3.3, father: CallParameterList, left: &, right: null )
+( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: Assignment )
+( self: printf FUNCTION_NAME 3.4, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
+( self: %f %f %f %f STRING_CONSTANT 3.4, father: CallParameterList, left: null, right: a )
+( self: a IDENTIFIER 3.4, father: CallParameterList, left: %f %f %f %f, right: b )
+( self: b IDENTIFIER 3.4, father: CallParameterList, left: a, right: c )
+( self: c IDENTIFIER 3.4, father: CallParameterList, left: b, right: d )
+( self: d IDENTIFIER 3.4, father: CallParameterList, left: c, right: null )
+( self: Assignment null null, father: Sentence, left: FunctionCall, right: Assignment )
+( self: a IDENTIFIER 3.5, father: Assignment, left: null, right: Expression )
 ( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
 ( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 1.2 _Constant 3.4, father: Expression, left: null, right: null )
+( self: 1.2f _Constant 3.5, father: Expression, left: null, right: null )
 ( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: b IDENTIFIER 3.5, father: Assignment, left: null, right: Expression )
+( self: b IDENTIFIER 3.6, father: Assignment, left: null, right: Expression )
 ( self: Expression SingleOrDoubleOperand null, father: Assignment, left: b, right: null )
 ( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 1.3 _Constant 3.5, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: c IDENTIFIER 3.6, father: Assignment, left: null, right: Expression )
+( self: 1.3F _Constant 3.6, father: Expression, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Assignment, right: Expression )
+( self: c IDENTIFIER 3.7, father: Assignment, left: null, right: Expression )
 ( self: Expression SingleOrDoubleOperand null, father: Assignment, left: c, right: null )
-( self: Expression Variable null, father: Expression, left: null, right: null )
-( self: a _Variable 3.6, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Return )
-( self: a IDENTIFIER 3.7, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
 ( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: b _Variable 3.7, father: Expression, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Expression, right: Expression )
-( self: c _Variable 3.7, father: Expression, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Expression, right: Expression )
 ( self: a _Variable 3.7, father: Expression, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Expression, right: Expression )
-( self: b _Variable 3.7, father: Expression, left: null, right: null )
 ( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
-( self: c _Variable 3.7, father: Expression, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Expression, right: Operator )
-( self: / _Operator 3.7, father: Operator, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Operator, right: Operator )
+( self: b _Variable 3.7, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: Expression )
 ( self: * _Operator 3.7, father: Operator, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Operator, right: Operator )
-( self: - _Operator 3.7, father: Operator, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Operator, right: null )
+( self: Expression Variable null, father: Expression, left: Operator, right: Operator )
+( self: a _Variable 3.7, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
 ( self: + _Operator 3.7, father: Operator, left: null, right: null )
-( self: Return null null, father: Sentence, left: Assignment, right: null )
-( self: return RETURN 3.8, father: Return, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Sentence, left: Assignment, right: Return )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: a _Variable 3.8, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 1 _Constant 3.8, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: > _Operator 3.8, father: Operator, left: null, right: null )
+( self: Return null null, father: Sentence, left: Expression, right: null )
+( self: return RETURN 3.9, father: Return, left: null, right: Expression )
 ( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
 ( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 0 _Constant 3.8, father: Expression, left: null, right: null )
+( self: 0 _Constant 3.9, father: Expression, left: null, right: null )
 
 目标码生成开始...
 目标码生成结束!
 ===================Assembler==================
 	.section .rodata
-	.align 3                               # 3.4
-.LC0:	                                  # 3.4
-	4607182418800017408                    # 3.4
-	4611686018427387904                    # 3.4
+	.align 2                               # 3.3
+.LC0:	                                  # 3.3
+	.string	"%f %f %f %f"                  # 3.3
+	.align 2                               # 3.4
+.LC1:	                                  # 3.4
+	.string	"%f %f %f %f"                  # 3.4
 	.align 3                               # 3.5
-.LC1:	                                  # 3.5
+.LC2:	                                  # 3.5
 	4607182418800017408                    # 3.5
-	4613937818241073152                    # 3.5
+	4611686018427387904                    # 3.5
+	.align 3                               # 3.6
+.LC3:	                                  # 3.6
+	4607182418800017408                    # 3.6
+	4613937818241073152                    # 3.6
+	.align 3                               # 3.8
+.LC4:	                                  # 3.8
+	1                                      # 3.8
+	0                                      # 3.8
 
 	.section ".text"
 	.align 2                               # 3
@@ -213,42 +276,50 @@ main:	                                  # 3
 	stw 0,36(1)                            # 3
 	mr 31,1                                # 3
 
-	lis 9,.LC0@ha                          # 3.4
-	lfd 0,.LC0@l(9)                        # 3.4
-	stfd 0,a(31)                           # 3.4
+	lis 0,.LC0@ha                          # 3.3
+	addic 10,0,.LC0@l                      # 3.3
+	mr 3,10                                # 3.3
+	crxor 6,6,6                            # 3.3
+	bl __isoc99_scanf                      # 3.3
 
-	lis 9,.LC1@ha                          # 3.5
-	lfd 0,.LC1@l(9)                        # 3.5
-	stfd 0,b(31)                           # 3.5
+	lis 0,.LC1@ha                          # 3.4
+	addic 0,0,.LC1@l                       # 3.4
+	mr 3,0                                 # 3.4
+	crxor 6,6,6                            # 3.4
+	bl printf                              # 3.4
 
-	lfd 0,a(31)                            # 3.6
-	stfd 0,c(31)                           # 3.6
+	lis 9,.LC2@ha                          # 3.5
+	lfs 0,.LC2@l(9)                        # 3.5
+	stfs 0,a(31)                           # 3.5
 
-	lfd 13,b(31)                           # 3.7
-	lfd 0,c(31)                            # 3.7
-	fdiv 0,13,0                            # 3.7
-	stfd 0,bss_tmp1(31)                    # 3.7
+	lis 9,.LC3@ha                          # 3.6
+	lfs 0,.LC3@l(9)                        # 3.6
+	stfs 0,b(31)                           # 3.6
 
-	lfd 13,a(31)                           # 3.7
-	lfd 0,bss_tmp1(31)                     # 3.7
-	fmul 0,13,0                            # 3.7
-	stfd 0,bss_tmp2(31)                    # 3.7
+	lfs 13,a(31)                           # 3.7
+	lfs 0,b(31)                            # 3.7
+	fmuls 0,13,0                           # 3.7
+	stfs 0,bss_tmp1(31)                    # 3.7
 
-	lfd 13,c(31)                           # 3.7
-	lfd 0,bss_tmp2(31)                     # 3.7
-	fsub 0,13,0                            # 3.7
-	stfd 0,bss_tmp3(31)                    # 3.7
+	lfs 13,bss_tmp1(31)                    # 3.7
+	lfs 0,a(31)                            # 3.7
+	fadds 0,13,0                           # 3.7
+	stfs 0,bss_tmp2(31)                    # 3.7
 
-	lfd 13,b(31)                           # 3.7
-	lfd 0,bss_tmp3(31)                     # 3.7
-	fadd 0,13,0                            # 3.7
-	stfd 0,bss_tmp4(31)                    # 3.7
+	lfs 0,bss_tmp2(31)                     # 3.7
+	stfs 0,c(31)                           # 3.7
 
-	lfd 0,bss_tmp4(31)                     # 3.7
-	stfd 0,a(31)                           # 3.7
-
+	lfs 13,a(31)                           # 3.8
+	lis 9,.LC4@ha                          # 3.8
+	lfs 0,.LC4@l(9)                        # 3.8
+	fcmpu 7,0,13                           # 3.8
 	li 0,0                                 # 3.8
-	mr 3,0                                 # 3.8
+	li 9,1                                 # 3.8
+	isel 0,9,0,29                          # 3.8
+	stw 0,bss_tmp1(31)                     # 3.8
+
+	li 0,0                                 # 3.9
+	mr 3,0                                 # 3.9
 	lwz 11,0(1)                            # 3
 	lwz 0,4(11)                            # 3
 	mtlr 0                                 # 3

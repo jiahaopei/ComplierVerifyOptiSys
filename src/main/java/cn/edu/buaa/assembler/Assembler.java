@@ -593,7 +593,52 @@ public class Assembler {
 				}
 				
 			} else if (fieldType.equals("float")) {
-				logger.debug("float expression!"); 
+				// 常数
+				if (expres.get("type").equals("CONSTANT")) {
+					String high = AssemblerExpression.getNumberHigh(expres.get("value"));
+					String low = AssemblerExpression.getNumberLow(expres.get("value"));
+					
+					// 把常量添加到.data域
+					String lc = ".LC" + assemblerDTO.getLabelCnt();
+					assemblerDTO.addToLabelCnt(1);
+					line = AssemblerUtils.PREFIX + ".align 3";
+					assemblerDTO.insertIntoData(line,label);
+					line = lc + ":";
+					assemblerDTO.insertIntoData(line, label);						
+					line = AssemblerUtils.PREFIX + high;
+					assemblerDTO.insertIntoData(line, label);
+					line = AssemblerUtils.PREFIX + low;
+					assemblerDTO.insertIntoData(line, label);
+					// 添加到符号表
+					Map<String, String> tmpMap = new HashMap<>();
+					tmpMap.put("type", "FLOAT_CONSTANT");
+					tmpMap.put("value", expres.get("value"));
+					assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+					
+					line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					
+				// 变量
+				} else if (expres.get("type").equals("VARIABLE")) {
+					// 把数放到r0中，再把r0中的数转到目标寄存器中, 同float
+					line = AssemblerUtils.PREFIX + "lfs 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+
+				} else {
+					try {
+						throw new Exception("_assignment only support constant and varivale : " + expres.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+
+				}
 			
 			} else {
 				try {
@@ -606,13 +651,8 @@ public class Assembler {
 			}
 
 		} else {
-			try {
-				throw new Exception("error : assignment statement !");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-
+			throw new RuntimeException("error : assignment statement !");
+			
 		}
 
 		assemblerDTO.insertIntoText("", null);

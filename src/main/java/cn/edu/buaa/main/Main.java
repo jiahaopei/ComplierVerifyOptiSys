@@ -14,10 +14,9 @@ import cn.edu.buaa.recorder.Recorder;
 public class Main {
 	
 	public static void main(String[] args) {
-		
 		// 公共记录
 		Recorder recorder = new Recorder();
-		String fileName = "test4.c";
+		String fileName = "test5.c";
 
 		Lexer lexer = new Lexer(fileName, recorder);
 		lexer.outputSrc();

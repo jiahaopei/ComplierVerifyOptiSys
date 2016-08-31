@@ -236,7 +236,7 @@ public class AssemblerExpression {
 			solveDoubleOperatorDouble(operand_a, operand_b, operator, label);
 			break;
 		case "float":
-			
+			solveDoubleOperatorFloat(operand_a, operand_b, operator, label);
 			break;
 		case "long":
 
@@ -251,14 +251,670 @@ public class AssemblerExpression {
 
 	}
 	
+	// 处理float型的双目运算
+	private static void solveDoubleOperatorFloat(Map<String, String> operand_a, Map<String, String> operand_b,
+			String operator, String label) {
+		String line = null;
+		if (operator.equals("+")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+				
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line,label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);						
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+				
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				
+			} else {
+				throw new RuntimeException("+ not support type : " + operand_a.get("type"));
+	
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+				
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line,label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);						
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+				
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("+ not support type : " + operand_b.get("type")); 
+		
+			}
+
+			// 执行加法
+			line = AssemblerUtils.PREFIX + "fadds 0,13,0";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "float");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+
+		} else if (operator.equals("-")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else {
+				throw new RuntimeException("- not support type : " + operand_a.get("type"));
+
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("- not support type : " + operand_b.get("type"));
+
+			}
+
+			// 执行减法
+			line = AssemblerUtils.PREFIX + "fsubs 0,13,0";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "float");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+
+		// 整数乘法
+		} else if (operator.equals("*")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else {
+				throw new RuntimeException("* not support type : " + operand_a.get("type"));
+
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("* not support type : " + operand_b.get("type"));
+
+			}
+
+			// 执行乘法
+			line = AssemblerUtils.PREFIX + "fmuls 0,13,0";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "float");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+
+		// 整数除法
+		} else if (operator.equals("/")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else {
+				throw new RuntimeException("/ not support type : " + operand_a.get("type"));
+
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("/ not support type : " + operand_b.get("type"));
+
+			}
+
+			// 执行除法
+			line = AssemblerUtils.PREFIX + "fdivs 0,13,0";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "float");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stfs 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+
+		// %运算
+		} else if (operator.equals("%")) {
+			throw new RuntimeException("C中的取余操作只能应用于int类型 : float");
+			
+
+		// >=关系运算
+		} else if (operator.equals(">=")) {
+			throw new RuntimeException("float type not support : >=");
+			
+		// >关系运算符
+		} else if (operator.equals(">")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else {
+				throw new RuntimeException("> not support type : " + operand_a.get("type"));
+
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("> not support type : " + operand_b.get("type"));
+
+			}
+
+			line = AssemblerUtils.PREFIX + "fcmpu 7,0,13";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 0,0";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 9,1";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "isel 0,9,0,29";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "int");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+			
+		// <=符号
+		} else if (operator.equals("<=")) {
+			throw new RuntimeException("float not support this operator : <=");
+
+		// < 符号
+		} else if (operator.equals("<")) {
+			// 第一个操作数
+			if (operand_a.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 13,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_a.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else if (operand_a.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_a.get("operand"));
+				String low = getNumberLow(operand_a.get("operand"));
+
+				// 把字符常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "FLOAT_CONSTANT");
+				tmpMap.put("value", operand_a.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 13," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_a.get("label"));
+
+			} else {
+				throw new RuntimeException("< not support type : " + operand_a.get("type"));
+
+			}
+
+			// 第二个操作数
+			if (operand_b.get("type").equals("VARIABLE")) {
+				line = AssemblerUtils.PREFIX + "lfs 0,"
+						+ assemblerDTO.getVariableSymbolOrNumber(operand_b.get("operand")) + "(31)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else if (operand_b.get("type").equals("CONSTANT")) {
+				String high = getNumberHigh(operand_b.get("operand"));
+				String low = getNumberLow(operand_b.get("operand"));
+
+				// 把double常量添加到.data域
+				String lc = ".LC" + assemblerDTO.getLabelCnt();
+				assemblerDTO.addToLabelCnt(1);
+				line = AssemblerUtils.PREFIX + ".align 3";
+				assemblerDTO.insertIntoData(line, label);
+				line = lc + ":";
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + high;
+				assemblerDTO.insertIntoData(line, label);
+				line = AssemblerUtils.PREFIX + low;
+				assemblerDTO.insertIntoData(line, label);
+				// 添加到符号表
+				Map<String, String> tmpMap = new HashMap<>();
+				tmpMap.put("type", "float_CONSTANT");
+				tmpMap.put("value", operand_b.get("operand"));
+				assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+
+				line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+				line = AssemblerUtils.PREFIX + "lfs 0," + lc + "@l(9)";
+				assemblerDTO.insertIntoText(line, operand_b.get("label"));
+
+			} else {
+				throw new RuntimeException("< not support type : " + operand_b.get("type"));
+
+			}
+
+			line = AssemblerUtils.PREFIX + "fcmpu 7,0,13";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 0,0";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "li 9,1";
+			assemblerDTO.insertIntoText(line, label);
+			line = AssemblerUtils.PREFIX + "isel 0,9,0,28";
+			assemblerDTO.insertIntoText(line, label);
+
+			// 赋值给临时操作数
+			String bss_tmp = "bss_tmp" + bss_tmp_cnt;
+			bss_tmp_cnt++;
+			// 记录到符号表中
+			Map<String, String> tmpMap = new HashMap<>();
+			tmpMap.put("type", "IDENTIFIER");
+			tmpMap.put("field_type", "int");
+			tmpMap.put("register", Integer.toString(memAdress));
+			memAdress += 4;
+			assemblerDTO.putIntoSymbolTable(bss_tmp, tmpMap);
+
+			line = AssemblerUtils.PREFIX + "stw 0," + assemblerDTO.getVariableSymbolOrNumber(bss_tmp) + "(31)";
+			assemblerDTO.insertIntoText(line, label);
+			// 计算结果压栈
+			tmpMap = new HashMap<>();
+			tmpMap.put("type", "VARIABLE");
+			tmpMap.put("operand", bss_tmp);
+			tmpMap.put("label", operand_a.get("label"));
+			operandStack.push(tmpMap);
+
+		// == 符号
+		} else if (operator.equals("==")) {
+			throw new RuntimeException("double not support this operator : ==");
+
+		// != 符号
+		} else if (operator.equals("!=")) {
+			throw new RuntimeException("double not support this operator : !=");
+			
+		} else {
+			throw new RuntimeException("other operator not support in double operator : " + operator);
+
+		}
+		
+	}
+
 	public static String getNumberHigh(String string) {
+		if (string == null || string.length() == 0) {
+			return "0";
+		}
+		if (!string.contains(".")) {
+			return string;
+		}
 		String str = string.substring(0, string.indexOf("."));
 		long heigh = Long.parseLong(str);
 		return Double.doubleToLongBits(heigh) + "";
 	}
 	
 	public static String getNumberLow(String string) {
+		if (string == null || string.length() == 0) {
+			return "0";
+		}
+		if (!string.contains(".")) {
+			return "0";
+		}
 		String str = string.substring(string.indexOf(".") + 1);
+		// 去除末尾的"l"、"L"、"f"、"F"标记
+		if (Character.isLetter(str.charAt(str.length() - 1))) {
+			str = str.substring(0, str.length() - 1);
+		}
 		long low = Long.parseLong(str);
 		return Double.doubleToLongBits(low) + "";
 	}

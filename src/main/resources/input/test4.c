@@ -10,6 +10,8 @@ int main() {
     b = 1.3;
     c = a;
 
+    a = 1;
+
     a = b + c - a * b / c;
 
 

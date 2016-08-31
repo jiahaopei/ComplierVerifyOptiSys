@@ -253,6 +253,11 @@ public class Parser {
 			} else if(sentencePattern.equals("SELF_OPT")) {
 				_expression(root, null);
 				index++;
+			
+			// 双目运算 
+			} else if (sentencePattern.equals("DOUBLE_OPT")) {
+				_expression(root, null);
+				index++;
 				
 			// 右大括号，函数结束
 			} else if(sentencePattern.equals("RB_BRACKET")) {
@@ -360,7 +365,7 @@ public class Parser {
 			// 多个变量声明
 			} else if (getTokenType(index).equals("COMMA")) {
 				while (!getTokenType(index).equals("SEMICOLON")) {
-					if (getTokenType(index).equals("IDENTIFIE")) {
+					if (getTokenType(index).equals("IDENTIFIER")) {
 						SyntaxTree tmpTree = new SyntaxTree();
 						tmpTree.setRoot(new SyntaxTreeNode("Statement"));
 						tmpTree.setCurrent(tmpTree.getRoot());
@@ -394,14 +399,15 @@ public class Parser {
 								tmpTree.getRoot());
 						
 					} else if (getTokenType(index).equals("COMMA")) { 
-						continue;
+						// 继续执行
 						
 					} else {
 						recorder.insertLine(Recorder.TAB + "变量声明语句 : 语法非法");
 						logger.info("变量声明语句 : 语法非法");
 						
 						try {
-							throw new Exception("Error in multiple variable statmement!");
+							throw new Exception("Error in multiple variable statmement : " 
+									+ getTokenValue(index) + " " + getTokenType(index));
 						} catch (Exception e) {
 							e.printStackTrace();
 							System.exit(1);
@@ -1118,6 +1124,7 @@ public class Parser {
 		// 可能为函数调用或者赋值语句或单目运算	
 		} else if (tokenType.equals("IDENTIFIER")) {
 			String index1TokenType = getTokenType(index + 1);
+			String index1TokenValue = getTokenValue(index + 1);
 			
 			if(index1TokenType.equals("LL_BRACKET")) {
 				return "FUNCTION_CALL";
@@ -1126,6 +1133,10 @@ public class Parser {
 			} else if(index1TokenType.equals("SELF_PLUS") 
 					|| index1TokenType.equals("SELF_MINUS")) { 
 				return "SELF_OPT";
+			} else if (!index1TokenType.equals("SELF_PLUS") 
+					&& !index1TokenType.equals("SELF_MINUS")
+					&& ParserUtils.isOperator(index1TokenValue)) { 
+				return "DOUBLE_OPT";
 			} else {
 				return "ERROR";
 			}

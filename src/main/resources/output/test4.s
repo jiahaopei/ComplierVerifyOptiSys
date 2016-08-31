@@ -8,6 +8,10 @@
 .LC1:	                                  # 3.5
 	4607182418800017408                    # 3.5
 	4613937818241073152                    # 3.5
+	.align 3                               # 3.7
+.LC2:	                                  # 3.7
+	1                                      # 3.7
+	0                                      # 3.7
 
 	.section ".text"
 	.align 2                               # 3
@@ -31,31 +35,35 @@ main:	                                  # 3
 	lfd 0,a(31)                            # 3.6
 	stfd 0,c(31)                           # 3.6
 
-	lfd 13,b(31)                           # 3.7
-	lfd 0,c(31)                            # 3.7
-	fdiv 0,13,0                            # 3.7
-	stfd 0,bss_tmp1(31)                    # 3.7
-
-	lfd 13,a(31)                           # 3.7
-	lfd 0,bss_tmp1(31)                     # 3.7
-	fmul 0,13,0                            # 3.7
-	stfd 0,bss_tmp2(31)                    # 3.7
-
-	lfd 13,c(31)                           # 3.7
-	lfd 0,bss_tmp2(31)                     # 3.7
-	fsub 0,13,0                            # 3.7
-	stfd 0,bss_tmp3(31)                    # 3.7
-
-	lfd 13,b(31)                           # 3.7
-	lfd 0,bss_tmp3(31)                     # 3.7
-	fadd 0,13,0                            # 3.7
-	stfd 0,bss_tmp4(31)                    # 3.7
-
-	lfd 0,bss_tmp4(31)                     # 3.7
+	lis 9,.LC2@ha                          # 3.7
+	lfd 0,.LC2@l(9)                        # 3.7
 	stfd 0,a(31)                           # 3.7
 
-	li 0,0                                 # 3.8
-	mr 3,0                                 # 3.8
+	lfd 13,b(31)                           # 3.8
+	lfd 0,c(31)                            # 3.8
+	fdiv 0,13,0                            # 3.8
+	stfd 0,bss_tmp1(31)                    # 3.8
+
+	lfd 13,a(31)                           # 3.8
+	lfd 0,bss_tmp1(31)                     # 3.8
+	fmul 0,13,0                            # 3.8
+	stfd 0,bss_tmp2(31)                    # 3.8
+
+	lfd 13,c(31)                           # 3.8
+	lfd 0,bss_tmp2(31)                     # 3.8
+	fsub 0,13,0                            # 3.8
+	stfd 0,bss_tmp3(31)                    # 3.8
+
+	lfd 13,b(31)                           # 3.8
+	lfd 0,bss_tmp3(31)                     # 3.8
+	fadd 0,13,0                            # 3.8
+	stfd 0,bss_tmp4(31)                    # 3.8
+
+	lfd 0,bss_tmp4(31)                     # 3.8
+	stfd 0,a(31)                           # 3.8
+
+	li 0,0                                 # 3.9
+	mr 3,0                                 # 3.9
 	lwz 11,0(1)                            # 3
 	lwz 0,4(11)                            # 3
 	mtlr 0                                 # 3
