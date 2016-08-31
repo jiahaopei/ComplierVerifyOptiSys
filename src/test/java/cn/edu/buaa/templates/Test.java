@@ -25,8 +25,8 @@ public class Test {
 		System.out.println(Float.intBitsToFloat(1072902963));
 		System.out.println(Float.intBitsToFloat(858993459));
 		
-		
 		System.out.println(b + " " + c + " " + d);
+		
 		
 	}
 	
