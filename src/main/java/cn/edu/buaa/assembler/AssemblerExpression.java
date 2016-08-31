@@ -239,7 +239,7 @@ public class AssemblerExpression {
 			solveDoubleOperatorFloat(operand_a, operand_b, operator, label);
 			break;
 		case "long":
-
+			solveDoubleOperatorLong(operand_a, operand_b, operator, label);
 			break;
 		case "int":
 			solveDoubleOperatorInt(operand_a, operand_b, operator, label);
@@ -251,6 +251,14 @@ public class AssemblerExpression {
 
 	}
 	
+	// 处理long型的双目运算
+	private static void solveDoubleOperatorLong(Map<String, String> operand_a, Map<String, String> operand_b,
+			String operator, String label) {
+		// 同int型，测试发现对于long型power-pc支持得不是很好;
+		// 过大的long不支持，比较小的long直接当做int来处理了
+		solveDoubleOperatorInt(operand_a, operand_b, operator, label);
+	}
+
 	// 处理float型的双目运算
 	private static void solveDoubleOperatorFloat(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {

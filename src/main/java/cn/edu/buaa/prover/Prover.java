@@ -412,6 +412,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder);
-		prover.runProver("for");
+		prover.runProver("if");
 	}
 }

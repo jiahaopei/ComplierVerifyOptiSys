@@ -1,329 +1,47 @@
-预处理源代码开始...
-预处理源代码结束
-====================Source C Code==================
-#include <stdio.h>
-#include <stdlib.h>
+待证 : if
+==============目标码模式===============
+<LOG-EXP>
+cmpi 7,0,0,0
+beq 7,.L1
+<STA-LIST>
+.L1:
 
-int main() {
-    float a, b, c;
-    float d;
+==============目标码模式命题===============
+GPR[0] = <LOG-EXP>
 
-    scanf("%f %f %f %f", &a, &b, &c, &d);
-    printf("%f %f %f %f", a, b, c, d);
+GPR[0] < 0 -> CR[7] = b100
+GPR[0] > 0 -> CR[7] = b010
+GPR[0] == 0 -> CR[7] = b001
 
-     a = 1.2f;
-    b = 1.3F;
-    c = a * b + a;
+CR[7] == b100 -> PC = PC + 4
+CR[7] == b010 -> PC = PC + 4
+CR[7] == b001 -> PC = PC + @.L1
 
-    a > 1;
+<STA-LIST>
 
+.L1:
 
-    return 0;
-}
+==============命题推理结果===============
+<LOG-EXP> < 0 -> PC = PC + 4
+<LOG-EXP> > 0 -> PC = PC + 4
+<LOG-EXP> == 0 -> PC = PC + @.L1
 
-源代码标号开始...
-源代码编号结束!
-====================Labeled C Code==================
-#include <stdio.h>                                // 1
-#include <stdlib.h>                               // 2
+<STA-LIST>
 
-int main() {                                      // 3
-    float a, b, c;                                // 3.1
-    float d;                                      // 3.2
+.L1:
 
-    scanf("%f %f %f %f", &a, &b, &c, &d);         // 3.3
-    printf("%f %f %f %f", a, b, c, d);            // 3.4
+=============推理出的语义================
+<LOG-EXP> != 0 -> <STA-LIST>
+<LOG-EXP> == 0 -> null
 
-     a = 1.2f;                                    // 3.5
-    b = 1.3F;                                     // 3.6
-    c = a * b + a;                                // 3.7
+σ-transfer :
+<LOG-EXP> != 0 -> σ(<STA-LIST>)
+<LOG-EXP> == 0 -> skip
 
-    a > 1;                                        // 3.8
+=============给定的目标语义================
+<LOG-EXP> != 0 -> σ(<STA-LIST>)
+<LOG-EXP> == 0 -> skip
 
-
-    return 0;                                     // 3.9
-}                                                 // 4
-
-词法分析开始...
-词法分析结束!
-====================Lexer==================
-(#, SHARP, 1)
-(include, INCLUDE, 1)
-(<, LT, 1)
-(stdio.h, IDENTIFIER, 1)
-(>, GT, 1)
-(#, SHARP, 2)
-(include, INCLUDE, 2)
-(<, LT, 2)
-(stdlib.h, IDENTIFIER, 2)
-(>, GT, 2)
-(int, INT, 3)
-(main, IDENTIFIER, 3)
-((, LL_BRACKET, 3)
-(), RL_BRACKET, 3)
-({, LB_BRACKET, 3)
-(float, FLOAT, 3.1)
-(a, IDENTIFIER, 3.1)
-(,, COMMA, 3.1)
-(b, IDENTIFIER, 3.1)
-(,, COMMA, 3.1)
-(c, IDENTIFIER, 3.1)
-(;, SEMICOLON, 3.1)
-(float, FLOAT, 3.2)
-(d, IDENTIFIER, 3.2)
-(;, SEMICOLON, 3.2)
-(scanf, IDENTIFIER, 3.3)
-((, LL_BRACKET, 3.3)
-(", DOUBLE_QUOTE, 3.3)
-(%f %f %f %f, STRING_CONSTANT, 3.3)
-(", DOUBLE_QUOTE, 3.3)
-(,, COMMA, 3.3)
-(&, BIT_AND, 3.3)
-(a, IDENTIFIER, 3.3)
-(,, COMMA, 3.3)
-(&, BIT_AND, 3.3)
-(b, IDENTIFIER, 3.3)
-(,, COMMA, 3.3)
-(&, BIT_AND, 3.3)
-(c, IDENTIFIER, 3.3)
-(,, COMMA, 3.3)
-(&, BIT_AND, 3.3)
-(d, IDENTIFIER, 3.3)
-(), RL_BRACKET, 3.3)
-(;, SEMICOLON, 3.3)
-(printf, IDENTIFIER, 3.4)
-((, LL_BRACKET, 3.4)
-(", DOUBLE_QUOTE, 3.4)
-(%f %f %f %f, STRING_CONSTANT, 3.4)
-(", DOUBLE_QUOTE, 3.4)
-(,, COMMA, 3.4)
-(a, IDENTIFIER, 3.4)
-(,, COMMA, 3.4)
-(b, IDENTIFIER, 3.4)
-(,, COMMA, 3.4)
-(c, IDENTIFIER, 3.4)
-(,, COMMA, 3.4)
-(d, IDENTIFIER, 3.4)
-(), RL_BRACKET, 3.4)
-(;, SEMICOLON, 3.4)
-(a, IDENTIFIER, 3.5)
-(=, ASSIGN, 3.5)
-(1.2f, DIGIT_CONSTANT, 3.5)
-(;, SEMICOLON, 3.5)
-(b, IDENTIFIER, 3.6)
-(=, ASSIGN, 3.6)
-(1.3F, DIGIT_CONSTANT, 3.6)
-(;, SEMICOLON, 3.6)
-(c, IDENTIFIER, 3.7)
-(=, ASSIGN, 3.7)
-(a, IDENTIFIER, 3.7)
-(*, MUL, 3.7)
-(b, IDENTIFIER, 3.7)
-(+, PLUS, 3.7)
-(a, IDENTIFIER, 3.7)
-(;, SEMICOLON, 3.7)
-(a, IDENTIFIER, 3.8)
-(>, GT, 3.8)
-(1, DIGIT_CONSTANT, 3.8)
-(;, SEMICOLON, 3.8)
-(return, RETURN, 3.9)
-(0, DIGIT_CONSTANT, 3.9)
-(;, SEMICOLON, 3.9)
-(}, RB_BRACKET, 4)
-
-语法分析开始...
-  include语句 : 语法合法
-  include语句 : 语法合法
-  变量声明语句 : 语法合法
-  变量声明语句 : 语法合法
-  函数调用语句 : 语法合法
-  函数调用语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  表达式语句 : 语法合法
-  表达式语句 : 语法合法
-  return语句 : 语法合法
-  函数定义 : 语法合法
-语法分析结束!
-====================Parser==================
-( self: Sentence null null, father: null, left: null, right: null )
-( self: Include null null, father: Sentence, left: null, right: Include )
-( self: # SHARP 1, father: Include, left: null, right: include )
-( self: include INCLUDE 1, father: Include, left: #, right: < )
-( self: < LT 1, father: Include, left: include, right: stdio.h )
-( self: stdio.h IDENTIFIER 1, father: Include, left: <, right: > )
-( self: > GT 1, father: Include, left: stdio.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: FunctionStatement )
-( self: # SHARP 2, father: Include, left: null, right: include )
-( self: include INCLUDE 2, father: Include, left: #, right: < )
-( self: < LT 2, father: Include, left: include, right: stdlib.h )
-( self: stdlib.h IDENTIFIER 2, father: Include, left: <, right: > )
-( self: > GT 2, father: Include, left: stdlib.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: null )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 3, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: StateParameterList )
-( self: main IDENTIFIER 3, father: FunctionName, left: null, right: null )
-( self: StateParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
-( self: Sentence null null, father: FunctionStatement, left: StateParameterList, right: null )
-( self: Statement null null, father: Sentence, left: null, right: Statement )
-( self: Type null null, father: Statement, left: null, right: a )
-( self: float FIELD_TYPE 3.1, father: Type, left: null, right: null )
-( self: a IDENTIFIER 3.1, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Statement )
-( self: Type null null, father: Statement, left: null, right: b )
-( self: float FIELD_TYPE null, father: Type, left: null, right: null )
-( self: b IDENTIFIER 3.1, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Statement )
-( self: Type null null, father: Statement, left: null, right: c )
-( self: float FIELD_TYPE null, father: Type, left: null, right: null )
-( self: c IDENTIFIER 3.1, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: FunctionCall )
-( self: Type null null, father: Statement, left: null, right: d )
-( self: float FIELD_TYPE 3.2, father: Type, left: null, right: null )
-( self: d IDENTIFIER 3.2, father: Statement, left: Type, right: null )
-( self: FunctionCall null null, father: Sentence, left: Statement, right: FunctionCall )
-( self: scanf FUNCTION_NAME 3.3, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: scanf, right: null )
-( self: %f %f %f %f STRING_CONSTANT 3.3, father: CallParameterList, left: null, right: & )
-( self: & ADDRESS 3.3, father: CallParameterList, left: %f %f %f %f, right: a )
-( self: a IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
-( self: & ADDRESS 3.3, father: CallParameterList, left: a, right: b )
-( self: b IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
-( self: & ADDRESS 3.3, father: CallParameterList, left: b, right: c )
-( self: c IDENTIFIER 3.3, father: CallParameterList, left: &, right: & )
-( self: & ADDRESS 3.3, father: CallParameterList, left: c, right: d )
-( self: d IDENTIFIER 3.3, father: CallParameterList, left: &, right: null )
-( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: Assignment )
-( self: printf FUNCTION_NAME 3.4, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: %f %f %f %f STRING_CONSTANT 3.4, father: CallParameterList, left: null, right: a )
-( self: a IDENTIFIER 3.4, father: CallParameterList, left: %f %f %f %f, right: b )
-( self: b IDENTIFIER 3.4, father: CallParameterList, left: a, right: c )
-( self: c IDENTIFIER 3.4, father: CallParameterList, left: b, right: d )
-( self: d IDENTIFIER 3.4, father: CallParameterList, left: c, right: null )
-( self: Assignment null null, father: Sentence, left: FunctionCall, right: Assignment )
-( self: a IDENTIFIER 3.5, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
-( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 1.2f _Constant 3.5, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: b IDENTIFIER 3.6, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: b, right: null )
-( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 1.3F _Constant 3.6, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Expression )
-( self: c IDENTIFIER 3.7, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: c, right: null )
-( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: a _Variable 3.7, father: Expression, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
-( self: b _Variable 3.7, father: Expression, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Expression, right: Expression )
-( self: * _Operator 3.7, father: Operator, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Operator, right: Operator )
-( self: a _Variable 3.7, father: Expression, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Expression, right: null )
-( self: + _Operator 3.7, father: Operator, left: null, right: null )
-( self: Expression SingleOrDoubleOperand null, father: Sentence, left: Assignment, right: Return )
-( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: a _Variable 3.8, father: Expression, left: null, right: null )
-( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
-( self: 1 _Constant 3.8, father: Expression, left: null, right: null )
-( self: Operator Operator null, father: Expression, left: Expression, right: null )
-( self: > _Operator 3.8, father: Operator, left: null, right: null )
-( self: Return null null, father: Sentence, left: Expression, right: null )
-( self: return RETURN 3.9, father: Return, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
-( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 0 _Constant 3.9, father: Expression, left: null, right: null )
-
-目标码生成开始...
-目标码生成结束!
-===================Assembler==================
-	.section .rodata
-	.align 2                               # 3.3
-.LC0:	                                  # 3.3
-	.string	"%f %f %f %f"                  # 3.3
-	.align 2                               # 3.4
-.LC1:	                                  # 3.4
-	.string	"%f %f %f %f"                  # 3.4
-	.align 3                               # 3.5
-.LC2:	                                  # 3.5
-	4607182418800017408                    # 3.5
-	4611686018427387904                    # 3.5
-	.align 3                               # 3.6
-.LC3:	                                  # 3.6
-	4607182418800017408                    # 3.6
-	4613937818241073152                    # 3.6
-	.align 3                               # 3.8
-.LC4:	                                  # 3.8
-	1                                      # 3.8
-	0                                      # 3.8
-
-	.section ".text"
-	.align 2                               # 3
-	.globl main                            # 3
-	.type main, @function                  # 3
-main:	                                  # 3
-	stwu 1,-32(1)                          # 3
-	mflr 0                                 # 3
-	stw 31,28(1)                           # 3
-	stw 0,36(1)                            # 3
-	mr 31,1                                # 3
-
-	lis 0,.LC0@ha                          # 3.3
-	addic 10,0,.LC0@l                      # 3.3
-	mr 3,10                                # 3.3
-	crxor 6,6,6                            # 3.3
-	bl __isoc99_scanf                      # 3.3
-
-	lis 0,.LC1@ha                          # 3.4
-	addic 0,0,.LC1@l                       # 3.4
-	mr 3,0                                 # 3.4
-	crxor 6,6,6                            # 3.4
-	bl printf                              # 3.4
-
-	lis 9,.LC2@ha                          # 3.5
-	lfs 0,.LC2@l(9)                        # 3.5
-	stfs 0,a(31)                           # 3.5
-
-	lis 9,.LC3@ha                          # 3.6
-	lfs 0,.LC3@l(9)                        # 3.6
-	stfs 0,b(31)                           # 3.6
-
-	lfs 13,a(31)                           # 3.7
-	lfs 0,b(31)                            # 3.7
-	fmuls 0,13,0                           # 3.7
-	stfs 0,bss_tmp1(31)                    # 3.7
-
-	lfs 13,bss_tmp1(31)                    # 3.7
-	lfs 0,a(31)                            # 3.7
-	fadds 0,13,0                           # 3.7
-	stfs 0,bss_tmp2(31)                    # 3.7
-
-	lfs 0,bss_tmp2(31)                     # 3.7
-	stfs 0,c(31)                           # 3.7
-
-	lfs 13,a(31)                           # 3.8
-	lis 9,.LC4@ha                          # 3.8
-	lfs 0,.LC4@l(9)                        # 3.8
-	fcmpu 7,0,13                           # 3.8
-	li 0,0                                 # 3.8
-	li 9,1                                 # 3.8
-	isel 0,9,0,29                          # 3.8
-	stw 0,bss_tmp1(31)                     # 3.8
-
-	li 0,0                                 # 3.9
-	mr 3,0                                 # 3.9
-	lwz 11,0(1)                            # 3
-	lwz 0,4(11)                            # 3
-	mtlr 0                                 # 3
-	lwz 31,-4(11)                          # 3
-	mr 1,11                                # 3
-	blr                                    # 3
-	.size main,.-main                      # 3
+===============结论================
+给定的目标语义和推理出的语义是否一致 : 
+true
