@@ -21,21 +21,27 @@ public class AssemblerFileHandler {
 	private int textPointer;		// .text域
 	
 	public AssemblerFileHandler() {
-		this.result = new ArrayList<>();
-		this.result.add("	.section .rodata");
-		// 加一行空格，分开数据域和代码域
-		this.result.add("");
-		this.result.add("	.section \".text\"");
-		
-		this.dataPointer = 1;
-		this.textPointer = 3;
+		this.result = new ArrayList<>();	
+		this.dataPointer = 0;
+		this.textPointer = 0;
 		
 	}
 	
 	public List<String> getResult() {
 		return result;
 	}
-
+	
+	public void generateHeader() {
+		this.result.add("");
+		this.result.add("	.section .rodata");
+		// 加一行空格，分开数据域和代码域
+		this.result.add("");
+		this.result.add("	.section \".text\"");
+		
+		this.dataPointer = textPointer + 2;
+		this.textPointer = dataPointer + 2;
+	}
+	
 	// 插入一行生成的汇编代码
 	public void insert(String value, String type) {
 		// 插入到data域
@@ -74,6 +80,7 @@ public class AssemblerFileHandler {
 				writer.write(item);
 				writer.newLine();
 			}
+			writer.newLine();
 			writer.write("	.ident	\"powerpc-e500v2-linux-gnuspe-gcc\"");
 			writer.newLine();
 			

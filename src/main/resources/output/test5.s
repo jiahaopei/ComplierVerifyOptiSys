@@ -1,4 +1,5 @@
 	.file	"test5.c"
+
 	.section .rodata
 	.align 2                               # 3.3
 .LC0:	                                  # 3.3
@@ -81,4 +82,56 @@ main:	                                  # 3
 	mr 1,11                                # 3
 	blr                                    # 3
 	.size main,.-main                      # 3
+
+	.section .rodata
+
+	.section ".text"
+	.align 2                               # 5
+	.globl add                             # 5
+	.type add, @function                   # 5
+add:	                                   # 5
+	stwu 1,-32(1)                          # 5
+	stw 31,28(1)                           # 5
+	mr 31,1                                # 5
+
+	lwz 11,0(1)                            # 5
+	lwz 31,-4(11)                          # 5
+	mr 1,11                                # 5
+	blr                                    # 5
+	.size add,.-add                        # 5
+
+	.section .rodata
+
+	.section ".text"
+	.align 2                               # 7
+	.globl sub                             # 7
+	.type sub, @function                   # 7
+sub:	                                   # 7
+	stwu 1,-32(1)                          # 7
+	stw 31,28(1)                           # 7
+	mr 31,1                                # 7
+
+	lwz 11,0(1)                            # 7
+	lwz 31,-4(11)                          # 7
+	mr 1,11                                # 7
+	blr                                    # 7
+	.size sub,.-sub                        # 7
+
+	.section .rodata
+
+	.section ".text"
+	.align 2                               # 9
+	.globl mul                             # 9
+	.type mul, @function                   # 9
+mul:	                                   # 9
+	stwu 1,-32(1)                          # 9
+	stw 31,28(1)                           # 9
+	mr 31,1                                # 9
+
+	lwz 11,0(1)                            # 9
+	lwz 31,-4(11)                          # 9
+	mr 1,11                                # 9
+	blr                                    # 9
+	.size mul,.-mul                        # 9
+
 	.ident	"powerpc-e500v2-linux-gnuspe-gcc"

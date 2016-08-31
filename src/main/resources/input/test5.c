@@ -17,3 +17,15 @@ int main() {
 
     return 0;
 }
+
+int add() {
+
+}
+
+int sub() {
+
+}
+
+int mul() {
+	
+}

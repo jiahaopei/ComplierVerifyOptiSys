@@ -59,6 +59,13 @@ public class AssemblerDTO {
 	}
 	
 	/**
+	 * 产生每个函数的.data和.text代码
+	 */
+	public void insertHeader() {
+		assFileHandler.generateHeader();
+	}
+	
+	/**
 	 * 把line插入data域
 	 * @param line
 	 * @param label
