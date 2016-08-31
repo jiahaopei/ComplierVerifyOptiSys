@@ -1,10 +1,10 @@
+变量名称 内存地址
 a 8
 b 12
 c 16
-d 20
-.LC8 null
-bss_tmp2 28
-.LC5 null
-bss_tmp1 24
-.LC4 null
+bss_tmp4 32
+bss_tmp2 24
+bss_tmp3 28
+bss_tmp1 20
+.LC1 null
 .LC0 null

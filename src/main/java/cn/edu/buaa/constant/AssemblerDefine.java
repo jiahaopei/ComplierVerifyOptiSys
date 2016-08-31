@@ -17,11 +17,23 @@ public class AssemblerDefine {
 			add("*");
 			add("/");
 			add("%");
+			
+			add("<<");
+			add(">>");
+			
 			add(">");
 			add("<");
 			add(">=");
 			add("<=");
 			add("==");
+			add("!=");
+			
+			add("&");
+			add("|");
+			add("^");
+			
+			add("&&");
+			add("||");
 		}
 	};
 
@@ -31,6 +43,9 @@ public class AssemblerDefine {
 		{
 			add("++");
 			add("--");
+			
+			add("!");
+			add("~");
 		}
 	};
 

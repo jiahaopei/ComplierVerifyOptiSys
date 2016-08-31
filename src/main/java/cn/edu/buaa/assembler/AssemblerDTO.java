@@ -24,7 +24,7 @@ public class AssemblerDTO {
 	private int memAdress;
 
 	// 控制生成的汇编代码中，变量是以数字还是原始名称出现, 默认false，为原始名称出现
-	private boolean isVariableSymbolOrNumber = true;
+	private boolean isVariableSymbolOrNumber = false;
 	
 	public AssemblerDTO() {
 		assFileHandler = new AssemblerFileHandler();
@@ -39,7 +39,7 @@ public class AssemblerDTO {
 	 */
 	public String getVariableSymbolOrNumber(String parameter) {
 		return (isVariableSymbolOrNumber ? symbolTable.get(parameter).get("register") : parameter);
-				
+		
 	}
 	
 	/**
@@ -143,12 +143,4 @@ public class AssemblerDTO {
 		this.memAdress = memAdress;
 	}
 	
-	public boolean isVariableSymbolOrNumber() {
-		return isVariableSymbolOrNumber;
-	}
-
-	public void setVariableSymbolOrNumber(boolean isVariableSymbolOrNumber) {
-		this.isVariableSymbolOrNumber = isVariableSymbolOrNumber;
-	}
-
 }

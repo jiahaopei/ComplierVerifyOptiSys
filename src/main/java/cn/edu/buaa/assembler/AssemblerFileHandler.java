@@ -96,6 +96,8 @@ public class AssemblerFileHandler {
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + "symboltable.txt"));
+			writer.write("变量名称 " + "内存地址");
+			writer.newLine();
 			for(String variableName : symbolTable.keySet()) {
 				Map<String, String> value = symbolTable.get(variableName);
 				writer.write(variableName + " " + value.get("register"));

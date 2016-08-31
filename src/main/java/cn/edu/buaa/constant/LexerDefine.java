@@ -26,12 +26,26 @@ public class LexerDefine {
 			put("return", "RETURN");
 
 			put("=", "ASSIGN");
-			put("&", "ADDRESS");
+			
+			put("&", "BIT_AND");
+			put("|", "BIT_OR");
+			put("^", "BIT_XOR");
+			put("~", "BIT_NOT");
+			
+			put("<<", "LEFT_SHIFT");
+			put(">>", "RIGHT_SHIFT");
+			
+			put("&&", "AND");
+			put("||", "OR");
+			put("!", "NOT");
+			
 			put("<", "LT");
 			put(">", "GT");
 			put(">=", "GET");
 			put("<=", "LET");
 			put("==", "EQU");
+			put("!=", "UNE");
+			
 			put("+", "PLUS");
 			put("-", "MINUS");
 			put("*", "MUL");
@@ -39,8 +53,8 @@ public class LexerDefine {
 			put("%", "MOD");
 			put("++", "SELF_PLUS");
 			put("--", "SELF_MINUS");
+			
 			put("\"", "DOUBLE_QUOTE");
-
 			put("#", "SHARP");
 			put(",", "COMMA");
 			put(";", "SEMICOLON");
@@ -57,8 +71,14 @@ public class LexerDefine {
 	public static final String[] delimiters = { "(", ")", "{", "}", "[", "]", ",", "\"", ";" };
 
 	// 运算符
-	public static final String[] operators = { "=", "&", "<", ">", "++", "--", 
-			"+", "-", "*", "/", "%", ">=", "<=", "!=", "==" };
+	public static final String[] operators = { 
+			"=", 
+			"&", "|", "^", "~",
+			"<<", ">>",
+			"&&", "||", "!",
+			"<", ">", ">=", "<=", "!=", "==",
+			"+", "-", "*", "/", "%" ,"++", "--"
+	};
 	
 	// 关键字
 	public static final String[][] keywords = { 

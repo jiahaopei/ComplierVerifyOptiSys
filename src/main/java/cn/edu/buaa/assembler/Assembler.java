@@ -37,7 +37,6 @@ public class Assembler {
 		AssemblerDTO assemblerDTO = new AssemblerDTO();
 		assemblerDTO.setLabelCnt(0);
 		assemblerDTO.setMemAdress(8); // 以8号地址起始
-		assemblerDTO.setVariableSymbolOrNumber(true); // true，表示以数字出现
 		this.assemblerDTO = assemblerDTO;
 		
 	}
@@ -154,7 +153,7 @@ public class Assembler {
 
 	}
 
-	// 函数定义句型，暂时只能处理main函数
+	// 函数定义句型，处理main函数和其它函数的定义
 	private void _functionStatement(SyntaxTreeNode node) {
 		SyntaxTreeNode currentNode = node.getFirstSon(); // 第一个儿子
 		String funcName = null;
@@ -164,6 +163,8 @@ public class Assembler {
 			if (currentNode.getValue().equals("FunctionName")) {
 				funcName = currentNode.getFirstSon().getValue();
 				label = currentNode.getFirstSon().getLabel();
+				
+				// 处理main函数
 				if (funcName.equals("main")) {
 					line = AssemblerUtils.PREFIX + ".align 2";
 					assemblerDTO.insertIntoText(line, label);
@@ -172,45 +173,86 @@ public class Assembler {
 					line = AssemblerUtils.PREFIX + ".type main, @function";
 					assemblerDTO.insertIntoText(line, label);
 					line = "main:";
+					
 					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "stwu 1,-16(1)";
+					line = AssemblerUtils.PREFIX + "stwu 1,-32(1)";
 					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "stw 31,12(1)";
+					line = AssemblerUtils.PREFIX + "mflr 0";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 31,28(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 0,36(1)";
 					assemblerDTO.insertIntoText(line, label);
 					line = AssemblerUtils.PREFIX + "mr 31,1";
 					assemblerDTO.insertIntoText(line, label);
 					
 					// 增加空行
 					assemblerDTO.insertIntoText("", null);
-
+				
+				// 为其它类型的函数
 				} else {
-					try {
-						throw new Exception("Only support main function!");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
+					line = AssemblerUtils.PREFIX + ".align 2";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".globl " + funcName;
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + ".type " + funcName + ", @function";
+					assemblerDTO.insertIntoText(line, label);
+					line = funcName + ":";
+					assemblerDTO.insertIntoText(line, label);
+					
+					line = AssemblerUtils.PREFIX + "stwu 1,-32(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stw 31,28(1)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "mr 31,1";
+					assemblerDTO.insertIntoText(line, label);
+					
+					// 增加空行
+					assemblerDTO.insertIntoText("", null);
+					
 				}
 
 			} else if (currentNode.getValue().equals("Sentence")) {
 				traverse(currentNode.getFirstSon());
 
+			} else {
+				logger.debug("unknown type : " + currentNode.getValue());
+				
 			}
 
 			currentNode = currentNode.getRight();
 		}
 
-		if (funcName != null && funcName.equals("main")) {
-			line = AssemblerUtils.PREFIX + "addi 11,31,16";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "mr 1,11";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "blr";
-			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + ".size main,.-main";
-			assemblerDTO.insertIntoText(line, label);
+		if (funcName != null) {
+			if (funcName.equals("main")) {
+				line = AssemblerUtils.PREFIX + "lwz 11,0(1)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 0,4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mtlr 0";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mr 1,11";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "blr";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + ".size main,.-main";
+				assemblerDTO.insertIntoText(line, label);
+				
+			} else {
+				line = AssemblerUtils.PREFIX + "lwz 11,0(1)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "lwz 31,-4(11)";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "mr 1,11";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + "blr";
+				assemblerDTO.insertIntoText(line, label);
+				line = AssemblerUtils.PREFIX + ".size " + funcName + ",.-" + funcName;
+				assemblerDTO.insertIntoText(line, label);
+				
+			}
 			
 		}
 
@@ -237,7 +279,7 @@ public class Assembler {
 			if (currentNode.getValue().equals("Type")) {
 				variableFieldType = currentNode.getFirstSon().getValue();
 
-				// 变量名
+			// 变量名
 			} else if (currentNode.getType().equals("IDENTIFIER")) {
 				variableName = currentNode.getValue();
 				variableType = currentNode.getExtraInfo().get("type");
@@ -250,7 +292,7 @@ public class Assembler {
 				assemblerDTO.addToMemAdress(4);
 				assemblerDTO.putIntoSymbolTable(variableName, tmpMap);
 
-				// 数组元素
+			// 数组元素
 			} else if (currentNode.getValue().equals("ConstantList")) {
 				line = AssemblerUtils.PREFIX + ".align 2";
 				assemblerDTO.insertIntoData(line, label);
@@ -294,7 +336,7 @@ public class Assembler {
 					}
 				}
 
-				// 函数参数
+			// 函数参数
 			} else if (currentNode.getValue().equals("CallParameterList")) {
 				SyntaxTreeNode tmpNode = currentNode.getFirstSon();
 				while (tmpNode != null) {
@@ -499,9 +541,60 @@ public class Assembler {
 
 				}
 
-			} else if (fieldType.equals("float")) {
-				logger.debug("float expression!");
+			} else if (fieldType.equals("long")) {
+				logger.debug("long expression!");
+				
+			} else if (fieldType.equals("double")) {
+				// 常数
+				if (expres.get("type").equals("CONSTANT")) {
+					String high = AssemblerExpression.getNumberHigh(expres.get("value"));
+					String low = AssemblerExpression.getNumberLow(expres.get("value"));
+					
+					// 把常量添加到.data域
+					String lc = ".LC" + assemblerDTO.getLabelCnt();
+					assemblerDTO.addToLabelCnt(1);
+					line = AssemblerUtils.PREFIX + ".align 3";
+					assemblerDTO.insertIntoData(line,label);
+					line = lc + ":";
+					assemblerDTO.insertIntoData(line, label);						
+					line = AssemblerUtils.PREFIX + high;
+					assemblerDTO.insertIntoData(line, label);
+					line = AssemblerUtils.PREFIX + low;
+					assemblerDTO.insertIntoData(line, label);
+					// 添加到符号表
+					Map<String, String> tmpMap = new HashMap<>();
+					tmpMap.put("type", "DOUBLE_CONSTANT");
+					tmpMap.put("value", expres.get("value"));
+					assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+					
+					line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "lfd 0," + lc + "@l(9)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfd 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					
+				// 变量
+				} else if (expres.get("type").equals("VARIABLE")) {
+					// 把数放到r0中，再把r0中的数转到目标寄存器中, 同float
+					line = AssemblerUtils.PREFIX + "lfd 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stfd 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
 
+				} else {
+					try {
+						throw new Exception("_assignment only support constant and varivale : " + expres.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+
+				}
+				
+			} else if (fieldType.equals("float")) {
+				logger.debug("float expression!"); 
+			
 			} else {
 				try {
 					throw new Exception("Not support this type : " + fieldType);
@@ -681,7 +774,7 @@ public class Assembler {
 					forCondition = currentNode;
 					// _expression(currentNode);
 
-					// 第3部分
+				// 第3部分
 				} else {
 					_expression(currentNode);
 
@@ -847,7 +940,7 @@ public class Assembler {
 			if (currentNode.getValue().equals("Sentence")) {
 				traverse(currentNode.getFirstSon());
 
-				// do-while条件表达式
+			// do-while条件表达式
 			} else if (currentNode.getValue().equals("Expression")) {
 				Map<String, String> expres = _expression(currentNode);
 				line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
