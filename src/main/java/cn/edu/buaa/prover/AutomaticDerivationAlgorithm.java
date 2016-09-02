@@ -2,6 +2,7 @@ package cn.edu.buaa.prover;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,108 @@ import cn.edu.buaa.pojo.Proposition;
 public class AutomaticDerivationAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AutomaticDerivationAlgorithm.class);
+	private static final String TAB = "\t\t";
 	
+	// 记录两个命题时候发生了关联
+	private static boolean flag;
+	
+	public static List<Proposition> process1(List<Proposition> srcPropositions, Map<String, String> evidences1) {
+		
+		logger.info("AutomaticDerivationAlgorithm.process");
+		
+		List<Proposition> propositions = new ArrayList<>();
+		for (Proposition proposition : srcPropositions) {
+			Proposition tmp = ProverHelper.cloneProposition(proposition);
+			propositions.add(tmp);
+		}
+		
+		int step = 1;
+		List<Proposition> newPropositions = new ArrayList<>();
+		for (int i = 0; i < propositions.size(); i++) {
+			boolean isDeleteP = false;
+			boolean allFlag = false;
+			Proposition p = propositions.get(i);
+			String pstr = p.toStr();
+			for (int j = 0; j < newPropositions.size(); j++) {
+				flag = false;
+				Proposition q = newPropositions.get(j);
+				String qstr = q.toStr();
+				isDeleteP = applyDerivationRuleToTwoPropositions(p, q);
+				if (q.size() == 0) {
+					newPropositions.remove(j);
+					j--;
+				}
+				
+				// 两个命题相关联
+				if (flag) {
+					if (q.getProof().contains("P")) {
+						System.out.println("S" + step + " = " + qstr + TAB + q.getProof());
+						q.setProof("S" + step);
+						step++;
+					}
+					if (p.getProof().contains("P")) {
+						System.out.println("S" + step + " = " + pstr + TAB + p.getProof());
+						p.setProof("S" + step);
+						step++;
+					}
+					Proposition t = p;
+					if (t.toStr().equals(pstr)) {
+						t = q;
+					}
+					System.out.println("S" + step + " = " + t.toStr() + TAB + q.getProof() + "," + p.getProof() + ",MP");
+					t.setProof("S" + step);
+					step++;
+					allFlag = true;
+					
+//					System.out.println();
+				}
+			}
+			if (!allFlag && !newPropositions.isEmpty()) {
+				System.out.println("S" + step + " = " + p.toStr() + TAB + p.getProof());
+				p.setProof("S" + step);
+				step++;
+			}
+			if (!isDeleteP && p.size() != 0) {
+				newPropositions.add(p);
+			}
+		}
+		
+		// 实现CI
+		String[] lines = conjunction(newPropositions);
+		System.out.println("S" + step + " = " + lines[0] + TAB + lines[1]);
+		step++;
+		
+		// 化简得到最终结果
+		List<Proposition> tmps = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(newPropositions);
+		lines = conjunction(tmps);
+		System.out.println("S" + step + " = " + lines[0] + TAB + "S" + (step - 1));
+		step++;
+		
+		return newPropositions;
+	}
+	
+	
+	private static String[] conjunction(List<Proposition> newPropositions) {
+		String[] strs = new String[2];
+		String pf = "";
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < newPropositions.size(); i++) {
+			if (i != 0) {
+				sb.append(" ∧ ");
+				pf += ", ";
+			}
+			sb.append("(" + newPropositions.get(i).toStr() + ")");
+			pf += newPropositions.get(i).getProof();
+			
+		}
+		pf += ", CI";
+		strs[0] = sb.toString();
+		strs[1] = pf;
+		
+		return strs;
+	}
+
+
 	public static List<Proposition> process(List<Proposition> srcPropositions) {
 		
 		logger.info("AutomaticDerivationAlgorithm.process");
@@ -54,14 +156,18 @@ public class AutomaticDerivationAlgorithm {
 	// left = right
 	// left = right
 	private static boolean solveItems1(List<Item> pl, List<Item> ql) {
+//		System.out.println(1);
+		
 		// 左边相等
 		if (pl.get(0).getLeft().equals(ql.get(0).getLeft())) {
+			flag = true;
 			ql.clear();
 			return false;
 		}
 
 		// p右边包括q的左边
 		if (pl.get(0).getRight().contains(ql.get(0).getLeft())) {
+			flag = true;
 			String right = pl.get(0).getRight().replace(ql.get(0).getLeft(), ql.get(0).getRight());
 			pl.get(0).setRight(right);
 			return false;
@@ -69,6 +175,7 @@ public class AutomaticDerivationAlgorithm {
 
 		// ！q的右边包括p的左边（此种情况应该不存在）
 		if (ql.get(0).getRight().contains(pl.get(0).getLeft())) {
+			flag = true;
 			String right = ql.get(0).getRight().replace(pl.get(0).getLeft(), pl.get(0).getRight());
 			ql.get(0).setRight(right);
 			return false;
@@ -76,15 +183,17 @@ public class AutomaticDerivationAlgorithm {
 
 		return false;
 	}
-
-	// left = right
-	// premise left = right
+	
+	// premise left = right  : pl
+	// left = right          : ql
 	private static boolean solveItems2(List<Item> pl, List<Item> ql) {
-
+//		System.out.println(2);	
+		
 		// 选定一个前提
 		String premise = ql.get(0).getLeft() + " == " + ql.get(0).getRight();
 		for (Item item : pl) {
 			if (premise.equals(item.getPremise())) {
+				flag = true;
 				Item e = new Item(null, item.getLeft(), item.getRight());
 				pl.clear();
 				pl.add(e);
@@ -96,6 +205,7 @@ public class AutomaticDerivationAlgorithm {
 		// pl前提包括ql
 		for (Item item : pl) {
 			if (item.getPremise().contains(ql.get(0).getLeft())) {
+				flag = true;
 				String tmp = item.getPremise().replace(ql.get(0).getLeft(), ql.get(0).getRight());
 				item.setPremise(tmp);
 			}
@@ -110,16 +220,20 @@ public class AutomaticDerivationAlgorithm {
 	 * premise left = right 
 	 * 如： 
 	 * GPR[0] < 0 -> CR[7] = b100 
-	 * GPR[0] > 0 -> CR[7] = b100 GPR[0] == 0 -> CR[8] = b100
+	 * GPR[0] > 0 -> CR[7] = b100 
+	 * GPR[0] == 0 -> CR[8] = b100
 	 * 
 	 * CR[0] = 22
 	 */
 	private static boolean solveItems3(List<Item> pl, List<Item> ql) {
+//		System.out.println(3);
 
 		for (Item item : ql) {
 			if (item.getLeft().equals(pl.get(0).getLeft())) {
+				flag = true;
 				item.setRight(pl.get(0).getRight());
 			} else if (item.getRight().contains(pl.get(0).getLeft())) {
+				flag = true;
 				String right = item.getRight().replace(pl.get(0).getLeft(), pl.get(0).getRight());
 				item.setRight(right);
 			}
@@ -130,11 +244,13 @@ public class AutomaticDerivationAlgorithm {
 	}
 
 	private static boolean solveItems4(List<Item> pl, List<Item> ql) {
+//		System.out.println(4);
 
 		int cnt = 0;
 		for (Item itemQ : ql) {
 			for (Item itemP : pl) {
 				if (itemP.getPremise().equals(itemQ.getLeft() + " == " + itemQ.getRight())) {
+					flag = true;
 					cnt++;
 					itemQ.setLeft(itemP.getLeft());
 					itemQ.setRight(itemP.getRight());
@@ -164,9 +280,9 @@ public class AutomaticDerivationAlgorithm {
 			if (solveItems1(p.getItems(), q.getItems())) {
 				isDeleteP = true;
 			}
-
-			// left = right : q
+			
 			// premise left = right : p
+			// left = right : q
 		} else if (p.getItems().get(0).getPremise() != null && q.getItems().get(0).getPremise() == null) {
 			if (solveItems2(p.getItems(), q.getItems())) {
 				isDeleteP = true;

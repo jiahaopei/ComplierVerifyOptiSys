@@ -24,7 +24,7 @@ public class AssemblerDTO {
 	private int memAdress;
 
 	// 控制生成的汇编代码中，变量是以数字还是原始名称出现, 默认false，为原始名称出现
-	private boolean isVariableSymbolOrNumber = false;
+	private boolean isVariableSymbolOrNumber = true;
 	
 	public AssemblerDTO() {
 		assFileHandler = new AssemblerFileHandler();

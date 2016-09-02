@@ -26,6 +26,13 @@ int main() {
         c = b * b;
     }
     printf("The biggest sqrt root of %d is %d", a, b);
+
+
+    // for 
+    for (a = 0; a < 10; a++) {
+        b++;
+
+    }
     
     return 0;
 }

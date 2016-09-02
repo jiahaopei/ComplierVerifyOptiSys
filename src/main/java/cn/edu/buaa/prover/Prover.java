@@ -28,10 +28,15 @@ public class Prover {
 
 	// 专用公理集
 	private Map<String, Proposition> axioms;
+	
 	// 所有语句的目标码模式
 	private Map<String, List<String>> allObjectCodePatterns;
+	
 	// 所有的循环不变式语句
 	private Map<String, List<Proposition>> loopInvariants;
+	
+	// 存储命题和对应的证据
+	private Map<String, String> evidences;
 	
 	private Recorder recorder;
 	
@@ -92,6 +97,7 @@ public class Prover {
 		logger.info("调用命题映射算法");
 		List<Proposition> propositions = PropositionMappingAlgorithm.process(objectCodePatterns, axioms);
 		showAllProposition(propositions);
+		initPropositionProof(propositions);
 				
 		if (bufferedWriter != null) {
 			try {
@@ -107,7 +113,7 @@ public class Prover {
 			// 非循环命题推导
 			recorder.insertLine("==============命题推理结果===============");
 			logger.info("调用自动推理算法");
-			List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process(propositions);
+			List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process1(propositions, evidences);
 			showAllProposition(simplifiedPropositions);
 			if (bufferedWriter != null) {
 				try {
@@ -192,6 +198,16 @@ public class Prover {
 		}
 		
 		return isSame;
+	}
+	
+	// 产生初始命题的证据
+	public void initPropositionProof(List<Proposition> propositions) {
+		int i = 1;
+		for (Proposition proposition : propositions) {
+			String f = "P" + i;
+			proposition.setProof(f);
+			i++;
+		}
 	}
 
 	public List<String> getObjectCodePatterns(String key) {
@@ -412,6 +428,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder);
-		prover.runProver("if");
+		prover.runProver("if_else");
 	}
 }

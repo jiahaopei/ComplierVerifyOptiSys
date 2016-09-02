@@ -268,6 +268,7 @@ public class ProverHelper {
 			items.add(item);
 		}
 		prop.setItems(items);
+		prop.setProof(proposition.getProof());
 
 		return prop;
 	}
