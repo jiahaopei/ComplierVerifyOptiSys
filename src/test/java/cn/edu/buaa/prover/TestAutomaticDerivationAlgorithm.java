@@ -28,7 +28,7 @@ public class TestAutomaticDerivationAlgorithm {
 		propositions.add(pa);
 		propositions.add(pb);
 		
-		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions);
+		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions).getSemantemeSet();
 		show(ans);
 	}
 	
@@ -55,7 +55,7 @@ public class TestAutomaticDerivationAlgorithm {
 		propositions.add(pa);
 		propositions.add(pb);
 		
-		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions);
+		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions).getSemantemeSet();
 		show(ans);
 	}
 	
@@ -82,7 +82,7 @@ public class TestAutomaticDerivationAlgorithm {
 		propositions.add(pb);
 		propositions.add(pa);
 		
-		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions);
+		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions).getSemantemeSet();
 		show(ans);
 	}
 	
@@ -124,7 +124,7 @@ public class TestAutomaticDerivationAlgorithm {
 		propositions.add(pc);
 		propositions.add(pb);
 		
-		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions);
+		List<Proposition> ans = AutomaticDerivationAlgorithm.process(propositions).getSemantemeSet();
 		show(ans);
 	}
 	

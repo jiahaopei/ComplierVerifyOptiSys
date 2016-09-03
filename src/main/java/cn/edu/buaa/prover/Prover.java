@@ -110,19 +110,20 @@ public class Prover {
 			// 非循环命题推导
 			recorder.insertLine("==============推导序列===============");
 			logger.info("调用自动推理算法");
-			List<String> sequences = new ArrayList<>();
-			List<Proposition> sigmaSemantemes = AutomaticDerivationAlgorithm.process1(propositions, sequences);
+			DerivationDTO dto = AutomaticDerivationAlgorithm.process(propositions);
 			// 保存推导序列
-			for (String string : sequences) {
-				recorder.insertLine(string);
+			for (int i = 0; i < dto.getProves().size(); i++) {
+				String line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
+				recorder.insertLine(line);
 			}
 			recorder.insertLine(null);
 			
 			if (bufferedWriter != null) {
 				try {
 					bufferedWriter.write("推导序列 :\n");
-					for (String string : sequences) {
-						bufferedWriter.write(string);
+					for (int i = 0; i < dto.getProves().size(); i++) {
+						String line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
+						bufferedWriter.write(line);
 						bufferedWriter.newLine();
 					}
 					bufferedWriter.newLine();
@@ -150,7 +151,7 @@ public class Prover {
 			// 判断语义是否一致
 			recorder.insertLine("===============结论================");
 			recorder.insertLine("给定的目标语义和推理出的语义是否一致 : ");
-			isSame = LoopInteractiveProvingAlgorithm.judgeSemantemes(goals, sigmaSemantemes);
+			isSame = LoopInteractiveProvingAlgorithm.judgeSemantemes(goals, dto.getSemantemeSet());
 			recorder.insertLine(Boolean.toString(isSame));
 			if (bufferedWriter != null) {
 				try {
@@ -421,6 +422,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder);
-		prover.runProver("if");
+		prover.runProver("do_while");
 	}
 }

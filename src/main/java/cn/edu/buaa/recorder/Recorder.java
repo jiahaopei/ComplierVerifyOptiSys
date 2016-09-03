@@ -39,7 +39,7 @@ public class Recorder {
 		
 	}
 
-	public void writeToFile(String line) {
+	private void writeToFile(String line) {
 		try {
 			if (line != null) {
 				out.write(line);
@@ -51,7 +51,7 @@ public class Recorder {
 		}
 	}
 	
-	public void writeToConsole(String line) {
+	private void writeToConsole(String line) {
 		if (line != null) {
 			System.out.println(line);
 		} else {
@@ -61,7 +61,7 @@ public class Recorder {
 	
 	public void insertLine(String line) {
 		writeToFile(line);
-//		writeToConsole(line);
+		writeToConsole(line);
 	}
 	
 }

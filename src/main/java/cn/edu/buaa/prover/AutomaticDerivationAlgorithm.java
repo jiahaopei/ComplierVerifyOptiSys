@@ -18,12 +18,11 @@ import cn.edu.buaa.pojo.Proposition;
 public class AutomaticDerivationAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AutomaticDerivationAlgorithm.class);
-	private static final String TAB = "\t\t";
 	
 	// 记录两个命题时候发生了关联
 	private static boolean flag;
 	
-	public static List<Proposition> process1(List<Proposition> srcPropositions, List<String> sequences) {
+	public static DerivationDTO process(List<Proposition> srcPropositions) {
 		
 		logger.info("AutomaticDerivationAlgorithm.process");
 		
@@ -33,6 +32,8 @@ public class AutomaticDerivationAlgorithm {
 			propositions.add(tmp);
 		}
 		
+		List<String> proves = new ArrayList<>();
+		List<String> proofs  = new ArrayList<>();
 		int step = 1;
 		String line = "";
 		List<Proposition> newPropositions = new ArrayList<>();
@@ -54,14 +55,16 @@ public class AutomaticDerivationAlgorithm {
 				// 两个命题相关联
 				if (flag) {
 					if (q.getProof().contains("P")) {
-						line = "S" + step + " = " + qstr + TAB + q.getProof();
-						sequences.add(line);
+						line = "S" + step + " = " + qstr;
+						proves.add(line);
+						proofs.add(q.getProof());						
 						q.setProof("S" + step);
 						step++;
 					}
 					if (p.getProof().contains("P")) {
-						line = "S" + step + " = " + pstr + TAB + p.getProof();
-						sequences.add(line);
+						line = "S" + step + " = " + pstr;
+						proves.add(line);
+						proofs.add(p.getProof());
 						p.setProof("S" + step);
 						step++;
 					}
@@ -69,16 +72,18 @@ public class AutomaticDerivationAlgorithm {
 					if (t.toStr().equals(pstr)) {
 						t = q;
 					}
-					line = "S" + step + " = " + t.toStr() + TAB + q.getProof() + "," + p.getProof() + ",MP";
-					sequences.add(line);
+					line = "S" + step + " = " + t.toStr();
+					proves.add(line);
+					proofs.add(q.getProof() + "," + p.getProof() + ",MP");
 					t.setProof("S" + step);
 					step++;
-					allFlag = true;					
+					allFlag = true;
 				}
 			}
-			if (!allFlag && !newPropositions.isEmpty()) {
-				line = "S" + step + " = " + p.toStr() + TAB + p.getProof();
-				sequences.add(line);
+			if (!allFlag) {
+				line = "S" + step + " = " + p.toStr();
+				proves.add(line);
+				proofs.add(p.getProof());
 				p.setProof("S" + step);
 				step++;
 			}
@@ -89,29 +94,38 @@ public class AutomaticDerivationAlgorithm {
 		
 		// 实现CI
 		String[] lines = conjunction(newPropositions);
-		line = "S" + step + " = " + lines[0] + TAB + lines[1];
-		sequences.add(line);
+		line = "S" + step + " = " + lines[0];
+		proves.add(line);
+		proofs.add(lines[1]);
 		step++;
 		
 		// 化简
 		List<Proposition> tmps = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(newPropositions);
 		lines = conjunction(tmps);
-		line = "S" + step + " = " + lines[0] + TAB + "S" + (step - 1) + ", REDUCE";
-		sequences.add(line);
+		line = "S" + step + " = " + lines[0];
+		proves.add(line);
+		proofs.add("S" + (step - 1) + ", REDUCE");
 		step++;
 		
 		// 推导语义
 		List<Proposition> sigmaSemantemes = SemantemeObtainAlgorithm.standardSemantemes(tmps);
 		lines = conjunction(sigmaSemantemes);
-		line = "S" + step + " = " + lines[0] + TAB + "S" + (step - 1) + ", σ";
-		sequences.add(line);
+		line = "S" + step + " = " + lines[0];
+		proves.add(line);
+		proofs.add("S" + (step - 1) + ", σ");
 		step++;
 		
-		return sigmaSemantemes;
+		DerivationDTO dto = new DerivationDTO();
+		dto.setSemantemeSet(sigmaSemantemes);
+		dto.setProves(proves);
+		dto.setProofs(proofs);
+		dto.setStep(step);
+		
+		return dto;
 	}
 	
 	
-	private static String[] conjunction(List<Proposition> newPropositions) {
+	public static String[] conjunction(List<Proposition> newPropositions) {
 		String[] strs = new String[2];
 		String pf = "";
 		StringBuffer sb = new StringBuffer();
@@ -129,38 +143,6 @@ public class AutomaticDerivationAlgorithm {
 		strs[1] = pf;
 		
 		return strs;
-	}
-
-
-	public static List<Proposition> process(List<Proposition> srcPropositions) {
-		
-		logger.info("AutomaticDerivationAlgorithm.process");
-		
-		List<Proposition> propositions = new ArrayList<>();
-		for (Proposition proposition : srcPropositions) {
-			Proposition tmp = ProverHelper.cloneProposition(proposition);
-			propositions.add(tmp);
-		}
-		
-		List<Proposition> newPropositions = new ArrayList<>();
-		for (int i = 0; i < propositions.size(); i++) {
-			boolean isDeleteP = false;
-			Proposition p = propositions.get(i);
-			for (int j = 0; j < newPropositions.size(); j++) {
-				Proposition q = newPropositions.get(j);
-				isDeleteP = applyDerivationRuleToTwoPropositions(p, q);
-				if (q.size() == 0) {
-					newPropositions.remove(j);
-					j--;
-				}
-			}
-			if (!isDeleteP && p.size() != 0) {
-				newPropositions.add(p);
-			}
-
-		}
-
-		return newPropositions;
 	}
 
 	// false : 不删除pl

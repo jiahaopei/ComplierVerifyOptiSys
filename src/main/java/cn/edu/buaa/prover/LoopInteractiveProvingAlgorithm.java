@@ -10,6 +10,7 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.edu.buaa.constant.ProverDefine;
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
 import cn.edu.buaa.recorder.Recorder;
@@ -32,113 +33,129 @@ public class LoopInteractiveProvingAlgorithm {
 		
 //		List<Proposition> srcGoals = readFromConsole(name);
 		List<Proposition> srcGoals = loopInvariants.get(name);
+		String line = "";
 		recorder.insertLine("用户输入的语义 :");
-		showAllProposition(srcGoals, recorder);
+		for (Proposition proposition : srcGoals) {
+			line = proposition.toStr();
+			if (proposition.getProof() != null) {
+				line = proposition.getProof() + " = " + line;
+			}
+			recorder.insertLine(line);
+		}
+		recorder.insertLine(null);
 		if (bufferedWriter != null) {
 			bufferedWriter.write("用户输入的语义 :\n");
-			ProverHelper.saveAllProposition(srcGoals, bufferedWriter);
-		}
-		
-	
-		List<Proposition> oneGoals = cloneListProposition(srcGoals);
-		recorder.insertLine("(1) n == 1");
-		recorder.insertLine("目标语义取 n = 1 :");
-		setLoopInvariant(oneGoals, "1");
-		showAllProposition(oneGoals, recorder);
-		if (bufferedWriter != null) {
-			bufferedWriter.write("(1) n == 1\n");
-			bufferedWriter.write("目标语义取 n = 1 :\n");
-			ProverHelper.saveAllProposition(oneGoals, bufferedWriter);
-		}
-		
-		
-		recorder.insertLine("推理出的语义为 :");
-		// n = 1时, 进行一遍推理
-		List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process(propositions);
-		List<Proposition> semantemes = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(simplifiedPropositions);
-		showAllProposition(semantemes, recorder);	
-		recorder.insertLine("σ-transfer :");
-		List<Proposition> semantemeSet = SemantemeObtainAlgorithm.standardSemantemes(semantemes);
-		showAllProposition(semantemeSet, recorder);
-		if (bufferedWriter != null) {
-			bufferedWriter.write("推理出的语义为 :\n");
-			ProverHelper.saveAllProposition(semantemes, bufferedWriter);
-			bufferedWriter.write("σ-transfer :\n");
-			ProverHelper.saveAllProposition(semantemeSet, bufferedWriter);
-		}
-		
-		recorder.insertLine("结论 :");
-		if (bufferedWriter != null) {
-			bufferedWriter.write("结论 :\n");
-		}
-		if (!judgeSemantemes(oneGoals, semantemeSet)) {
-			recorder.insertLine("n = 1时, 目标语义和推理出的语义不一致");
-			if (bufferedWriter != null) {
-				bufferedWriter.write("n = 1时, 目标语义和推理出的语义不一致\n");
+			for (Proposition proposition : srcGoals) {
+				line = proposition.toStr();
+				if (proposition.getProof() != null) {
+					line = proposition.getProof() + " = " + line;
+				}
+				bufferedWriter.write(line);
 				bufferedWriter.newLine();
 			}
-			return false;
-		} else {
-			recorder.insertLine("n = 1时, 目标语义和推理出的语义一致\n");
-			bufferedWriter.write("n = 1时, 目标语义和推理出的语义一致\n");
 			bufferedWriter.newLine();
 		}
 		
-		// n == N时，假设目标语义成立
-		recorder.insertLine("(2) n = N");
-		recorder.insertLine("假设成立 :");
+		recorder.insertLine("辅助前提 :");
+		String[] assistPremises = AutomaticDerivationAlgorithm.conjunction(srcGoals);
+		recorder.insertLine("P0 = " + assistPremises[0]);
+		recorder.insertLine(null);
+		if (bufferedWriter != null) {
+			bufferedWriter.write("辅助前提 :\n");
+			bufferedWriter.write("P0 = " + assistPremises[0] + "\n");
+			bufferedWriter.newLine();
+		}
+		
+		// 生成推导序列
+		DerivationDTO dto = AutomaticDerivationAlgorithm.process(propositions);
+		
+		// check(n == 1)
+		List<Proposition> oneGoals = cloneListProposition(srcGoals);
+		setLoopInvariant(oneGoals, "1");
+		String oneProof = "S" + (dto.getStep() - 1);
+		boolean oneResult = judgeSemantemes(oneGoals, dto.getSemantemeSet());
+		
+		// 生成 n = N 时的推导序列
 		List<Proposition> NGoals = cloneListProposition(srcGoals);
 		setLoopInvariant(NGoals, "N");
-		showAllProposition(NGoals, recorder);
-		if (bufferedWriter != null) {
-			bufferedWriter.write("(2) n = N\n");
-			bufferedWriter.write("假设成立 :\n");
-			ProverHelper.saveAllProposition(NGoals, bufferedWriter);
-		}
+		String[] nPremises = AutomaticDerivationAlgorithm.conjunction(NGoals);
+		line = "S" + dto.getStep() + " = " + nPremises[0];
+		dto.getProves().add(line);
+		line = "P0, n = N";
+		dto.getProofs().add(line);
+		dto.setStep(dto.getStep() + 1);
 		
-		// 推理 n == (N + 1)时，语义是否保持一致
-		recorder.insertLine("(3) n = N + 1");
+		// 把 n = N时的结果合并 n = 1时的结果
+		List<Proposition> goals = mergeTwo(NGoals, dto.getSemantemeSet());
+		String[] nPlusPremises = AutomaticDerivationAlgorithm.conjunction(goals);
+		line = "S" + dto.getStep() + " = " + nPlusPremises[0];
+		dto.getProves().add(line);
+		line = "S" + (dto.getStep() - 2) + ", S" + (dto.getStep() - 1) + ", CI";
+		dto.getProofs().add(line);
+		dto.setStep(dto.getStep() + 1);
+		
+		// check(n == N + 1)
 		List<Proposition> NPlusGoals = cloneListProposition(srcGoals);
 		setLoopInvariant(NPlusGoals, "(N + 1)");
-		recorder.insertLine("目标语义 :");
-		showAllProposition(NPlusGoals, recorder);
-		if (bufferedWriter != null) {
-			bufferedWriter.write("(3) n = N + 1\n");
-			bufferedWriter.write("目标语义 :\n");
-			ProverHelper.saveAllProposition(NPlusGoals, bufferedWriter);
+		String nPlusProof = "S" + (dto.getStep() - 1);
+		boolean nPlusResult = judgeSemantemes(NPlusGoals, goals);
+		
+		// 保存推导序列
+		recorder.insertLine("推导序列 :");
+		for (int i = 0; i < dto.getProves().size(); i++) {
+			line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
+			recorder.insertLine(line);
 		}
-		
-		
-		List<Proposition> goals = mergeTwo(NGoals, semantemeSet);
-		recorder.insertLine("合并推理出的 n = 1 和 假设的 n = N 的语义 :");
-		showAllProposition(goals, recorder);
-		recorder.insertLine("结论 :");
+		recorder.insertLine(null);
 		if (bufferedWriter != null) {
-			bufferedWriter.write("合并推理出的 n = 1 和 假设的 n = N 的语义 :\n");
-			ProverHelper.saveAllProposition(goals, bufferedWriter);
-			bufferedWriter.write("结论 :\n");
-		}
-		
-		if (judgeSemantemes(NPlusGoals, goals)) {
-			recorder.insertLine("n = N + 1时, 目标语义和推理出的语义一致\n");
-			if (bufferedWriter != null) {
-				bufferedWriter.write("n = N + 1时, 目标语义和推理出的语义一致\n");
+			bufferedWriter.write("推导序列 :\n");
+			for (int i = 0; i < dto.getProves().size(); i++) {
+				line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
+				bufferedWriter.write(line);
 				bufferedWriter.newLine();
 			}
-			return true;
-		} else {
-			recorder.insertLine("n = N + 1时, 目标语义和推理出的语义不一致\n");
-			if (bufferedWriter != null) {
-				bufferedWriter.write("n = N + 1时, 目标语义和推理出的语义不一致\n");
-				bufferedWriter.newLine();
-			}
-			return false;
+			bufferedWriter.newLine();
 		}
 		
+		// 输出语义比较结果
+		line = AutomaticDerivationAlgorithm.conjunction(oneGoals)[0];
+		recorder.insertLine("check(n == 1) :");
+		recorder.insertLine("目标语义 : " + line);
+		recorder.insertLine("推导序列证据 : " + oneProof);
+		recorder.insertLine("目标语义和推理出的语义是否一致 : " + oneResult);
+		recorder.insertLine(null);
+		if (bufferedWriter != null) {
+			bufferedWriter.write("check(n == 1) :\n");
+			bufferedWriter.write("目标语义 : " + line);
+			bufferedWriter.newLine();
+			bufferedWriter.write("推导序列证据 : " + oneProof);
+			bufferedWriter.newLine();
+			bufferedWriter.write("目标语义和推理出的语义是否一致 : " + oneResult);
+			bufferedWriter.newLine();
+			bufferedWriter.newLine();
+		}
+		
+		line = AutomaticDerivationAlgorithm.conjunction(NPlusGoals)[0];
+		recorder.insertLine("check(n == N + 1) :");
+		recorder.insertLine("目标语义 : " + line);
+		recorder.insertLine("推导序列证据 : " + nPlusProof);
+		recorder.insertLine("目标语义和推理出的语义是否一致 : " + nPlusResult);
+		recorder.insertLine(null);
+		if (bufferedWriter != null) {
+			bufferedWriter.write("check(n == N + 1) :\n");
+			bufferedWriter.write("目标语义 : " + line);
+			bufferedWriter.newLine();
+			bufferedWriter.write("推导序列证据 : " + nPlusProof);
+			bufferedWriter.newLine();
+			bufferedWriter.write("目标语义和推理出的语义是否一致 : " + nPlusResult);
+			bufferedWriter.newLine();
+			bufferedWriter.newLine();
+		}
+		
+		return oneResult && nPlusResult;
 	}
 	
 	public static List<Proposition> mergeTwo(List<Proposition> nGoals, List<Proposition> oneGoals) {
-		
 		List<Proposition> goals = cloneListProposition(nGoals);
 		for (int i = 0; i < nGoals.size(); i++) {
 			for (int j = 0; j < oneGoals.size(); j++) {
@@ -164,7 +181,6 @@ public class LoopInteractiveProvingAlgorithm {
 		}
 		
 		return goals;
-		
 	}
 
 	public static void setLoopInvariant(List<Proposition> goals, String n) {
@@ -186,8 +202,6 @@ public class LoopInteractiveProvingAlgorithm {
 			}
 			
 		}
-		
-		
 	}
 
 	public static List<Proposition> cloneListProposition(List<Proposition> srcGoals) {
@@ -201,9 +215,17 @@ public class LoopInteractiveProvingAlgorithm {
 	}
 
 	public static void showAllProposition(List<Proposition> propositions, Recorder recorder) {
+		String line = "";
+		int i = 0;
 		for (Proposition proposition : propositions) {
-			recorder.insertLine(proposition.toString());
+			if (i != 0) {
+				line += " ^ ";
+			}
+			line += "(" + proposition.toStr() + ")";
+			i++;
 		}
+		recorder.insertLine(line);
+		recorder.insertLine(null);
 	}
 	
 	public static List<Proposition> readFromConsole(String name) {
