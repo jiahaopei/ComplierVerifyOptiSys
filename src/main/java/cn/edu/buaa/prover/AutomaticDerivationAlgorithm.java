@@ -2,7 +2,6 @@ package cn.edu.buaa.prover;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class AutomaticDerivationAlgorithm {
 	// 记录两个命题时候发生了关联
 	private static boolean flag;
 	
-	public static List<Proposition> process1(List<Proposition> srcPropositions, Map<String, String> evidences1) {
+	public static List<Proposition> process1(List<Proposition> srcPropositions, List<String> sequences) {
 		
 		logger.info("AutomaticDerivationAlgorithm.process");
 		
@@ -35,6 +34,7 @@ public class AutomaticDerivationAlgorithm {
 		}
 		
 		int step = 1;
+		String line = "";
 		List<Proposition> newPropositions = new ArrayList<>();
 		for (int i = 0; i < propositions.size(); i++) {
 			boolean isDeleteP = false;
@@ -54,12 +54,14 @@ public class AutomaticDerivationAlgorithm {
 				// 两个命题相关联
 				if (flag) {
 					if (q.getProof().contains("P")) {
-						System.out.println("S" + step + " = " + qstr + TAB + q.getProof());
+						line = "S" + step + " = " + qstr + TAB + q.getProof();
+						sequences.add(line);
 						q.setProof("S" + step);
 						step++;
 					}
 					if (p.getProof().contains("P")) {
-						System.out.println("S" + step + " = " + pstr + TAB + p.getProof());
+						line = "S" + step + " = " + pstr + TAB + p.getProof();
+						sequences.add(line);
 						p.setProof("S" + step);
 						step++;
 					}
@@ -67,16 +69,16 @@ public class AutomaticDerivationAlgorithm {
 					if (t.toStr().equals(pstr)) {
 						t = q;
 					}
-					System.out.println("S" + step + " = " + t.toStr() + TAB + q.getProof() + "," + p.getProof() + ",MP");
+					line = "S" + step + " = " + t.toStr() + TAB + q.getProof() + "," + p.getProof() + ",MP";
+					sequences.add(line);
 					t.setProof("S" + step);
 					step++;
-					allFlag = true;
-					
-//					System.out.println();
+					allFlag = true;					
 				}
 			}
 			if (!allFlag && !newPropositions.isEmpty()) {
-				System.out.println("S" + step + " = " + p.toStr() + TAB + p.getProof());
+				line = "S" + step + " = " + p.toStr() + TAB + p.getProof();
+				sequences.add(line);
 				p.setProof("S" + step);
 				step++;
 			}
@@ -87,16 +89,25 @@ public class AutomaticDerivationAlgorithm {
 		
 		// 实现CI
 		String[] lines = conjunction(newPropositions);
-		System.out.println("S" + step + " = " + lines[0] + TAB + lines[1]);
+		line = "S" + step + " = " + lines[0] + TAB + lines[1];
+		sequences.add(line);
 		step++;
 		
-		// 化简得到最终结果
+		// 化简
 		List<Proposition> tmps = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(newPropositions);
 		lines = conjunction(tmps);
-		System.out.println("S" + step + " = " + lines[0] + TAB + "S" + (step - 1));
+		line = "S" + step + " = " + lines[0] + TAB + "S" + (step - 1) + ", REDUCE";
+		sequences.add(line);
 		step++;
 		
-		return newPropositions;
+		// 推导语义
+		List<Proposition> sigmaSemantemes = SemantemeObtainAlgorithm.standardSemantemes(tmps);
+		lines = conjunction(sigmaSemantemes);
+		line = "S" + step + " = " + lines[0] + TAB + "S" + (step - 1) + ", σ";
+		sequences.add(line);
+		step++;
+		
+		return sigmaSemantemes;
 	}
 	
 	

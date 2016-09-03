@@ -34,10 +34,7 @@ public class Prover {
 	
 	// 所有的循环不变式语句
 	private Map<String, List<Proposition>> loopInvariants;
-	
-	// 存储命题和对应的证据
-	private Map<String, String> evidences;
-	
+		
 	private Recorder recorder;
 	
 	private final Logger logger = LoggerFactory.getLogger(Prover.class);
@@ -96,8 +93,8 @@ public class Prover {
 		recorder.insertLine("==============目标码模式命题===============");
 		logger.info("调用命题映射算法");
 		List<Proposition> propositions = PropositionMappingAlgorithm.process(objectCodePatterns, axioms);
-		showAllProposition(propositions);
 		initPropositionProof(propositions);
+		showAllProposition(propositions);
 				
 		if (bufferedWriter != null) {
 			try {
@@ -111,38 +108,29 @@ public class Prover {
 		
 		if (!ProverDefine.LOOPS.contains(name)) {
 			// 非循环命题推导
-			recorder.insertLine("==============命题推理结果===============");
+			recorder.insertLine("==============推导序列===============");
 			logger.info("调用自动推理算法");
-			List<Proposition> simplifiedPropositions = AutomaticDerivationAlgorithm.process1(propositions, evidences);
-			showAllProposition(simplifiedPropositions);
-			if (bufferedWriter != null) {
-				try {
-					bufferedWriter.write("命题推理结果 :\n");
-					ProverHelper.saveAllProposition(simplifiedPropositions, bufferedWriter);
-					bufferedWriter.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			List<String> sequences = new ArrayList<>();
+			List<Proposition> sigmaSemantemes = AutomaticDerivationAlgorithm.process1(propositions, sequences);
+			// 保存推导序列
+			for (String string : sequences) {
+				recorder.insertLine(string);
 			}
-			
-			// 获得语义
-			recorder.insertLine("=============推理出的语义================");
-			List<Proposition> semantemes = SemantemeObtainAlgorithm.obtainSemantemeFromProposition(simplifiedPropositions);
-			showAllProposition(semantemes);	
-			recorder.insertLine("σ-transfer :");
-			List<Proposition> sigmaSemantemes = SemantemeObtainAlgorithm.standardSemantemes(semantemes);
-			showAllProposition(sigmaSemantemes);
+			recorder.insertLine(null);
 			
 			if (bufferedWriter != null) {
 				try {
-					bufferedWriter.write("推理出的语义为 :\n");
-					ProverHelper.saveAllProposition(semantemes, bufferedWriter);
-					bufferedWriter.write("σ-transfer : \n\n");
-					ProverHelper.saveAllProposition(sigmaSemantemes, bufferedWriter);
-					bufferedWriter.flush();
+					bufferedWriter.write("推导序列 :\n");
+					for (String string : sequences) {
+						bufferedWriter.write(string);
+						bufferedWriter.newLine();
+					}
+					bufferedWriter.newLine();
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				
 			}
 			
 			// 给定的目标语义
@@ -400,8 +388,13 @@ public class Prover {
 	
 	public void showAllProposition(List<Proposition> propositions) {
 		for (Proposition proposition : propositions) {
-			recorder.insertLine(proposition.toString());
+			String line = proposition.toStr();
+			if (proposition.getProof() != null) {
+				line = proposition.getProof() + " = " + line;
+			}
+			recorder.insertLine(line);
 		}
+		recorder.insertLine(null);
 	}
 
 	public void createOutputFile(String key) {
@@ -428,6 +421,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder);
-		prover.runProver("if_else");
+		prover.runProver("if");
 	}
 }
