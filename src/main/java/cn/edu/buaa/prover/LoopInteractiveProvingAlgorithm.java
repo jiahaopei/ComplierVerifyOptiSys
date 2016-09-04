@@ -20,7 +20,8 @@ public class LoopInteractiveProvingAlgorithm {
 	private static final Logger logger = LoggerFactory.getLogger(LoopInteractiveProvingAlgorithm.class);
 	
 	public static boolean process(List<Proposition> srcPropositions, String name, Map<String, 
-			List<Proposition>> loopInvariants, BufferedWriter bufferedWriter, Recorder recorder) throws IOException {
+			List<Proposition>> loopInvariants, BufferedWriter bufferedWriter, 
+			Recorder recorder, BufferedWriter sequences) throws IOException {
 		
 		logger.info("LoopInteractiveProvingAlgorithm.process");
 		
@@ -66,6 +67,12 @@ public class LoopInteractiveProvingAlgorithm {
 			bufferedWriter.newLine();
 		}
 		
+		if (sequences != null) {
+			sequences.write("辅助前提 :\n");
+			sequences.write("P0 = " + assistPremises[0]);
+			sequences.newLine();
+		}
+		
 		// 生成推导序列
 		DerivationDTO dto = AutomaticDerivationAlgorithm.process(propositions);
 		
@@ -107,6 +114,7 @@ public class LoopInteractiveProvingAlgorithm {
 			recorder.insertLine(line);
 		}
 		recorder.insertLine(null);
+		
 		if (bufferedWriter != null) {
 			bufferedWriter.write("推导序列 :\n");
 			for (int i = 0; i < dto.getProves().size(); i++) {
@@ -115,6 +123,17 @@ public class LoopInteractiveProvingAlgorithm {
 				bufferedWriter.newLine();
 			}
 			bufferedWriter.newLine();
+		}
+		
+		if (sequences != null) {
+			sequences.write("推导序列 :\n");
+			for (int i = 0; i < dto.getProves().size(); i++) {
+				line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
+				sequences.write(line);
+				sequences.newLine();
+			}
+			sequences.newLine();
+			sequences.flush();
 		}
 		
 		// 输出语义比较结果

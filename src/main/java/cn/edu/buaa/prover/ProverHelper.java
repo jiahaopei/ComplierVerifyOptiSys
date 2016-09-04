@@ -282,7 +282,6 @@ public class ProverHelper {
 			bufferedWriter.write(line);
 			bufferedWriter.newLine();
 		}
-		bufferedWriter.newLine();
 	}
 	
 	public static void reducePropositionOfThree(Proposition proposition) {

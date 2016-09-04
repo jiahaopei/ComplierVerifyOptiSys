@@ -29,7 +29,7 @@ public class Main {
 		parser.runParser();
 		parser.outputParser();
 
-		Prover prover = new Prover(recorder);
+		Prover prover = new Prover(recorder, fileName);
 		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
 		assembler.runAssembler();
 		assembler.generateAssemblerFile(fileName);

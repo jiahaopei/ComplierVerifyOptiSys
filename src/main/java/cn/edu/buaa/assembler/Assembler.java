@@ -744,7 +744,7 @@ public class Assembler {
 		if (isIfElse) {
 			recorder.insertLine("if-else语句验证开始...");
 			logger.info("if-else语句验证开始...");
-			valid = prover.runProver("if_else");
+			valid = prover.runProver("if_else", ifLabel + ", " + elseLabel);
 			if (valid) {
 				recorder.insertLine("if-else语句验证结果 : 验证成功");
 				logger.info("if-else语句验证结果 : 验证成功");
@@ -760,7 +760,7 @@ public class Assembler {
 		} else {
 			recorder.insertLine("if语句验证开始...");
 			logger.info("if语句验证开始...");
-			valid = prover.runProver("if");
+			valid = prover.runProver("if", ifLabel);
 			if (valid) {
 				recorder.insertLine("if语句验证结果 : 验证成功");
 				logger.info("if语句验证结果 : 验证成功");
@@ -855,7 +855,7 @@ public class Assembler {
 		boolean valid = false;
 		recorder.insertLine("for语句验证开始...");
 		logger.info("for语句验证开始...");
-		valid = prover.runProver("for");
+		valid = prover.runProver("for", label);
 		if (valid) {
 			recorder.insertLine("for语句验证结果 : 验证成功");
 			logger.info("for语句验证结果 : 验证成功");
@@ -936,7 +936,7 @@ public class Assembler {
 		boolean valid = false;
 		recorder.insertLine("while语句验证开始...");
 		logger.info("while语句验证开始...");
-		valid = prover.runProver("while");
+		valid = prover.runProver("while", label);
 		if (valid) {
 			recorder.insertLine("while语句验证结果 : 验证成功");
 			logger.info("while语句验证结果 : 验证成功");
@@ -1010,7 +1010,7 @@ public class Assembler {
 		boolean valid = false;
 		recorder.insertLine("do-while语句验证开始...");
 		logger.info("do-while语句验证开始...");
-		valid = prover.runProver("do_while");
+		valid = prover.runProver("do_while", label);
 		if (valid) {
 			recorder.insertLine("do-while语句验证结果 : 验证成功");
 			logger.info("do-while语句验证结果 : 验证成功");
@@ -1100,7 +1100,7 @@ public class Assembler {
 		parser.runParser();
 		parser.outputParser();
 
-		Prover prover = new Prover(recorder);
+		Prover prover = new Prover(recorder, fileName);
 		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
 		assembler.runAssembler();
 		assembler.generateAssemblerFile(fileName);
