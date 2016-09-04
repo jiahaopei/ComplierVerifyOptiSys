@@ -1,4 +1,4 @@
-if : 3.7.1
+if : 3.7.1_if
 目标码模式命题 :
 P1 = GPR[0] = <LOG-EXP>
 P2 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001
@@ -17,7 +17,7 @@ S8 = (<LOG-EXP> < 0 -> PC = PC + 4 || <LOG-EXP> > 0 -> PC = PC + 4 || <LOG-EXP> 
 S9 = (<LOG-EXP> != 0 -> <STA-LIST> || <LOG-EXP> == 0 -> null)		S8, REDUCE
 S10 = (<LOG-EXP> != 0 -> σ(<STA-LIST>) || <LOG-EXP> == 0 -> skip)		S9, σ
 
-do_while : 3.7
+do_while : 3.7_dw
 目标码模式命题 :
 P1 = .L1:
 P2 = <STA-LIST>
@@ -40,7 +40,7 @@ S10 = (σ(<STA-LIST>)) ∧ (<LOG-EXP> != 0 -> σ(<STA-LIST>) || <LOG-EXP> == 0 -
 S11 = (σ(<STA-LIST>)) ∧ ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** N || <LOG-EXP> == 0 -> skip)		P0, n = N
 S12 = (σ(<STA-LIST>)) ∧ ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** (N + 1) || <LOG-EXP> == 0 -> skip)		S10, S11, CI
 
-while : 3.13
+while : 3.13_wh
 目标码模式命题 :
 P1 = PC = PC + @.L2
 P2 = .L1:
@@ -67,7 +67,7 @@ S12 = (<LOG-EXP> != 0 -> σ(<STA-LIST>) || <LOG-EXP> == 0 -> skip)		S11, σ
 S13 = ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** N || <LOG-EXP> == 0 -> skip)		P0, n = N
 S14 = ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** (N + 1) || <LOG-EXP> == 0 -> skip)		S12, S13, CI
 
-for : 3.16
+for : 3.16_fo
 目标码模式命题 :
 P1 = <ASS-EXP_1>
 P2 = PC = PC + @.L2

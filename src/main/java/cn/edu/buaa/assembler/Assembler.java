@@ -371,8 +371,8 @@ public class Assembler {
 						parameterList.add(tmpNode.getValue());
 
 						// 地址符号，不处理
-					} else if (tmpNode.getType().equals("ADDRESS")) {
-						logger.debug("ADDRESS : " + tmpNode.getValue());
+					} else if (tmpNode.getType().equals("BIT_AND")) {
+						logger.debug("BIT_AND : " + tmpNode.getValue());
 
 					} else {
 						try {
@@ -1048,6 +1048,12 @@ public class Assembler {
 			line = AssemblerUtils.PREFIX + "mr 3,0";
 			assemblerDTO.insertIntoText(line, label);
 
+		} else if (expres.get("type").equals("VARIABLE")) {
+			line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+			assemblerDTO.insertIntoText(line, label); 
+			line = AssemblerUtils.PREFIX + "mr 3,0";
+			assemblerDTO.insertIntoText(line, label);
+			
 		} else {
 			try {
 				throw new Exception("return type not supported");

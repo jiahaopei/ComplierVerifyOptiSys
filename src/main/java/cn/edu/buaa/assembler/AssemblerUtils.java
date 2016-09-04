@@ -5,7 +5,7 @@ import cn.edu.buaa.lexer.LexerUtils;
 
 public class AssemblerUtils {
 	
-	public static final int WIDTH = 40;
+	public static final int WIDTH = 50;
 	public static final String PREFIX = "\t";
 	
 	// 判断是是否是一种语法类型

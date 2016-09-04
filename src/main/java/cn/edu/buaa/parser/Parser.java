@@ -74,7 +74,10 @@ public class Parser {
 			}
 			
 			SyntaxTreeNode node = new SyntaxTreeNode(
-					getTokenValue(index), getTokenType(index), getTokenLabel(index));
+							getTokenValue(index), 
+							getTokenType(index), 
+							getTokenLabel(index) + "_in"
+						);
 			includeTree.addChildNode(node, root);
 			
 			if (cnt == 2 || getTokenValue(index).equals(">")) {
@@ -121,7 +124,7 @@ public class Parser {
 								getTokenValue(index), 
 								"FIELD_TYPE", 
 								extraInfo,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_fs"), 
 						typeRoot);
 				index++;
 				
@@ -137,7 +140,7 @@ public class Parser {
 								tokens.get(index).getValue(), 
 								"IDENTIFIER", 
 								extraInfo,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_fs"), 
 						funcNameRoot);
 				index++;
 				
@@ -160,7 +163,7 @@ public class Parser {
 										getTokenValue(index), 
 										"FIELD_TYPE", 
 										extraInfo,
-										getTokenLabel(index)), 
+										getTokenLabel(index) + "_fs"), 
 								param);
 						
 						if (tokens.get(index + 1).getType().equals("IDENTIFIER")) {
@@ -172,7 +175,7 @@ public class Parser {
 											getTokenValue(index + 1), 
 											"IDENTIFIER", 
 											extraInfo,
-											getTokenLabel(index + 1)), 
+											getTokenLabel(index + 1) + "_fs"), 
 									param);
 						} else {
 							recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
@@ -304,7 +307,7 @@ public class Parser {
 								getTokenValue(index), 
 								"FIELD_TYPE", 
 								extraInfo,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_st"), 
 						variableType);
 				
 			// 变量名
@@ -317,7 +320,7 @@ public class Parser {
 								getTokenValue(index), 
 								"IDENTIFIER", 
 								extraInfo,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_st"), 
 						root);
 			
 			// 数组大小	
@@ -330,7 +333,7 @@ public class Parser {
 								getTokenValue(index), 
 								"DIGIT_CONSTANT",
 								extraInfo,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_st"), 
 						root);
 			
 			// 数组元素
@@ -346,7 +349,7 @@ public class Parser {
 										tokens.get(index).getValue(), 
 										"DIGIT_CONSTANT", 
 										null,
-										getTokenLabel(index)), 
+										getTokenLabel(index) + "_st"), 
 								constantList);
 						
 					} else {
@@ -395,7 +398,7 @@ public class Parser {
 										getTokenValue(index), 
 										"IDENTIFIER", 
 										extraInfo,
-										getTokenLabel(index)), 
+										getTokenLabel(index) + "_st"), 
 								tmpTree.getRoot());
 						
 					} else if (getTokenType(index).equals("COMMA")) { 
@@ -458,7 +461,7 @@ public class Parser {
 								getTokenValue(index), 
 								"IDENTIFIER", 
 								null,
-								getTokenLabel(index)), 
+								getTokenLabel(index) + "_as"), 
 						null);
 				index++;
 				
@@ -490,7 +493,12 @@ public class Parser {
 	private void _while(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree whileTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "WhileControl", null, label);
+		SyntaxTreeNode root = new SyntaxTreeNode(
+				"Control", 
+				"WhileControl", 
+				null, 
+				label + "_wh"
+				);
 		whileTree.setRoot(root);
 		whileTree.setCurrent(root);
 		tree.addChildNode(root, father);
@@ -540,7 +548,12 @@ public class Parser {
 	private void _doWhile(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree doWhileTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "DoWhileControl", null, label);
+		SyntaxTreeNode root = new SyntaxTreeNode(
+				"Control", 
+				"DoWhileControl", 
+				null, 
+				label + "_dw"
+				);
 		doWhileTree.setRoot(root);
 		doWhileTree.setCurrent(root);
 		tree.addChildNode(root, father);
@@ -610,7 +623,12 @@ public class Parser {
 		tree.addChildNode(root, father);
 		
 		SyntaxTree ifTree = new SyntaxTree();
-		SyntaxTreeNode ifRoot = new SyntaxTreeNode("IfControl", null, null, label);
+		SyntaxTreeNode ifRoot = new SyntaxTreeNode(
+				"IfControl", 
+				null, 
+				null, 
+				label + "_if"
+				);
 		ifTree.setRoot(ifRoot);
 		ifTree.setCurrent(ifRoot);
 		ifElseTree.addChildNode(ifRoot, root);
@@ -675,7 +693,12 @@ public class Parser {
 			index++;
 			
 			SyntaxTree elseTree = new SyntaxTree();
-			SyntaxTreeNode elseRoot = new SyntaxTreeNode("ElseControl", null, null, getTokenLabel(index));
+			SyntaxTreeNode elseRoot = new SyntaxTreeNode(
+					"ElseControl", 
+					null, 
+					null, 
+					getTokenLabel(index) + "_el"
+					);
 			elseTree.setRoot(elseRoot);
 			elseTree.setCurrent(elseRoot);
 			ifElseTree.addChildNode(elseRoot, root);
@@ -707,7 +730,12 @@ public class Parser {
 	private void _for(SyntaxTreeNode father, String label) {
 		
 		SyntaxTree forTree = new SyntaxTree();
-		SyntaxTreeNode root = new SyntaxTreeNode("Control", "ForControl", null, label);
+		SyntaxTreeNode root = new SyntaxTreeNode(
+				"Control", 
+				"ForControl", 
+				null, 
+				label + "_fo"
+				);
 		forTree.setRoot(root);
 		forTree.setCurrent(root);
 		forTree.addChildNode(root, father);
@@ -825,7 +853,11 @@ public class Parser {
 		
 		if (getTokenType(index).equals("RETURN")) {
 			SyntaxTreeNode returnNode = new SyntaxTreeNode(
-					getTokenValue(index), getTokenType(index), null, getTokenLabel(index));
+					getTokenValue(index), 
+					getTokenType(index), 
+					null, 
+					getTokenLabel(index) + "_re"
+					);
 			returnTree.addChildNode(returnNode, root);
 			index++;	
 		} else {
@@ -872,7 +904,12 @@ public class Parser {
 				tmpTree.setRoot(constantRoot);
 				tmpTree.setCurrent(constantRoot);
 				
-				SyntaxTreeNode node = new SyntaxTreeNode(getTokenValue(index), "_Constant", null, getTokenLabel(index));
+				SyntaxTreeNode node = new SyntaxTreeNode(
+						getTokenValue(index), 
+						"_Constant", 
+						null, 
+						getTokenLabel(index) + "_ex"
+						);
 				tmpTree.addChildNode(node, null);
 				reversePolishExpression.add(tmpTree);
 				
@@ -887,7 +924,12 @@ public class Parser {
 					tmpTree.setRoot(variableRoot);
 					tmpTree.setCurrent(variableRoot);
 					
-					SyntaxTreeNode node = new SyntaxTreeNode(getTokenValue(index), "_Variable", null, getTokenLabel(index));
+					SyntaxTreeNode node = new SyntaxTreeNode(
+							getTokenValue(index), 
+							"_Variable", 
+							null, 
+							getTokenLabel(index) + "_ex"
+							);
 					tmpTree.addChildNode(node, null);
 					reversePolishExpression.add(tmpTree);
 					
@@ -899,13 +941,23 @@ public class Parser {
 					tmpTree.setCurrent(arrayItemRoot);
 					
 					// 数组的名字
-					SyntaxTreeNode node = new SyntaxTreeNode(getTokenValue(index), "_ArrayName", null, getTokenLabel(index));
+					SyntaxTreeNode node = new SyntaxTreeNode(
+							getTokenValue(index), 
+							"_ArrayName", 
+							null, 
+							getTokenLabel(index) + "_ex"
+							);
 					tmpTree.addChildNode(node, null);
 					
 					index += 2;
 					if (getTokenType(index).equals("DIGIT_CONSTANT")
 							|| getTokenType(index).equals("IDENTIFIER")) {
-						node = new SyntaxTreeNode(getTokenValue(index), "_ArrayIndex", null, getTokenLabel(index));
+						node = new SyntaxTreeNode(
+								getTokenValue(index), 
+								"_ArrayIndex", 
+								null, 
+								getTokenLabel(index) + "_ex"
+								);
 						tmpTree.addChildNode(node, null);
 						reversePolishExpression.add(tmpTree);
 						
@@ -940,7 +992,12 @@ public class Parser {
 				tmpTree.setRoot(root);
 				tmpTree.setCurrent(root);
 				
-				SyntaxTreeNode node = new SyntaxTreeNode(getTokenValue(index), "_Operator", null, getTokenLabel(index));
+				SyntaxTreeNode node = new SyntaxTreeNode(
+						getTokenValue(index), 
+						"_Operator", 
+						null, 
+						getTokenLabel(index) + "_ex"
+						);
 				tmpTree.addChildNode(node, null);
 				
 				// 如果是左括号，直接压栈
@@ -1024,7 +1081,7 @@ public class Parser {
 									getTokenValue(index), 
 									"FUNCTION_NAME", 
 									null,
-									getTokenLabel(index)), 
+									getTokenLabel(index) + "_fc"), 
 							null);
 			
 			// 左小括号
@@ -1042,7 +1099,7 @@ public class Parser {
 										getTokenValue(index), 
 										getTokenType(index),
 										null,
-										getTokenLabel(index)),
+										getTokenLabel(index) + "_fc"),
 								paramsList);
 						
 					} else if (getTokenType(index).equals("DOUBLE_QUOTE")) {
@@ -1052,7 +1109,7 @@ public class Parser {
 										getTokenValue(index), 
 										getTokenType(index),
 										null,
-										getTokenLabel(index)),
+										getTokenLabel(index) + "_fc"),
 								paramsList);
 						index++;
 						
@@ -1060,9 +1117,9 @@ public class Parser {
 						funcCallTree.addChildNode(
 								new SyntaxTreeNode(
 										getTokenValue(index),
-										"ADDRESS", 
+										"BIT_AND", 
 										null,
-										getTokenLabel(index)),
+										getTokenLabel(index) + "_fc"),
 								paramsList);
 					} else if (getTokenType(index).equals("COMMA")) {
 						// do nothing

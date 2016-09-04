@@ -1,4 +1,4 @@
-if_else : 2.7.2, 2.7.3
+if_else : 2.7.2_if, 2.7.3_el
 目标码模式命题 :
 P1 = GPR[0] = <LOG-EXP>
 P2 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001
@@ -23,7 +23,7 @@ S11 = (<LOG-EXP> < 0 -> PC = PC + 4 || <LOG-EXP> > 0 -> PC = PC + 4 || <LOG-EXP>
 S12 = (<LOG-EXP> != 0 -> <STA-LIST_1> || <LOG-EXP> == 0 -> <STA-LIST_2>)		S11, REDUCE
 S13 = (<LOG-EXP> != 0 -> σ(<STA-LIST_1>) || <LOG-EXP> == 0 -> σ(<STA-LIST_2>))		S12, σ
 
-for : 2.7
+for : 2.7_fo
 目标码模式命题 :
 P1 = <ASS-EXP_1>
 P2 = PC = PC + @.L2
