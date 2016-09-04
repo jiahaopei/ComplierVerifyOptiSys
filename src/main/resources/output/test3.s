@@ -1,4 +1,5 @@
 	.file	"test3.c"
+
 	.section .rodata
 	.align 2                               # 3.5
 .LC0:	                                  # 3.5
@@ -18,34 +19,34 @@ main:	                                  # 3
 	lis 0,.LC0@ha                          # 3.5
 	addic 10,0,.LC0@l                      # 3.5
 	mr 3,10                                # 3.5
-	addi 11,31,a                           # 3.5
+	addi 11,31,8                           # 3.5
 	mr 4,11                                # 3.5
-	addi 12,31,b                           # 3.5
+	addi 12,31,12                          # 3.5
 	mr 5,12                                # 3.5
-	addi 13,31,c                           # 3.5
+	addi 13,31,16                          # 3.5
 	mr 6,13                                # 3.5
-	addi 14,31,d                           # 3.5
+	addi 14,31,20                          # 3.5
 	mr 7,14                                # 3.5
 	crxor 6,6,6                            # 3.5
 	bl __isoc99_scanf                      # 3.5
 
-	lwz 9,d(31)                            # 3.6
-	lwz 0,a(31)                            # 3.6
+	lwz 9,20(31)                           # 3.6
+	lwz 0,8(31)                            # 3.6
 	add 0,9,0                              # 3.6
-	stw 0,bss_tmp1(31)                     # 3.6
+	stw 0,24(31)                           # 3.6
 
-	lwz 9,c(31)                            # 3.6
-	lwz 0,bss_tmp1(31)                     # 3.6
+	lwz 9,16(31)                           # 3.6
+	lwz 0,24(31)                           # 3.6
 	subf 0,9,0                             # 3.6
-	stw 0,bss_tmp2(31)                     # 3.6
+	stw 0,28(31)                           # 3.6
 
-	lwz 9,b(31)                            # 3.6
-	lwz 0,bss_tmp2(31)                     # 3.6
+	lwz 9,12(31)                           # 3.6
+	lwz 0,28(31)                           # 3.6
 	add 0,9,0                              # 3.6
-	stw 0,bss_tmp3(31)                     # 3.6
+	stw 0,32(31)                           # 3.6
 
-	lwz 0,bss_tmp3(31)                     # 3.6
-	stw 0,a(31)                            # 3.6
+	lwz 0,32(31)                           # 3.6
+	stw 0,8(31)                            # 3.6
 
 	li 0,0                                 # 3.7
 	mr 3,0                                 # 3.7
@@ -56,4 +57,5 @@ main:	                                  # 3
 	mr 1,11                                # 3
 	blr                                    # 3
 	.size main,.-main                      # 3
+
 	.ident	"powerpc-e500v2-linux-gnuspe-gcc"
