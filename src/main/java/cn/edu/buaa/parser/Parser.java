@@ -146,7 +146,7 @@ public class Parser {
 				
 			// 如果是参数序列
 			} else if (getTokenType(index).equals("LL_BRACKET")) {
-				SyntaxTreeNode paramsList = new SyntaxTreeNode("StateParameterList");
+				SyntaxTreeNode paramsList = new SyntaxTreeNode("FunctionParameterList");
 				funcStatementTree.addChildNode(paramsList, root);
 				
 				index++;
@@ -452,7 +452,7 @@ public class Parser {
 		assignTree.setRoot(root);
 		assignTree.setCurrent(root);
 		tree.addChildNode(root, father);
-		
+				
 		while(!getTokenType(index).equals("SEMICOLON")) {			
 			// 被赋值的变量
 			if(getTokenType(index).equals("IDENTIFIER")) {
@@ -886,6 +886,13 @@ public class Parser {
 			father = tree.getRoot();
 		}
 		
+		// 如果是函数调用
+		if (getTokenType(index).equals("IDENTIFIER") && getTokenType(index + 1).equals("LL_BRACKET")) {
+			_functionCall(father);
+			index--;
+			return;
+		}
+		
 		// 运算符栈
 		Stack<SyntaxTree> operatorStack = new Stack<SyntaxTree>();
 		// 转换成的逆波兰表达式结果
@@ -971,8 +978,9 @@ public class Parser {
 							System.exit(1);
 						}
 					}
-					
-				} else {
+				}
+				
+				else {
 					recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
 					logger.info("表达式语句 : 语法非法");
 					try {

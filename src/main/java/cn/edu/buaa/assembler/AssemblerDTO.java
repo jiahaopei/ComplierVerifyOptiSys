@@ -107,6 +107,10 @@ public class AssemblerDTO {
 	 * @return
 	 */
 	public Map<String, String> getMapFromSymbolTable(String key) {
+		if (!symbolTable.containsKey(key)) {
+			throw new RuntimeException("Undefine variable : " + key);
+		}
+		
 		return symbolTable.get(key);
 	}
 	

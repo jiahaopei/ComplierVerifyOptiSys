@@ -17,16 +17,12 @@ main:	                                            # 3_fs
 	mr 31,1                                          # 3_fs
 
 	lis 0,.LC0@ha                                    # 3.5_fc
-	addic 10,0,.LC0@l                                # 3.5_fc
-	mr 3,10                                          # 3.5_fc
-	addi 11,31,8                                     # 3.5_fc
-	mr 4,11                                          # 3.5_fc
-	addi 12,31,12                                    # 3.5_fc
-	mr 5,12                                          # 3.5_fc
-	addi 13,31,16                                    # 3.5_fc
-	mr 6,13                                          # 3.5_fc
-	addi 14,31,20                                    # 3.5_fc
-	mr 7,14                                          # 3.5_fc
+	addic 0,0,.LC0@l                                 # 3.5_fc
+	mr 3,0                                           # 3.5_fc
+	lwz 4,8(31)                                      # 3.5_fc
+	lwz 5,12(31)                                     # 3.5_fc
+	lwz 6,16(31)                                     # 3.5_fc
+	lwz 7,20(31)                                     # 3.5_fc
 	crxor 6,6,6                                      # 3.5_fc
 	bl __isoc99_scanf                                # 3.5_fc
 

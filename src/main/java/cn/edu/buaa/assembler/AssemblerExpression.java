@@ -37,6 +37,8 @@ public class AssemblerExpression {
 			return tmpMap;
 		}
 		
+		
+		
 		// 初始化，清空栈
 		operandStack.clear();
 		optAndOpdStack.clear();
@@ -256,6 +258,20 @@ public class AssemblerExpression {
 			String operator, String label) {
 		// 同int型，测试发现对于long型power-pc支持得不是很好;
 		// 过大的long不支持，比较小的long直接当做int来处理了
+		if (operand_a.get("type").equals("CONSTANT")) {
+			String value = operand_a.get("operand");
+			if (value.endsWith("l") || value.endsWith("L")) {
+				value = value.substring(0, value.length() - 1);
+			}
+			operand_a.put("operand", value);
+		}
+		if (operand_b.get("type").equals("CONSTANT")) {
+			String value = operand_b.get("operand");
+			if (value.endsWith("l") || value.endsWith("L")) {
+				value = value.substring(0, value.length() - 1);
+			}
+			operand_b.put("operand", value);
+		}
 		solveDoubleOperatorInt(operand_a, operand_b, operator, label);
 	}
 

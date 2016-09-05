@@ -154,8 +154,8 @@ public class Assembler {
 	}
 
 	// 函数定义句型，处理main函数和其它函数的定义
-	private void _functionStatement(SyntaxTreeNode node) {
-		SyntaxTreeNode currentNode = node.getFirstSon(); // 第一个儿子
+	private void _functionStatement(SyntaxTreeNode father) {
+		SyntaxTreeNode currentNode = father.getFirstSon(); // 第一个儿子
 		String funcName = null;
 		String label = null;
 		String line = null;
@@ -248,9 +248,31 @@ public class Assembler {
 						
 					}
 				}
-
+				
+			} else if (currentNode.getValue().equals("Type")) {
+				// do nothing
+				
+			} else if (currentNode.getValue().equals("FunctionParameterList")) {
+				SyntaxTreeNode node = currentNode.getFirstSon();	// Parameter
+				while (node != null) {
+					String variableFieldType = node.getFirstSon().getValue();
+					String variableName = node.getFirstSon().getRight().getValue();
+					String variableType = node.getFirstSon().getRight().getExtraInfo().get("type");
+										
+					// 将该变量存入符号表
+					Map<String, String> tmpMap = new HashMap<String, String>();
+					tmpMap.put("type", variableType);
+					tmpMap.put("field_type", variableFieldType);
+					tmpMap.put("register", Integer.toString(assemblerDTO.getMemAdress()));
+					assemblerDTO.addToMemAdress(4);
+					assemblerDTO.putIntoSymbolTable(variableName, tmpMap);
+					
+					node = node.getRight();
+				}
+				
 			} else {
 				logger.debug("unknown type : " + currentNode.getValue());
+				throw new RuntimeException(currentNode.getValue() + " " + currentNode.getType());
 				
 			}
 
@@ -328,14 +350,6 @@ public class Assembler {
 			if (currentNode.getType() != null && currentNode.getType().equals("FUNCTION_NAME")) {
 				funcName = currentNode.getValue();
 				label = currentNode.getLabel();
-				if (!funcName.equals("scanf") && !funcName.equals("printf")) {
-					try {
-						throw new Exception("function call except scanf and printf not supported yet");
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.exit(1);
-					}
-				}
 
 			// 函数参数
 			} else if (currentNode.getValue().equals("CallParameterList")) {
@@ -364,8 +378,13 @@ public class Assembler {
 
 						// 数字常量
 					} else if (tmpNode.getType().equals("DIGIT_CONSTANT")) {
-						logger.debug("_functionCall [DIGIT_CONSTANT] : " + tmpNode.getValue());
-
+						// 添加到符号表
+						Map<String, String> tmpMap = new HashMap<>();
+						tmpMap.put("type", "DIGIT_CONSTANT");
+						tmpMap.put("value", tmpNode.getValue());
+						assemblerDTO.putIntoSymbolTable(tmpNode.getValue(), tmpMap);
+						parameterList.add(tmpNode.getValue());
+							
 						// 某个变量
 					} else if (tmpNode.getType().equals("IDENTIFIER")) {
 						parameterList.add(tmpNode.getValue());
@@ -392,13 +411,12 @@ public class Assembler {
 			currentNode = currentNode.getRight();
 		}
 
-		// 如果是printf函数
-		if (funcName.equals("printf")) {
+		// 如果是printf或者scanf函数
+		if (funcName.equals("printf") || funcName.equals("scanf")) {
 			int num = 3;
 			for (int i = 0; i < parameterList.size(); i++) {
 				String parameter = parameterList.get(i);
 				String parameterType = assemblerDTO.getMapFromSymbolTable(parameter).get("type");
-				
 				
 				// 参数的类型是字符串常量
 				if (parameterType.equals("STRING_CONSTANT")) {
@@ -418,14 +436,99 @@ public class Assembler {
 						num++;
 						assemblerDTO.insertIntoText(line, label);
 
-					} else if (fieldType.equals("float") || fieldType.equals("double")) {
-						logger.debug("printf parameter type : " + fieldType);
-
+					} else if (fieldType.equals("float")) {
+						line = AssemblerUtils.PREFIX + "lfs " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
+						
+					} else if (fieldType.equals("double")) {
+						line = AssemblerUtils.PREFIX + "lfd " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
+						
 					} else {
 						logger.debug("More type will be added to printf : " + fieldType);
 
 					}
-
+				
+				// 为数字常量
+				} else if (parameterType.equals("DIGIT_CONSTANT")) { 
+					// 判断数字是什么类型
+					if (parameter.contains(".")) {
+						// float
+						if (parameter.endsWith("f") || parameter.endsWith("F")) {
+							String high = AssemblerExpression.getNumberHigh(parameter);
+							String low = AssemblerExpression.getNumberLow(parameter);
+							
+							// 把字符常量添加到.data域
+							String lc = ".LC" + assemblerDTO.getLabelCnt();
+							assemblerDTO.addToLabelCnt(1);
+							line = AssemblerUtils.PREFIX + ".align 3";
+							assemblerDTO.insertIntoData(line,label);
+							line = lc + ":";
+							assemblerDTO.insertIntoData(line, label);						
+							line = AssemblerUtils.PREFIX + high;
+							assemblerDTO.insertIntoData(line, label);
+							line = AssemblerUtils.PREFIX + low;
+							assemblerDTO.insertIntoData(line, label);
+							// 添加到符号表
+							Map<String, String> tmpMap = new HashMap<>();
+							tmpMap.put("type", "FLOAT_CONSTANT");
+							tmpMap.put("value", parameter);
+							assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+							
+							line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+							assemblerDTO.insertIntoText(line, label);
+							line = AssemblerUtils.PREFIX + "lfs " + num + "," + lc + "@l(9)";
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+						
+						// double
+						} else {
+							String high = AssemblerExpression.getNumberHigh(parameter);
+							String low = AssemblerExpression.getNumberLow(parameter);
+							
+							// 把字符常量添加到.data域
+							String lc = ".LC" + assemblerDTO.getLabelCnt();
+							assemblerDTO.addToLabelCnt(1);
+							line = AssemblerUtils.PREFIX + ".align 3";
+							assemblerDTO.insertIntoData(line,label);
+							line = lc + ":";
+							assemblerDTO.insertIntoData(line, label);						
+							line = AssemblerUtils.PREFIX + high;
+							assemblerDTO.insertIntoData(line, label);
+							line = AssemblerUtils.PREFIX + low;
+							assemblerDTO.insertIntoData(line, label);
+							// 添加到符号表
+							Map<String, String> tmpMap = new HashMap<>();
+							tmpMap.put("type", "DOUBLE_CONSTANT");
+							tmpMap.put("value", parameter);
+							assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+							
+							line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+							assemblerDTO.insertIntoText(line, label);
+							line = AssemblerUtils.PREFIX + "lfd " + num + "," + lc + "@l(9)";
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+						
+						}
+						
+					} else {
+						// long
+						if (parameter.endsWith("l") || parameter.endsWith("L")) {
+							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter.substring(0, parameter.length() - 1);
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+							
+						// int
+						} else {
+							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter;
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+							
+						}
+					}
+					
 				} else {
 					try {
 						throw new Exception("Other variable type not support : "
@@ -439,66 +542,143 @@ public class Assembler {
 			}
 			line = AssemblerUtils.PREFIX + "crxor 6,6,6";
 			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "bl printf";
+			if (funcName.equals("printf")) {
+				line = AssemblerUtils.PREFIX + "bl printf";
+			} else if (funcName.equals("scanf")) {
+				line = AssemblerUtils.PREFIX + "bl __isoc99_scanf";
+			}
 			assemblerDTO.insertIntoText(line, label);
-
-			// 如果是scanf函数
-		} else if (funcName.equals("scanf")) {
+			
+		// 其它类型的函数, 只处理无返回值的函数类型
+		} else {
 			int num = 3;
 			for (int i = 0; i < parameterList.size(); i++) {
 				String parameter = parameterList.get(i);
 				String parameterType = assemblerDTO.getMapFromSymbolTable(parameter).get("type");
+				
+				// 参数的类型是字符串常量
 				if (parameterType.equals("STRING_CONSTANT")) {
 					line = AssemblerUtils.PREFIX + "lis 0," + parameter + "@ha";
 					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "addic " + (num + 7) + ",0," + parameter + "@l";
-					assemblerDTO.insertIntoText(line, label);
-					line = AssemblerUtils.PREFIX + "mr " + num + "," + (num + 7);
+					line = AssemblerUtils.PREFIX + "addic " + num + ",0," + parameter + "@l";
 					num++;
 					assemblerDTO.insertIntoText(line, label);
 
+					// 参数为变量
 				} else if (parameterType.equals("VARIABLE")) {
 					String fieldType = assemblerDTO.getMapFromSymbolTable(parameter).get("field_type");
 					if (fieldType.equals("int") || fieldType.equals("long")) {
-						line = AssemblerUtils.PREFIX + "addi " + (num + 7) + ",31," + assemblerDTO.getVariableSymbolOrNumber(parameter);
-						assemblerDTO.insertIntoText(line, label);
-						line = AssemblerUtils.PREFIX + "mr " + num + "," + (num + 7);
+						line = AssemblerUtils.PREFIX + "lwz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
 						num++;
 						assemblerDTO.insertIntoText(line, label);
 
 					} else if (fieldType.equals("float")) {
-						logger.debug("scanf float");
-
+						line = AssemblerUtils.PREFIX + "lfs " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
+						
+					} else if (fieldType.equals("double")) {
+						line = AssemblerUtils.PREFIX + "lfd " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
+						
 					} else {
-						try {
-							throw new Exception("data type in scanf is not supported : " + fieldType);
-						} catch (Exception e) {
-							e.printStackTrace();
-							System.exit(1);
-						}
+						logger.debug("More type will be added to printf : " + fieldType);
 
 					}
-
+				
+				// 为数字常量
+				} else if (parameterType.equals("DIGIT_CONSTANT")) { 
+					// 判断数字是什么类型
+					if (parameter.contains(".")) {
+						// float
+						if (parameter.endsWith("f") || parameter.endsWith("F")) {
+							String high = AssemblerExpression.getNumberHigh(parameter);
+							String low = AssemblerExpression.getNumberLow(parameter);
+							
+							// 把字符常量添加到.data域
+							String lc = ".LC" + assemblerDTO.getLabelCnt();
+							assemblerDTO.addToLabelCnt(1);
+							line = AssemblerUtils.PREFIX + ".align 3";
+							assemblerDTO.insertIntoData(line,label);
+							line = lc + ":";
+							assemblerDTO.insertIntoData(line, label);						
+							line = AssemblerUtils.PREFIX + high;
+							assemblerDTO.insertIntoData(line, label);
+							line = AssemblerUtils.PREFIX + low;
+							assemblerDTO.insertIntoData(line, label);
+							// 添加到符号表
+							Map<String, String> tmpMap = new HashMap<>();
+							tmpMap.put("type", "FLOAT_CONSTANT");
+							tmpMap.put("value", parameter);
+							assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+							
+							line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+							assemblerDTO.insertIntoText(line, label);
+							line = AssemblerUtils.PREFIX + "lfs " + num + "," + lc + "@l(9)";
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+						
+						// double
+						} else {
+							String high = AssemblerExpression.getNumberHigh(parameter);
+							String low = AssemblerExpression.getNumberLow(parameter);
+							
+							// 把字符常量添加到.data域
+							String lc = ".LC" + assemblerDTO.getLabelCnt();
+							assemblerDTO.addToLabelCnt(1);
+							line = AssemblerUtils.PREFIX + ".align 3";
+							assemblerDTO.insertIntoData(line,label);
+							line = lc + ":";
+							assemblerDTO.insertIntoData(line, label);						
+							line = AssemblerUtils.PREFIX + high;
+							assemblerDTO.insertIntoData(line, label);
+							line = AssemblerUtils.PREFIX + low;
+							assemblerDTO.insertIntoData(line, label);
+							// 添加到符号表
+							Map<String, String> tmpMap = new HashMap<>();
+							tmpMap.put("type", "DOUBLE_CONSTANT");
+							tmpMap.put("value", parameter);
+							assemblerDTO.putIntoSymbolTable(lc, tmpMap);
+							
+							line = AssemblerUtils.PREFIX + "lis 9," + lc + "@ha";
+							assemblerDTO.insertIntoText(line, label);
+							line = AssemblerUtils.PREFIX + "lfd " + num + "," + lc + "@l(9)";
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+						
+						}
+						
+					} else {
+						// long
+						if (parameter.endsWith("l") || parameter.endsWith("L")) {
+							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter.substring(0, parameter.length() - 1);
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+							
+						// int
+						} else {
+							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter;
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+							
+						}
+					}
+					
 				} else {
 					try {
-						throw new Exception(funcName + "not support this parameter type : " + parameterType);
+						throw new Exception("Other variable type not support : "
+								+ assemblerDTO.getMapFromSymbolTable(parameter).get("type"));
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(1);
 					}
-
 				}
 
 			}
-
-			line = AssemblerUtils.PREFIX + "crxor 6,6,6";
+			line = AssemblerUtils.PREFIX + "bl " + funcName;
 			assemblerDTO.insertIntoText(line, label);
-			line = AssemblerUtils.PREFIX + "bl __isoc99_scanf";
-			assemblerDTO.insertIntoText(line, label);
-
-		} else {
-			logger.debug("_functionCall funcName : " + funcName);
-
+			
 		}
 
 		assemblerDTO.insertIntoText("", null);  // 增加一个空行
@@ -516,7 +696,7 @@ public class Assembler {
 
 			// 该变量的类型
 			String fieldType = assemblerDTO.getMapFromSymbolTable(currentNode.getValue()).get("field_type");
-			if (fieldType.equals("int")) {
+			if (fieldType.equals("int") || fieldType.equals("long")) {
 				// 常数
 				if (expres.get("type").equals("CONSTANT")) {
 					line = AssemblerUtils.PREFIX + "li 0," + expres.get("value");
@@ -542,10 +722,7 @@ public class Assembler {
 
 				}
 
-			} else if (fieldType.equals("long")) {
-				logger.debug("long expression!");
-				
-			} else if (fieldType.equals("double")) {
+			}  else if (fieldType.equals("double")) {
 				// 常数
 				if (expres.get("type").equals("CONSTANT")) {
 					String high = AssemblerExpression.getNumberHigh(expres.get("value"));
@@ -650,7 +827,29 @@ public class Assembler {
 				}
 
 			}
-
+		
+		// 等于号的右边为有返回值的函数
+		} else if (currentNode.getType().equals("IDENTIFIER") 
+				&& currentNode.getRight().getValue().equals("FunctionCall")) {
+			// 先处理右边
+			_functionCall(currentNode.getRight());
+			
+			String returnType = assemblerDTO.getMapFromSymbolTable(currentNode.getValue()).get("field_type");
+			if (returnType.equals("int") || returnType.equals("long")) {
+				line = AssemblerUtils.PREFIX + "stw 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+			
+			} else if (returnType.equals("double")) {
+				line = AssemblerUtils.PREFIX + "stfd 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+			
+			} else if(returnType.equals("float")) {
+				line = AssemblerUtils.PREFIX + "stfs 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+			
+			} else {
+				throw new RuntimeException(" = not support type : " + returnType);
+				
+			}
+			assemblerDTO.insertIntoText(line, label);
+			
 		} else {
 			throw new RuntimeException("error : assignment statement !");
 			

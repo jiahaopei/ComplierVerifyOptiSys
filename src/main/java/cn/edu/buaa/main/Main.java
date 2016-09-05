@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		// 公共记录
 		Recorder recorder = new Recorder();
-		String fileName = "test2.c";
+		String fileName = "evenSum.c";
 
 		Lexer lexer = new Lexer(fileName, recorder);
 		lexer.outputSrc();

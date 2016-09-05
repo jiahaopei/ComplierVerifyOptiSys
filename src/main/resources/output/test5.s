@@ -32,14 +32,22 @@ main:	                                            # 3_fs
 	mr 31,1                                          # 3_fs
 
 	lis 0,.LC0@ha                                    # 3.3_fc
-	addic 10,0,.LC0@l                                # 3.3_fc
-	mr 3,10                                          # 3.3_fc
+	addic 0,0,.LC0@l                                 # 3.3_fc
+	mr 3,0                                           # 3.3_fc
+	lfs 4,8(31)                                      # 3.3_fc
+	lfs 5,12(31)                                     # 3.3_fc
+	lfs 6,16(31)                                     # 3.3_fc
+	lfs 7,20(31)                                     # 3.3_fc
 	crxor 6,6,6                                      # 3.3_fc
 	bl __isoc99_scanf                                # 3.3_fc
 
 	lis 0,.LC1@ha                                    # 3.4_fc
 	addic 0,0,.LC1@l                                 # 3.4_fc
 	mr 3,0                                           # 3.4_fc
+	lfs 4,8(31)                                      # 3.4_fc
+	lfs 5,12(31)                                     # 3.4_fc
+	lfs 6,16(31)                                     # 3.4_fc
+	lfs 7,20(31)                                     # 3.4_fc
 	crxor 6,6,6                                      # 3.4_fc
 	bl printf                                        # 3.4_fc
 

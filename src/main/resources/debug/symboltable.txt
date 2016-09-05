@@ -1,12 +1,9 @@
-变量名称 内存地址
-a 8
-b 12
-c 16
-d 20
-bss_tmp2 28
-.LC3 null
-bss_tmp1 24
-.LC4 null
-.LC1 null
-.LC2 null
-.LC0 null
+变量名称	变量类型	内存地址
+tmp	int	20
+bss_tmp2	int	28
+.LC5	null	null
+i	int	12
+bss_tmp1	int	24
+sum	int	16
+.LC0	null	null
+n	int	8
