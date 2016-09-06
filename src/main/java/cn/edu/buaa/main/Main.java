@@ -16,13 +16,12 @@ public class Main {
 	public static void main(String[] args) {
 		// 公共记录
 		Recorder recorder = new Recorder();
-		String fileName = "evenSum.c";
-
+		String fileName = "test7.c";
+		
 		Lexer lexer = new Lexer(fileName, recorder);
-		lexer.outputSrc();
-		lexer.labelSrc(fileName);
-		lexer.outputLabelSrc(fileName);
 		lexer.runLexer();
+		lexer.outputSrc();
+		lexer.outputLabelSrc(fileName);
 		lexer.outputLexer();
 
 		Parser parser = new Parser(lexer.getTokens(), recorder);

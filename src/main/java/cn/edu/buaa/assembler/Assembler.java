@@ -1293,12 +1293,11 @@ public class Assembler {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		String fileName = "evenSum.c";
-
+		
 		Lexer lexer = new Lexer(fileName, recorder);
-		lexer.outputSrc();
-		lexer.labelSrc(fileName);
-		lexer.outputLabelSrc(fileName);
 		lexer.runLexer();
+		lexer.outputSrc();
+		lexer.outputLabelSrc(fileName);
 		lexer.outputLexer();
 
 		Parser parser = new Parser(lexer.getTokens(), recorder);

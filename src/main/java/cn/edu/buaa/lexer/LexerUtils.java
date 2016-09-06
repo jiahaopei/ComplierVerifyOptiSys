@@ -4,6 +4,8 @@ import cn.edu.buaa.constant.LexerDefine;
 
 public class LexerUtils {
 	
+	public static final int LEN = 50; 
+	
 	// 跳过空字符
 	public static int skipBlank(int i, String line) {
 		while (i < line.length() && isBlank(i, line)) {

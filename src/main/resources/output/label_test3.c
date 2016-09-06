@@ -10,7 +10,6 @@ int main() {                                      // 3
 
     scanf("%d %d %d %d", &a, &b, &c, &d);         // 3.5
 
-    
 
     a = b + c - d + a;                            // 3.6
 

@@ -37,8 +37,6 @@ public class AssemblerExpression {
 			return tmpMap;
 		}
 		
-		
-		
 		// 初始化，清空栈
 		operandStack.clear();
 		optAndOpdStack.clear();
@@ -2660,9 +2658,9 @@ public class AssemblerExpression {
 		// 取出操作数
 		Map<String, String> operand = operandStack.pop();
 		
-		// 单目运算符只支持int型运算
-		if (!getFieldType(operand).equals("int")) {
-			throw new RuntimeException("single operator only support int type : " + getFieldType(operand));
+		// 单目运算符只支持int、long型运算
+		if (!getFieldType(operand).equals("int") && !getFieldType(operand).equals("long")) {
+			throw new RuntimeException("single operator not support type : " + getFieldType(operand));
 			
 		}
 		

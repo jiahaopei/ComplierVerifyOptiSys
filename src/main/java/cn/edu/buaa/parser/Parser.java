@@ -203,7 +203,12 @@ public class Parser {
 				recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
 				logger.info("函数定义 : 语法非法");
 				try {
-					throw new Exception("Error in functionStatement! : [" + getTokenLabel(index) + "]");
+					System.out.println(getTokenValue(index - 1));
+					System.out.println(getTokenValue(index));
+					System.out.println(getTokenValue(index + 1));
+					System.out.println(getTokenValue(index + 2));
+					System.out.println(getTokenValue(index + 3));
+					throw new Exception("Error in functionStatement! : " + getTokenType(index));
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);
@@ -1324,12 +1329,11 @@ public class Parser {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		String fileName = "evenSum.c";
-
+		
 		Lexer lexer = new Lexer(fileName, recorder);
-		lexer.outputSrc();
-		lexer.labelSrc(fileName);
-		lexer.outputLabelSrc(fileName);
 		lexer.runLexer();
+		lexer.outputSrc();
+		lexer.outputLabelSrc(fileName);
 		lexer.outputLexer();
 		
 		Parser parser = new Parser(lexer.getTokens(), recorder);
