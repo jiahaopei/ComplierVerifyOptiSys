@@ -198,16 +198,12 @@ public class Parser {
 				// 跳过左大括号
 				index++;
 				_block(funcStatementTree);
+				break;
 				
 			} else {
 				recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
 				logger.info("函数定义 : 语法非法");
 				try {
-					System.out.println(getTokenValue(index - 1));
-					System.out.println(getTokenValue(index));
-					System.out.println(getTokenValue(index + 1));
-					System.out.println(getTokenValue(index + 2));
-					System.out.println(getTokenValue(index + 3));
 					throw new Exception("Error in functionStatement! : " + getTokenType(index));
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -217,13 +213,8 @@ public class Parser {
 			}
 		}
 		
-		if (index == tokens.size()) {
-			recorder.insertLine(Recorder.TAB + "函数定义 : 语法合法");
-			logger.info("函数定义 : 语法合法");
-		} else {
-			recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
-			logger.info("函数定义 : 语法非法");
-		}
+		recorder.insertLine(Recorder.TAB + "函数定义 : 语法合法");
+		logger.info("函数定义 : 语法合法");
 		
 	}
 	

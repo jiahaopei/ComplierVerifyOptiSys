@@ -58,139 +58,139 @@ add:	                                             # 4_fs
 	.size add,.-add                                  # 4_fs
 
 	.section .rodata
-	.align 2                                         # 6.3_fc
-.LC3:	                                            # 6.3_fc
-	.string	"sub function %d\n"                      # 6.3_fc
-
-	.section ".text"
-	.align 2                                         # 6_fs
-	.globl sub                                       # 6_fs
-	.type sub, @function                             # 6_fs
-sub:	                                             # 6_fs
-	stwu 1,-32(1)                                    # 6_fs
-	stw 31,28(1)                                     # 6_fs
-	mr 31,1                                          # 6_fs
-
-	lwz 9,24(31)                                     # 6.2_ex
-	lwz 0,28(31)                                     # 6.2_ex
-	subf 0,9,0                                       # 6.2_ex
-	stw 0,36(31)                                     # 6.2_ex
-
-	lwz 9,20(31)                                     # 6.2_ex
-	lwz 0,36(31)                                     # 6.2_ex
-	subf 0,9,0                                       # 6.2_ex
-	stw 0,40(31)                                     # 6.2_ex
-
-	lwz 0,40(31)                                     # 6.2_as
-	stw 0,32(31)                                     # 6.2_as
-
-	lis 0,.LC3@ha                                    # 6.3_fc
-	addic 0,0,.LC3@l                                 # 6.3_fc
-	mr 3,0                                           # 6.3_fc
-	lwz 4,32(31)                                     # 6.3_fc
-	crxor 6,6,6                                      # 6.3_fc
-	bl printf                                        # 6.3_fc
-
-	lwz 0,32(31)                                     # 6.4_re
-	mr 3,0                                           # 6.4_re
-	lwz 11,0(1)                                      # 6_fs
-	lwz 31,-4(11)                                    # 6_fs
-	mr 1,11                                          # 6_fs
-	blr                                              # 6_fs
-	.size sub,.-sub                                  # 6_fs
-
-	.section .rodata
+	.align 2                                         # 9.3_fc
+.LC3:	                                            # 9.3_fc
+	.string	"sub function %d\n"                      # 9.3_fc
 
 	.section ".text"
 	.align 2                                         # 9_fs
-	.globl inc                                       # 9_fs
-	.type inc, @function                             # 9_fs
-inc:	                                             # 9_fs
+	.globl sub                                       # 9_fs
+	.type sub, @function                             # 9_fs
+sub:	                                             # 9_fs
 	stwu 1,-32(1)                                    # 9_fs
 	stw 31,28(1)                                     # 9_fs
 	mr 31,1                                          # 9_fs
 
-	lwz 9,36(31)                                     # 9.2_ex
-	li 0,1                                           # 9.2_ex
-	add 0,9,0                                        # 9.2_ex
-	stw 0,44(31)                                     # 9.2_ex
+	lwz 9,24(31)                                     # 9.2_ex
+	lwz 0,28(31)                                     # 9.2_ex
+	subf 0,9,0                                       # 9.2_ex
+	stw 0,36(31)                                     # 9.2_ex
 
-	lwz 0,44(31)                                     # 9.2_as
-	stw 0,40(31)                                     # 9.2_as
+	lwz 9,20(31)                                     # 9.2_ex
+	lwz 0,36(31)                                     # 9.2_ex
+	subf 0,9,0                                       # 9.2_ex
+	stw 0,40(31)                                     # 9.2_ex
 
-	lwz 0,40(31)                                     # 9.3_re
-	mr 3,0                                           # 9.3_re
+	lwz 0,40(31)                                     # 9.2_as
+	stw 0,32(31)                                     # 9.2_as
+
+	lis 0,.LC3@ha                                    # 9.3_fc
+	addic 0,0,.LC3@l                                 # 9.3_fc
+	mr 3,0                                           # 9.3_fc
+	lwz 4,32(31)                                     # 9.3_fc
+	crxor 6,6,6                                      # 9.3_fc
+	bl printf                                        # 9.3_fc
+
+	lwz 0,32(31)                                     # 9.4_re
+	mr 3,0                                           # 9.4_re
 	lwz 11,0(1)                                      # 9_fs
 	lwz 31,-4(11)                                    # 9_fs
 	mr 1,11                                          # 9_fs
 	blr                                              # 9_fs
-	.size inc,.-inc                                  # 9_fs
+	.size sub,.-sub                                  # 9_fs
 
 	.section .rodata
-	.align 2                                         # 11.9_fc
-.LC4:	                                            # 11.9_fc
-	.string	"The add result is : %d\n"               # 11.9_fc
-	.align 2                                         # 11.10_fc
-.LC5:	                                            # 11.10_fc
-	.string	"The sub result is : %d\n"               # 11.10_fc
 
 	.section ".text"
-	.align 2                                         # 11_fs
-	.globl main                                      # 11_fs
-	.type main, @function                            # 11_fs
-main:	                                            # 11_fs
-	stwu 1,-32(1)                                    # 11_fs
-	mflr 0                                           # 11_fs
-	stw 31,28(1)                                     # 11_fs
-	stw 0,36(1)                                      # 11_fs
-	mr 31,1                                          # 11_fs
+	.align 2                                         # 12_fs
+	.globl inc                                       # 12_fs
+	.type inc, @function                             # 12_fs
+inc:	                                             # 12_fs
+	stwu 1,-32(1)                                    # 12_fs
+	stw 31,28(1)                                     # 12_fs
+	mr 31,1                                          # 12_fs
 
-	li 0,1                                           # 11.4_as
-	stw 0,44(31)                                     # 11.4_as
+	lwz 9,36(31)                                     # 12.2_ex
+	li 0,1                                           # 12.2_ex
+	add 0,9,0                                        # 12.2_ex
+	stw 0,44(31)                                     # 12.2_ex
 
-	li 0,2                                           # 11.5_as
-	stw 0,48(31)                                     # 11.5_as
+	lwz 0,44(31)                                     # 12.2_as
+	stw 0,40(31)                                     # 12.2_as
 
-	lwz 3,44(31)                                     # 11.6_fc
-	li 4,3                                           # 11.6_fc
-	bl add                                           # 11.6_fc
+	lwz 0,40(31)                                     # 12.3_re
+	mr 3,0                                           # 12.3_re
+	lwz 11,0(1)                                      # 12_fs
+	lwz 31,-4(11)                                    # 12_fs
+	mr 1,11                                          # 12_fs
+	blr                                              # 12_fs
+	.size inc,.-inc                                  # 12_fs
 
-	stw 3,52(31)                                     # 11.6_as
+	.section .rodata
+	.align 2                                         # 14.9_fc
+.LC4:	                                            # 14.9_fc
+	.string	"The add result is : %d\n"               # 14.9_fc
+	.align 2                                         # 14.10_fc
+.LC5:	                                            # 14.10_fc
+	.string	"The sub result is : %d\n"               # 14.10_fc
 
-	lwz 3,44(31)                                     # 11.7_fc
-	lwz 4,52(31)                                     # 11.7_fc
-	lwz 5,48(31)                                     # 11.7_fc
-	bl sub                                           # 11.7_fc
+	.section ".text"
+	.align 2                                         # 14_fs
+	.globl main                                      # 14_fs
+	.type main, @function                            # 14_fs
+main:	                                            # 14_fs
+	stwu 1,-32(1)                                    # 14_fs
+	mflr 0                                           # 14_fs
+	stw 31,28(1)                                     # 14_fs
+	stw 0,36(1)                                      # 14_fs
+	mr 31,1                                          # 14_fs
 
-	stw 3,56(31)                                     # 11.7_as
+	li 0,1                                           # 14.4_as
+	stw 0,44(31)                                     # 14.4_as
 
-	li 3,4                                           # 11.8_fc
-	bl inc                                           # 11.8_fc
+	li 0,2                                           # 14.5_as
+	stw 0,48(31)                                     # 14.5_as
 
-	stw 3,60(31)                                     # 11.8_as
+	lwz 3,44(31)                                     # 14.6_fc
+	li 4,3                                           # 14.6_fc
+	bl add                                           # 14.6_fc
 
-	lis 0,.LC4@ha                                    # 11.9_fc
-	addic 0,0,.LC4@l                                 # 11.9_fc
-	mr 3,0                                           # 11.9_fc
-	lwz 4,52(31)                                     # 11.9_fc
-	crxor 6,6,6                                      # 11.9_fc
-	bl printf                                        # 11.9_fc
+	stw 3,52(31)                                     # 14.6_as
 
-	lis 0,.LC5@ha                                    # 11.10_fc
-	addic 0,0,.LC5@l                                 # 11.10_fc
-	mr 3,0                                           # 11.10_fc
-	lwz 4,56(31)                                     # 11.10_fc
-	crxor 6,6,6                                      # 11.10_fc
-	bl printf                                        # 11.10_fc
+	lwz 3,44(31)                                     # 14.7_fc
+	lwz 4,52(31)                                     # 14.7_fc
+	lwz 5,48(31)                                     # 14.7_fc
+	bl sub                                           # 14.7_fc
 
-	li 0,0                                           # 11.11_re
-	mr 3,0                                           # 11.11_re
-	lwz 11,0(1)                                      # 11_fs
-	lwz 0,4(11)                                      # 11_fs
-	mtlr 0                                           # 11_fs
-	lwz 31,-4(11)                                    # 11_fs
-	mr 1,11                                          # 11_fs
-	blr                                              # 11_fs
-	.size main,.-main                                # 11_fs
+	stw 3,56(31)                                     # 14.7_as
+
+	li 3,4                                           # 14.8_fc
+	bl inc                                           # 14.8_fc
+
+	stw 3,60(31)                                     # 14.8_as
+
+	lis 0,.LC4@ha                                    # 14.9_fc
+	addic 0,0,.LC4@l                                 # 14.9_fc
+	mr 3,0                                           # 14.9_fc
+	lwz 4,52(31)                                     # 14.9_fc
+	crxor 6,6,6                                      # 14.9_fc
+	bl printf                                        # 14.9_fc
+
+	lis 0,.LC5@ha                                    # 14.10_fc
+	addic 0,0,.LC5@l                                 # 14.10_fc
+	mr 3,0                                           # 14.10_fc
+	lwz 4,56(31)                                     # 14.10_fc
+	crxor 6,6,6                                      # 14.10_fc
+	bl printf                                        # 14.10_fc
+
+	li 0,0                                           # 14.11_re
+	mr 3,0                                           # 14.11_re
+	lwz 11,0(1)                                      # 14_fs
+	lwz 0,4(11)                                      # 14_fs
+	mtlr 0                                           # 14_fs
+	lwz 31,-4(11)                                    # 14_fs
+	mr 1,11                                          # 14_fs
+	blr                                              # 14_fs
+	.size main,.-main                                # 14_fs
 
 	.ident	"powerpc-e500v2-linux-gnuspe-gcc"

@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "func.h"
+#include "func1.h"
+#include "func2.h"
 
 int inc(int x) {
     int z;
