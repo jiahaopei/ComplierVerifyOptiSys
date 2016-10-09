@@ -33,21 +33,22 @@ public class MyPanel extends JPanel {
 //		g2d.fillRoundRect(1, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 //		g2d.setClip(null);
 		
+		// 绘制边
+		g2d.setColor(Color.GRAY);
+		g2d.setStroke(new BasicStroke(WID));
+		g2d.drawRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
+		
 		// 绘制菜单栏
 		g2d.setClip(0, 30, getWidth(), 40);
 		g2d.setColor(Color.LIGHT_GRAY);
-		g2d.fillRoundRect(1, 1, getWidth() - 1, getHeight() - 1, 20, 20);
+		g2d.fillRoundRect(0, 1, getWidth(), getHeight() - 1, 20, 20);
 		g2d.setClip(null);
-		
-		// 绘制边
-		g2d.setColor(Color.DARK_GRAY);
-		g2d.setStroke(new BasicStroke(WID));
-		g2d.drawRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
 		
 		// 设置字体
 		g2d.setFont(new Font("Arial", Font.BOLD, 16));
 		g2d.setColor(Color.DARK_GRAY);
 		//g2d.drawString("Compiler Verification System", 15, 24);
+		
 	}
 	
 	

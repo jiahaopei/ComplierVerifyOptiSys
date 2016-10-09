@@ -93,7 +93,8 @@ public class MainWindow extends JFrame {
 		setUndecorated(true);
 		setBackground(new Color(0, 0, 0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(50, 30, 1000, 710);	// 设置窗口大小
+		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
+		setBounds(50, 30, 600, 450);
 		
 		contentPane = new MyPanel();
 		contentPane.addMouseMotionListener(new MouseMotionAdapter() {
