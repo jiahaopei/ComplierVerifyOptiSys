@@ -23,8 +23,15 @@ public class MyPanel extends JPanel {
 		// 打开抗锯齿效果
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-//		g2d.setColor(new Color(255, 255, 255, 140));
+//		g2d.setColor(new Color(0, 0, 0, 140));
+		g2d.setColor(Color.LIGHT_GRAY);
+		g2d.fillRect(0, 0, getWidth(), getHeight());
+//		g2d.fillRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
+		
+		// 绘制边
 		g2d.setColor(Color.GRAY);
+		g2d.setStroke(new BasicStroke(WID));
+		g2d.drawRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
 		g2d.fillRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
 		
 //		// 绘制标题栏
@@ -32,11 +39,6 @@ public class MyPanel extends JPanel {
 //		g2d.setColor(Color.LIGHT_GRAY);
 //		g2d.fillRoundRect(1, 1, getWidth() - 1, getHeight() - 1, 20, 20);
 //		g2d.setClip(null);
-		
-		// 绘制边
-		g2d.setColor(Color.GRAY);
-		g2d.setStroke(new BasicStroke(WID));
-		g2d.drawRoundRect(WID / 2, WID / 2, getWidth() - WID, getHeight() - WID, 20, 20);
 		
 		// 绘制菜单栏
 		g2d.setClip(0, 30, getWidth(), 40);
