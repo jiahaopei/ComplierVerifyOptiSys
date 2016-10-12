@@ -28,17 +28,20 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
-import javax.swing.JSlider;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneConstants;
+
 
 public class MainWindow extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	// 记录窗体随鼠标移动参数
+	private int mx;
+	private int my;
+	private int jfx;
+	private int jfy;
+	
 	/**
 	 * 组件
 	 */
@@ -50,15 +53,19 @@ public class MainWindow extends JFrame {
 	private JButton btnOpen;
 	private JFileChooser chooser;
 	
-	// 记录窗体随鼠标移动参数
-	private int mx;
-	private int my;
-	private int jfx;
-	private int jfy;
-	private JPanel panel_1;
+	/**
+	 * JTree
+	 */
+	private JPanel menuPanel;
 	private JLabel lblStatus;
 	private JLabel lblNewLabel;
-	private JScrollPane scrollPane;
+	private JScrollPane sourceScrollPane;
+	private JScrollPane goalScrollPane;
+	private JTree goalTree;
+	private JScrollPane proveScrollPane;
+	private JTree proveTree;
+	private JTree sourceTree;
+	private JPanel statusPanel;
 
 	/**
 	 * Launch the application.
@@ -112,8 +119,11 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
 		setBounds(50, 30, 600, 450);
-		setTitle("C Source File");		// 由输入文件指定
+		setTitle("Source File : ");		// 由输入文件指定
 		setAlwaysOnTop(true);
+		
+		menuPanel = new JPanel();
+		menuPanel.setOpaque(false);	
 		
 		contentPane = new MyPanel();
 		contentPane.setOpaque(false);
@@ -135,10 +145,37 @@ public class MainWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
+		statusPanel = new JPanel();
+		statusPanel.setOpaque(false);
+		statusPanel.setBackground(Color.WHITE);
+		
+		sourceScrollPane = new JScrollPane();
+		sourceScrollPane.setOpaque(false);
+		sourceScrollPane.setBackground(Color.DARK_GRAY);
+		
+		goalScrollPane = new JScrollPane();
+		goalScrollPane.setOpaque(false);
+		goalScrollPane.setBackground(Color.DARK_GRAY);
+		
+		proveScrollPane = new JScrollPane();
+		proveScrollPane.setOpaque(false);
+		proveScrollPane.setBackground(Color.DARK_GRAY);
 		
 		
-		panel_1 = new JPanel();
-		panel_1.setOpaque(false);
+		// 内容显示树
+		sourceTree = new JTree();
+		sourceTree.setBackground(Color.LIGHT_GRAY);
+		sourceScrollPane.setViewportView(sourceTree);
+		
+		goalTree = new JTree();
+		goalTree.setBackground(Color.LIGHT_GRAY);
+		goalScrollPane.setViewportView(goalTree);
+		
+		proveTree = new JTree();
+		proveTree.setBackground(Color.LIGHT_GRAY);
+		proveScrollPane.setViewportView(proveTree);
+		
+		
 		
 		// 设置标题
 		lblNewLabel = new JLabel();
@@ -146,100 +183,11 @@ public class MainWindow extends JFrame {
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setText("Compiler Verification System");
 		
-		scrollPane = new JScrollPane();
-		
-		JPanel panel = new JPanel();
-		panel.setOpaque(false);
-		panel.setBackground(Color.WHITE);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
-				.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(22)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-					.addGap(27)
-					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-					.addGap(28)
-					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-					.addGap(21))
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(lblNewLabel)
-					.addGap(9)
-					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(30)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
-		);
-		
 		// 状态栏
 		lblStatus = new JLabel();
 		lblStatus.setHorizontalAlignment(JLabel.LEFT);
 		lblStatus.setForeground(Color.WHITE);
 		lblStatus.setText("Status : ");
-		
-		btnMax = new JButton("Max");
-		btnMax.setUI(new MyButtonUI());
-		btnMax.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (getExtendedState() == MAXIMIZED_BOTH) {
-					setExtendedState(JFrame.NORMAL);
-				} else {
-					setExtendedState(JFrame.MAXIMIZED_BOTH);
-				}
-			}
-		});
-		
-		btnMin = new JButton("Min");
-		btnMin.setUI(new MyButtonUI());
-		btnMin.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				setExtendedState(JFrame.ICONIFIED);
-			}
-		});
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblStatus, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 284, Short.MAX_VALUE)
-					.addComponent(btnMax)
-					.addGap(18)
-					.addComponent(btnMin)
-					.addContainerGap())
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblStatus, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, gl_panel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnMax, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnMin, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-					.addGap(4))
-		);
-		panel.setLayout(gl_panel);
 		
 		btnRun = new JButton("Run");
 		btnRun.setUI(new MyButtonUI());
@@ -250,6 +198,7 @@ public class MainWindow extends JFrame {
 				
 			}
 		});
+		btnRun.setUI(new MyButtonUI());
 		
 		// 选定一个源文件
 		btnOpen = new JButton("Open");
@@ -281,11 +230,36 @@ public class MainWindow extends JFrame {
 				
 			}
 		});
+		btnExit.setUI(new MyButtonUI());
 		
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
+		btnMax = new JButton("Max");
+		btnMax.setUI(new MyButtonUI());
+		btnMax.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (getExtendedState() == MAXIMIZED_BOTH) {
+					setExtendedState(JFrame.NORMAL);
+				} else {
+					setExtendedState(JFrame.MAXIMIZED_BOTH);
+				}
+			}
+		});
+		btnMax.setUI(new MyButtonUI());
+		
+		btnMin = new JButton("Min");
+		btnMin.setUI(new MyButtonUI());
+		btnMin.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setExtendedState(JFrame.ICONIFIED);
+			}
+		});
+		btnMin.setUI(new MyButtonUI());
+
+		GroupLayout gl_menuPanel = new GroupLayout(menuPanel);
+		gl_menuPanel.setHorizontalGroup(
+			gl_menuPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_menuPanel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(btnRun)
 					.addGap(18)
@@ -294,18 +268,75 @@ public class MainWindow extends JFrame {
 					.addComponent(btnExit)
 					.addContainerGap(335, Short.MAX_VALUE))
 		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel_1.createSequentialGroup()
+		gl_menuPanel.setVerticalGroup(
+			gl_menuPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_menuPanel.createSequentialGroup()
 					.addContainerGap(10, Short.MAX_VALUE)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+					.addGroup(gl_menuPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnRun)
 						.addComponent(btnOpen)
 						.addComponent(btnExit))
 					.addContainerGap())
 		);
-		panel_1.setLayout(gl_panel_1);
-		contentPane.setLayout(gl_contentPane);
 		
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addComponent(menuPanel, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+				.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(statusPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(22)
+					.addComponent(sourceScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+					.addGap(27)
+					.addComponent(goalScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+					.addGap(28)
+					.addComponent(proveScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+					.addGap(21))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblNewLabel)
+					.addGap(9)
+					.addComponent(menuPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(30)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(proveScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						.addComponent(goalScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						.addComponent(sourceScrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(statusPanel, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
+		);
+		
+		GroupLayout gl_statusPanel = new GroupLayout(statusPanel);
+		gl_statusPanel.setHorizontalGroup(
+			gl_statusPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_statusPanel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblStatus, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 284, Short.MAX_VALUE)
+					.addComponent(btnMax)
+					.addGap(18)
+					.addComponent(btnMin)
+					.addContainerGap())
+		);
+		gl_statusPanel.setVerticalGroup(
+			gl_statusPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_statusPanel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_statusPanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblStatus, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_statusPanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnMax, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnMin, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addGap(4))
+		);
+		menuPanel.setLayout(gl_menuPanel);
+		contentPane.setLayout(gl_contentPane);
+		statusPanel.setLayout(gl_statusPanel);
 	}
 }
