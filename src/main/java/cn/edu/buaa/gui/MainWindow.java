@@ -6,8 +6,13 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
@@ -52,21 +57,27 @@ public class MainWindow extends JFrame {
 	private JButton btnRun;
 	private JButton btnOpen;
 	private JFileChooser chooser;
+	private JPanel menuPanel;
+	private JLabel lblStatus;
+	private JLabel lblNewLabel;
+	private JPanel statusPanel;
 	
 	/**
 	 * JTree
 	 */
-	private JPanel menuPanel;
-	private JLabel lblStatus;
-	private JLabel lblNewLabel;
-	private JScrollPane sourceScrollPane;
-	private JScrollPane goalScrollPane;
-	private JTree goalTree;
-	private JScrollPane proveScrollPane;
-	private JTree proveTree;
+	private DefaultTreeModel sourceModel;
+	private TreeNode sourceRoot;
 	private JTree sourceTree;
-	private JPanel statusPanel;
-
+	private JScrollPane sourceScrollPane;
+	private DefaultTreeModel goalModel;
+	private TreeNode goalRoot;
+	private JTree goalTree;	
+	private JScrollPane goalScrollPane;
+	private DefaultTreeModel proveModel;
+	private TreeNode proveRoot;
+	private JTree proveTree;
+	private JScrollPane proveScrollPane;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -162,20 +173,67 @@ public class MainWindow extends JFrame {
 		proveScrollPane.setBackground(Color.DARK_GRAY);
 		
 		
-		// 内容显示树
-		sourceTree = new JTree();
+		// 树
+		sourceRoot = makeSourceTree();
+		sourceModel = new DefaultTreeModel(sourceRoot);
+		sourceTree = new JTree(sourceModel);
+		sourceTree.putClientProperty("JTree.lineStyle", "None");	// 撤销父子节点之间的连线
+//		sourceTree.setRootVisible(false);	// 隐藏根节点
 		sourceTree.setBackground(Color.LIGHT_GRAY);
+		sourceTree.addTreeSelectionListener(new TreeSelectionListener() {		// 添加选择事件
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) sourceTree.getLastSelectedPathComponent();
+                if (node == null) return;
+                
+                Object object = node.getUserObject();
+//                if (node.isLeaf()) {
+                    User user = (User) object;
+                    System.out.println("你选择了：" + user.toString());
+//                }
+            }
+        });
 		sourceScrollPane.setViewportView(sourceTree);
 		
-		goalTree = new JTree();
+		goalRoot = makeSourceTree();
+		goalModel = new DefaultTreeModel(goalRoot);
+		goalTree = new JTree(goalModel);
+		goalTree.putClientProperty("JTree.lineStyle", "None");
+//		goalTree.setRootVisible(false);
 		goalTree.setBackground(Color.LIGHT_GRAY);
+		goalTree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) goalTree.getLastSelectedPathComponent();
+                if (node == null) return;
+                
+                Object object = node.getUserObject();
+                User user = (User) object;
+                System.out.println("你选择了：" + user.toString());
+ 
+            }
+        });
 		goalScrollPane.setViewportView(goalTree);
 		
-		proveTree = new JTree();
+		proveRoot = makeSourceTree();
+		proveModel = new DefaultTreeModel(proveRoot);
+		proveTree = new JTree(proveModel);
+		proveTree.putClientProperty("JTree.lineStyle", "None");
+//		proveTree.setRootVisible(false);
 		proveTree.setBackground(Color.LIGHT_GRAY);
+		proveTree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) proveTree.getLastSelectedPathComponent();
+                if (node == null) return;
+                
+                Object object = node.getUserObject();
+                User user = (User) object;
+                System.out.println("你选择了：" + user.toString());
+ 
+            }
+        });
 		proveScrollPane.setViewportView(proveTree);
-		
-		
 		
 		// 设置标题
 		lblNewLabel = new JLabel();
@@ -339,4 +397,27 @@ public class MainWindow extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 		statusPanel.setLayout(gl_statusPanel);
 	}
+
+	private TreeNode makeSourceTree() {
+		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(new User("软件部"));
+		DefaultMutableTreeNode node11 = new DefaultMutableTreeNode(new User("小组"));
+		node11.add(new DefaultMutableTreeNode(new User("hehe")));
+		node11.add(new DefaultMutableTreeNode(new User("haha")));
+        node1.add(node11);
+        node1.add(new DefaultMutableTreeNode(new User("小虎")));
+        node1.add(new DefaultMutableTreeNode(new User("小龙")));
+ 
+        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(new User("销售部"));
+        node2.add(new DefaultMutableTreeNode(new User("小叶")));
+        node2.add(new DefaultMutableTreeNode(new User("小雯")));
+        node2.add(new DefaultMutableTreeNode(new User("小夏")));
+ 
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode(new User("职员管理"));
+        top.add(new DefaultMutableTreeNode(new User("总经理")));
+        top.add(node1);
+        top.add(node2);
+        
+		return top;
+	}
+	
 }
