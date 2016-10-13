@@ -9,7 +9,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
-public class MyPanel extends JPanel {
+public class CustomPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	private static int WID = 2;

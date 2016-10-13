@@ -2,6 +2,7 @@ package cn.edu.buaa.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,12 +14,14 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -28,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.util.Enumeration;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
@@ -51,8 +55,8 @@ public class MainWindow extends JFrame {
 	 * 组件
 	 */
 	private JPanel contentPane;
-	private JButton btnMax;
-	private JButton btnMin;
+	private JButton btnExpandAll;
+	private JButton btnCollapseAll;
 	private JButton btnExit;
 	private JButton btnRun;
 	private JButton btnOpen;
@@ -66,15 +70,15 @@ public class MainWindow extends JFrame {
 	 * JTree
 	 */
 	private DefaultTreeModel sourceModel;
-	private TreeNode sourceRoot;
+	private DefaultMutableTreeNode sourceRoot;
 	private JTree sourceTree;
 	private JScrollPane sourceScrollPane;
 	private DefaultTreeModel goalModel;
-	private TreeNode goalRoot;
+	private DefaultMutableTreeNode goalRoot;
 	private JTree goalTree;	
 	private JScrollPane goalScrollPane;
 	private DefaultTreeModel proveModel;
-	private TreeNode proveRoot;
+	private DefaultMutableTreeNode proveRoot;
 	private JTree proveTree;
 	private JScrollPane proveScrollPane;
 	
@@ -129,14 +133,14 @@ public class MainWindow extends JFrame {
 //		setBackground(new Color(0, 0, 0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
-		setBounds(50, 30, 600, 450);
+		setBounds(50, 30, 800, 600);
 		setTitle("Source File : ");		// 由输入文件指定
-		setAlwaysOnTop(true);
+//		setAlwaysOnTop(true);
 		
 		menuPanel = new JPanel();
 		menuPanel.setOpaque(false);	
 		
-		contentPane = new MyPanel();
+		contentPane = new CustomPanel();
 		contentPane.setOpaque(false);
 		contentPane.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -182,15 +186,29 @@ public class MainWindow extends JFrame {
 		sourceTree.setBackground(Color.LIGHT_GRAY);
 		sourceTree.addTreeSelectionListener(new TreeSelectionListener() {		// 添加选择事件
             @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) sourceTree.getLastSelectedPathComponent();
-                if (node == null) return;
+            public void valueChanged(TreeSelectionEvent e) {                
+                TreePath[] paths = sourceTree.getSelectionPaths();
+                if (paths == null) return;
                 
-                Object object = node.getUserObject();
-//                if (node.isLeaf()) {
-                    User user = (User) object;
-                    System.out.println("你选择了：" + user.toString());
-//                }
+                goalModel.reload();
+                for (TreePath path : paths) {
+                	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                	User user = (User) node.getUserObject();
+                	System.out.println(user);
+                	
+                	Enumeration<DefaultMutableTreeNode> goals = goalRoot.breadthFirstEnumeration();
+                    while (goals.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = goals.nextElement();
+                    	if (user.equals(cur.getUserObject())) {
+                    		// 高亮显示               
+                    		
+                    		TreeNode[] nodes = goalModel.getPathToRoot(cur);
+                    		TreePath treePath = new TreePath(nodes);
+                    		goalTree.makeVisible(treePath);
+                    		goalTree.scrollPathToVisible(treePath);
+                    	}
+                    }
+                }
             }
         });
 		sourceScrollPane.setViewportView(sourceTree);
@@ -204,13 +222,25 @@ public class MainWindow extends JFrame {
 		goalTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) goalTree.getLastSelectedPathComponent();
-                if (node == null) return;
+                TreePath[] paths = goalTree.getSelectionPaths();
+                if (paths == null) return;
                 
-                Object object = node.getUserObject();
-                User user = (User) object;
-                System.out.println("你选择了：" + user.toString());
- 
+                sourceModel.reload();
+                for (TreePath path : paths) {
+                	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                	User user = (User) node.getUserObject();
+                	
+                	Enumeration<DefaultMutableTreeNode> goals = sourceRoot.breadthFirstEnumeration();
+                    while (goals.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = goals.nextElement();
+                    	if (user.equals(cur.getUserObject())) {
+                    		TreeNode[] nodes = sourceModel.getPathToRoot(cur);
+                    		TreePath treePath = new TreePath(nodes);
+                    		sourceTree.makeVisible(treePath);
+                    		sourceTree.scrollPathToVisible(treePath);
+                    	}
+                    }
+                }
             }
         });
 		goalScrollPane.setViewportView(goalTree);
@@ -248,7 +278,8 @@ public class MainWindow extends JFrame {
 		lblStatus.setText("Status : ");
 		
 		btnRun = new JButton("Run");
-		btnRun.setUI(new MyButtonUI());
+		btnRun.setUI(new CustomButtonUI());
+		btnRun.setForeground(Color.RED);
 		btnRun.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -256,10 +287,12 @@ public class MainWindow extends JFrame {
 				
 			}
 		});
-		btnRun.setUI(new MyButtonUI());
+		btnRun.setUI(new CustomButtonUI());
 		
 		// 选定一个源文件
 		btnOpen = new JButton("Open");
+		btnOpen.setUI(new CustomButtonUI());
+		btnOpen.setForeground(Color.RED);
 		chooser = new JFileChooser("./src/main/resources/input");
 		btnOpen.addMouseListener(new MouseAdapter() {
 			@Override
@@ -274,13 +307,12 @@ public class MainWindow extends JFrame {
 					
 					setTitle("Source File : " + file.getName());
 				}
-				
 			}
 		});
-		btnOpen.setUI(new MyButtonUI());
 		
 		btnExit = new JButton("Exit");
-		btnExit.setUI(new MyButtonUI());
+		btnExit.setUI(new CustomButtonUI());
+		btnExit.setForeground(Color.RED);
 		btnExit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -288,31 +320,30 @@ public class MainWindow extends JFrame {
 				
 			}
 		});
-		btnExit.setUI(new MyButtonUI());
 		
-		btnMax = new JButton("Max");
-		btnMax.setUI(new MyButtonUI());
-		btnMax.addMouseListener(new MouseAdapter() {
+		btnExpandAll = new JButton("ExpandAll");
+		btnExpandAll.setUI(new CustomButtonUIForContent());
+		btnExpandAll.setForeground(Color.LIGHT_GRAY);
+		btnExpandAll.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (getExtendedState() == MAXIMIZED_BOTH) {
-					setExtendedState(JFrame.NORMAL);
-				} else {
-					setExtendedState(JFrame.MAXIMIZED_BOTH);
-				}
+				showAllNodes(sourceRoot, sourceModel, sourceTree);
+				showAllNodes(goalRoot, goalModel, goalTree);
+				showAllNodes(proveRoot, proveModel, proveTree);
 			}
 		});
-		btnMax.setUI(new MyButtonUI());
 		
-		btnMin = new JButton("Min");
-		btnMin.setUI(new MyButtonUI());
-		btnMin.addMouseListener(new MouseAdapter() {
+		btnCollapseAll = new JButton("CollapseAll");
+		btnCollapseAll.setUI(new CustomButtonUIForContent());
+		btnCollapseAll.setForeground(Color.LIGHT_GRAY);
+		btnCollapseAll.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				setExtendedState(JFrame.ICONIFIED);
+				sourceModel.reload();
+				goalModel.reload();
+				proveModel.reload();
 			}
 		});
-		btnMin.setUI(new MyButtonUI());
 
 		GroupLayout gl_menuPanel = new GroupLayout(menuPanel);
 		gl_menuPanel.setHorizontalGroup(
@@ -377,9 +408,9 @@ public class MainWindow extends JFrame {
 					.addContainerGap()
 					.addComponent(lblStatus, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED, 284, Short.MAX_VALUE)
-					.addComponent(btnMax)
+					.addComponent(btnExpandAll)
 					.addGap(18)
-					.addComponent(btnMin)
+					.addComponent(btnCollapseAll)
 					.addContainerGap())
 		);
 		gl_statusPanel.setVerticalGroup(
@@ -389,8 +420,8 @@ public class MainWindow extends JFrame {
 					.addGroup(gl_statusPanel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblStatus, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
 						.addGroup(Alignment.LEADING, gl_statusPanel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnMax, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnMin, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addComponent(btnExpandAll, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnCollapseAll, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addGap(4))
 		);
 		menuPanel.setLayout(gl_menuPanel);
@@ -398,7 +429,21 @@ public class MainWindow extends JFrame {
 		statusPanel.setLayout(gl_statusPanel);
 	}
 
-	private TreeNode makeSourceTree() {
+	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {
+		TreeNode[] nodes = model.getPathToRoot(root);
+		TreePath path = new TreePath(nodes);
+		tree.makeVisible(path);
+				
+		if (root.isLeaf()) return;
+		
+		Enumeration<DefaultMutableTreeNode> subs = root.children();
+        while (subs.hasMoreElements()) {
+        	DefaultMutableTreeNode cur = subs.nextElement();
+        	showAllNodes(cur, model, tree);
+        }
+	}
+
+	private DefaultMutableTreeNode makeSourceTree() {
 		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(new User("软件部"));
 		DefaultMutableTreeNode node11 = new DefaultMutableTreeNode(new User("小组"));
 		node11.add(new DefaultMutableTreeNode(new User("hehe")));

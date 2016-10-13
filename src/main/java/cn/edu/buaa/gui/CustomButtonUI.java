@@ -14,7 +14,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import sun.swing.SwingUtilities2;
 
 @SuppressWarnings("restriction")
-public class MyButtonUI extends BasicButtonUI {
+public class CustomButtonUI extends BasicButtonUI {
 	
 	@Override
 	protected void installDefaults(AbstractButton b) {
@@ -24,7 +24,6 @@ public class MyButtonUI extends BasicButtonUI {
 	
 	@Override
 	public void paint(Graphics g, JComponent c) {
-		g.setColor(new Color(255, 0, 0, 150));
 		g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 10, 10);
 		super.paint(g, c);
 		
@@ -75,7 +74,7 @@ public class MyButtonUI extends BasicButtonUI {
 
 	@Override
 	protected void paintButtonPressed(Graphics g, AbstractButton b) {
-		g.setColor(new Color(255, 200, 0, 150));
+		g.setColor(Color.ORANGE);
 		g.fillRoundRect(0, 0, b.getWidth(), b.getHeight(), 10, 10);
 	
 	}
