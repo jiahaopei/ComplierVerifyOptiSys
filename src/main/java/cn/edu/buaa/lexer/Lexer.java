@@ -24,7 +24,9 @@ public class Lexer {
 	
 	private Recorder recorder;
 	private String srcName;
-	private List<String> src;
+	private List<String> srcs;
+	private List<String> labels;
+	
 	private List<Token> tokens;
 	
 	private Set<String> fileNames;
@@ -34,13 +36,18 @@ public class Lexer {
 	public Lexer(String fileName, Recorder recorder) {
 		this.recorder = recorder;
 		srcName = fileName;
-		src = getContent(fileName);
+		srcs = getContent(fileName);
+		labels = new ArrayList<>();
 		tokens = new ArrayList<Token>();
 		fileNames = new HashSet<>();
 	}
 
-	public List<String> getSrc() {
-		return src;
+	public List<String> getSrcs() {
+		return srcs;
+	}
+	
+	public List<String> getLabels() {
+		return labels;
 	}
 
 	public List<Token> getTokens() {
@@ -61,7 +68,9 @@ public class Lexer {
 			
 			Stack<Integer> stack = new Stack<>();
 			stack.push(1);
-			for (String line : src) {
+			for (int i = 0; i < srcs.size(); i++) {
+				String line = srcs.get(i);
+				String label = "";
 				
 				if (line.contains("}")) {
 					stack.pop();
@@ -78,9 +87,9 @@ public class Lexer {
 						line += " ";
 					}
 					
-					String l = generateLabel(stack);
-					if (l.trim().length() != 0) {
-						line = line + "// " + l.trim();
+					label = generateLabel(stack);
+					if (label.trim().length() != 0) {
+						line = line + "// " + label.trim();
 					}
 				}
 				
@@ -88,6 +97,7 @@ public class Lexer {
 				writer.write(line);
 				writer.newLine();
 				writer.flush();
+				labels.add(label);
 
 				if (line.contains("{")) {
 					stack.push(0);
@@ -98,8 +108,6 @@ public class Lexer {
 					stack.push(tmp + 1);
 				}
 			}
-			
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -112,11 +120,6 @@ public class Lexer {
 				}
 			}
 		}
-			
-		
-		
-		
-		
 		
 		recorder.insertLine("词法分析结束!");
 		logger.info("词法分析结束!");
@@ -536,7 +539,7 @@ public class Lexer {
 
 		return codes;
 	}
-
+	
 	public void labelSrc(String fileName) {
 		logger.info("源代码标号开始...");
 		recorder.insertLine("源代码标号开始...");
@@ -550,8 +553,8 @@ public class Lexer {
 			Stack<Integer> stack = new Stack<>();
 			stack.push(1);
 			int i = 0;
-			while (i < src.size()) {
-				String line = src.get(i);
+			while (i < srcs.size()) {
+				String line = srcs.get(i);
 
 				if (line.contains("}")) {
 					stack.pop();
@@ -636,10 +639,17 @@ public class Lexer {
 	// 输出源代码
 	public void outputSrc() {
 		recorder.insertLine("====================Source C Code==================");
-		for (String str : src) {
+		for (String str : srcs) {
 			recorder.insertLine(str);
 		}
 		recorder.insertLine(null);
+	}
+	
+	// 输出标号
+	public void outputLabels() {
+		for (String str : labels) {
+			System.out.println(str);
+		}
 	}
 	
 	// 输出词法分析后的结果
@@ -680,6 +690,7 @@ public class Lexer {
 		Lexer lexer = new Lexer(fileName, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
+//		lexer.outputLabels();
 		lexer.outputLabelSrc(fileName);
 		lexer.outputLexer();
 	}
