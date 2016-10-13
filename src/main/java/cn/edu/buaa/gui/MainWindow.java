@@ -128,9 +128,6 @@ public class MainWindow extends JFrame {
 			
 		});
 		
-		// 设定背景
-//		setUndecorated(true);
-//		setBackground(new Color(0, 0, 0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
 		setBounds(50, 30, 800, 600);
