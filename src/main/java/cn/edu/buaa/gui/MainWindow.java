@@ -192,14 +192,14 @@ public class MainWindow extends JFrame {
                 TreePath[] paths = sourceTree.getSelectionPaths();
                 if (paths == null) return;
                 
-//              travel(sourceRoot);
-                
+                sourceRenderer.keys.clear();
+                goalRenderer.keys.clear();
                 goalModel.reload();
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	User user = (User) node.getUserObject();
                 	
-                	goalRenderer.key = user;
+                	goalRenderer.keys.add(user);
                 	
                 	Enumeration<DefaultMutableTreeNode> goals = goalRoot.breadthFirstEnumeration();
                     while (goals.hasMoreElements()) {
@@ -216,7 +216,6 @@ public class MainWindow extends JFrame {
                 }
                 goalTree.repaint();
                 sourceTree.repaint();
-                goalRenderer.key = null;
             }
         });
 		sourceScrollPane.setViewportView(sourceTree);
@@ -235,12 +234,14 @@ public class MainWindow extends JFrame {
                 TreePath[] paths = goalTree.getSelectionPaths();
                 if (paths == null) return;
                 
+                sourceRenderer.keys.clear();
+                goalRenderer.keys.clear();
                 sourceModel.reload();
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	User user = (User) node.getUserObject();
                 	
-                	sourceRenderer.key = user;
+                	sourceRenderer.keys.add(user);
                 	
                 	Enumeration<DefaultMutableTreeNode> goals = sourceRoot.breadthFirstEnumeration();
                     while (goals.hasMoreElements()) {
@@ -255,7 +256,6 @@ public class MainWindow extends JFrame {
                 }
                 goalTree.repaint();
                 sourceTree.repaint();
-                sourceRenderer.key = null;
             }
         });
 		goalScrollPane.setViewportView(goalTree);
@@ -441,24 +441,6 @@ public class MainWindow extends JFrame {
 		menuPanel.setLayout(gl_menuPanel);
 		contentPane.setLayout(gl_contentPane);
 		statusPanel.setLayout(gl_statusPanel);
-	}
-
-	protected void travel(DefaultMutableTreeNode root) {
-		Enumeration<DefaultMutableTreeNode> goals = root.breadthFirstEnumeration();
-        while (goals.hasMoreElements()) {
-        	DefaultMutableTreeNode cur = goals.nextElement();
-        	
-        	
-//        	if (user.equals(cur.getUserObject())) {
-//        		// 高亮显示               
-//        		
-//        		TreeNode[] nodes = goalModel.getPathToRoot(cur);
-//        		TreePath treePath = new TreePath(nodes);
-//        		goalTree.makeVisible(treePath);
-//        		goalTree.scrollPathToVisible(treePath);
-//        	}
-        }
-		
 	}
 
 	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {

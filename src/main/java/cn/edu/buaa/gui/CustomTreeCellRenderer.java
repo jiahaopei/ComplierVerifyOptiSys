@@ -2,6 +2,8 @@ package cn.edu.buaa.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;
@@ -16,7 +18,7 @@ class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 7686967801067184641L;
 	
 	private final TreeCellRenderer renderer;  
-    public User key;
+    public List<User> keys = new ArrayList<>();
     public String name;
   
     public CustomTreeCellRenderer(TreeCellRenderer renderer) {  
@@ -39,13 +41,9 @@ class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             User user = (User) node.getUserObject(); 
             
-            System.out.println(name + " $$ " + key);
-            
-            if (key != null && key.equals(user)) {
+            if (keys != null && keys.contains(user)) {
                 c.setForeground(Color.YELLOW);  
-//                c.setBackground(Color.YELLOW);
-            } else {  
-//                c.setForeground(getTextNonSelectionColor());  
+            } else {
             	c.setForeground(Color.BLACK);
             }
         }  
