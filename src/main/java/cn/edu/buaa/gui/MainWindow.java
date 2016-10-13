@@ -2,7 +2,6 @@ package cn.edu.buaa.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +20,6 @@ import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -72,10 +70,12 @@ public class MainWindow extends JFrame {
 	private DefaultTreeModel sourceModel;
 	private DefaultMutableTreeNode sourceRoot;
 	private JTree sourceTree;
+	private CustomTreeCellRenderer sourceRenderer;
 	private JScrollPane sourceScrollPane;
 	private DefaultTreeModel goalModel;
 	private DefaultMutableTreeNode goalRoot;
-	private JTree goalTree;	
+	private JTree goalTree;
+	private CustomTreeCellRenderer goalRenderer;
 	private JScrollPane goalScrollPane;
 	private DefaultTreeModel proveModel;
 	private DefaultMutableTreeNode proveRoot;
@@ -182,19 +182,24 @@ public class MainWindow extends JFrame {
 		sourceModel = new DefaultTreeModel(sourceRoot);
 		sourceTree = new JTree(sourceModel);
 		sourceTree.putClientProperty("JTree.lineStyle", "None");	// 撤销父子节点之间的连线
-//		sourceTree.setRootVisible(false);	// 隐藏根节点
 		sourceTree.setBackground(Color.LIGHT_GRAY);
+		sourceRenderer = new CustomTreeCellRenderer(sourceTree.getCellRenderer());
+		sourceRenderer.name = "source";
+		sourceTree.setCellRenderer(sourceRenderer);
 		sourceTree.addTreeSelectionListener(new TreeSelectionListener() {		// 添加选择事件
             @Override
             public void valueChanged(TreeSelectionEvent e) {                
                 TreePath[] paths = sourceTree.getSelectionPaths();
                 if (paths == null) return;
                 
+//              travel(sourceRoot);
+                
                 goalModel.reload();
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	User user = (User) node.getUserObject();
-                	System.out.println(user);
+                	
+                	goalRenderer.key = user;
                 	
                 	Enumeration<DefaultMutableTreeNode> goals = goalRoot.breadthFirstEnumeration();
                     while (goals.hasMoreElements()) {
@@ -209,6 +214,9 @@ public class MainWindow extends JFrame {
                     	}
                     }
                 }
+                goalTree.repaint();
+                sourceTree.repaint();
+                goalRenderer.key = null;
             }
         });
 		sourceScrollPane.setViewportView(sourceTree);
@@ -217,8 +225,10 @@ public class MainWindow extends JFrame {
 		goalModel = new DefaultTreeModel(goalRoot);
 		goalTree = new JTree(goalModel);
 		goalTree.putClientProperty("JTree.lineStyle", "None");
-//		goalTree.setRootVisible(false);
 		goalTree.setBackground(Color.LIGHT_GRAY);
+		goalRenderer = new CustomTreeCellRenderer(goalTree.getCellRenderer());
+		goalRenderer.name = "goal";
+		goalTree.setCellRenderer(goalRenderer);
 		goalTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
@@ -229,6 +239,8 @@ public class MainWindow extends JFrame {
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	User user = (User) node.getUserObject();
+                	
+                	sourceRenderer.key = user;
                 	
                 	Enumeration<DefaultMutableTreeNode> goals = sourceRoot.breadthFirstEnumeration();
                     while (goals.hasMoreElements()) {
@@ -241,6 +253,9 @@ public class MainWindow extends JFrame {
                     	}
                     }
                 }
+                goalTree.repaint();
+                sourceTree.repaint();
+                sourceRenderer.key = null;
             }
         });
 		goalScrollPane.setViewportView(goalTree);
@@ -249,7 +264,6 @@ public class MainWindow extends JFrame {
 		proveModel = new DefaultTreeModel(proveRoot);
 		proveTree = new JTree(proveModel);
 		proveTree.putClientProperty("JTree.lineStyle", "None");
-//		proveTree.setRootVisible(false);
 		proveTree.setBackground(Color.LIGHT_GRAY);
 		proveTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -427,6 +441,24 @@ public class MainWindow extends JFrame {
 		menuPanel.setLayout(gl_menuPanel);
 		contentPane.setLayout(gl_contentPane);
 		statusPanel.setLayout(gl_statusPanel);
+	}
+
+	protected void travel(DefaultMutableTreeNode root) {
+		Enumeration<DefaultMutableTreeNode> goals = root.breadthFirstEnumeration();
+        while (goals.hasMoreElements()) {
+        	DefaultMutableTreeNode cur = goals.nextElement();
+        	
+        	
+//        	if (user.equals(cur.getUserObject())) {
+//        		// 高亮显示               
+//        		
+//        		TreeNode[] nodes = goalModel.getPathToRoot(cur);
+//        		TreePath treePath = new TreePath(nodes);
+//        		goalTree.makeVisible(treePath);
+//        		goalTree.scrollPathToVisible(treePath);
+//        	}
+        }
+		
 	}
 
 	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {
