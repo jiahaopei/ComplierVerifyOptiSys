@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -193,15 +194,14 @@ public class MainWindow extends JFrame {
 		proveScrollPane.setOpaque(false);
 		proveScrollPane.setBackground(Color.DARK_GRAY);
 		
-		
 		// 树
-		sourceRoot = makeSourceTree();
+		sourceRoot = new DefaultMutableTreeNode();
 		sourceModel = new DefaultTreeModel(sourceRoot);
 		sourceTree = new JTree(sourceModel);
 		sourceTree.putClientProperty("JTree.lineStyle", "None");	// 撤销父子节点之间的连线
 		sourceTree.setBackground(Color.LIGHT_GRAY);
+		sourceTree.setRootVisible(false);
 		sourceRenderer = new CustomTreeCellRenderer(sourceTree.getCellRenderer());
-		sourceRenderer.name = "source";
 		sourceTree.setCellRenderer(sourceRenderer);
 		sourceTree.addTreeSelectionListener(new TreeSelectionListener() {		// 添加选择事件
             @Override
@@ -214,7 +214,7 @@ public class MainWindow extends JFrame {
                 goalModel.reload();
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                	User user = (User) node.getUserObject();
+                	Node user = (Node) node.getUserObject();
                 	
                 	goalRenderer.keys.add(user);
                 	
@@ -243,7 +243,6 @@ public class MainWindow extends JFrame {
 		goalTree.putClientProperty("JTree.lineStyle", "None");
 		goalTree.setBackground(Color.LIGHT_GRAY);
 		goalRenderer = new CustomTreeCellRenderer(goalTree.getCellRenderer());
-		goalRenderer.name = "goal";
 		goalTree.setCellRenderer(goalRenderer);
 		goalTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -256,7 +255,7 @@ public class MainWindow extends JFrame {
                 sourceModel.reload();
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                	User user = (User) node.getUserObject();
+                	Node user = (Node) node.getUserObject();
                 	
                 	sourceRenderer.keys.add(user);
                 	
@@ -289,7 +288,7 @@ public class MainWindow extends JFrame {
                 if (node == null) return;
                 
                 Object object = node.getUserObject();
-                User user = (User) object;
+                Node user = (Node) object;
                 System.out.println("你选择了：" + user.toString());
  
             }
@@ -336,6 +335,8 @@ public class MainWindow extends JFrame {
 					File file = chooser.getSelectedFile();					
 					srcPath = file.getAbsolutePath();
 					setTitle("Source File : " + file.getName());
+					sourceRoot.setUserObject(new Node(file.getName()));
+					sourceTree.repaint();
 				}
 			}
 		});
@@ -496,13 +497,29 @@ public class MainWindow extends JFrame {
 			
 			@Override
 			protected void done() {
-				
-				
-				
+				// 删除旧的节点
+				Enumeration<DefaultMutableTreeNode> children = sourceRoot.children();
+				while (children.hasMoreElements()) {
+					DefaultMutableTreeNode cur = children.nextElement();
+					sourceModel.removeNodeFromParent(cur);
+				}
+				// 增加新的节点
+				DefaultMutableTreeNode tmp = makeTree(sources, sourceLabels);
+				sourceModel.insertNodeInto(tmp, sourceRoot, 0);
+				sourceModel.reload();
+				TreeNode[] nodes = sourceModel.getPathToRoot(tmp.getLastChild());
+				sourceTree.makeVisible(new TreePath(nodes));
+								
 				lblStatus.setText("Status : (Completed)");
 			}
 			
 		}.execute();
+	}
+
+	protected DefaultMutableTreeNode makeTree(List<String> codes, List<String> labels) {
+		
+		
+		return makeSourceTree();
 	}
 
 	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {
@@ -520,21 +537,21 @@ public class MainWindow extends JFrame {
 	}
 
 	private DefaultMutableTreeNode makeSourceTree() {
-		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(new User("软件部"));
-		DefaultMutableTreeNode node11 = new DefaultMutableTreeNode(new User("小组"));
-		node11.add(new DefaultMutableTreeNode(new User("hehe")));
-		node11.add(new DefaultMutableTreeNode(new User("haha")));
+		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(new Node("软件部"));
+		DefaultMutableTreeNode node11 = new DefaultMutableTreeNode(new Node("小组"));
+		node11.add(new DefaultMutableTreeNode(new Node("hehe")));
+		node11.add(new DefaultMutableTreeNode(new Node("haha")));
         node1.add(node11);
-        node1.add(new DefaultMutableTreeNode(new User("小虎")));
-        node1.add(new DefaultMutableTreeNode(new User("小龙")));
+        node1.add(new DefaultMutableTreeNode(new Node("小虎")));
+        node1.add(new DefaultMutableTreeNode(new Node("小龙")));
  
-        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(new User("销售部"));
-        node2.add(new DefaultMutableTreeNode(new User("小叶")));
-        node2.add(new DefaultMutableTreeNode(new User("小雯")));
-        node2.add(new DefaultMutableTreeNode(new User("小夏")));
+        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(new Node("销售部"));
+        node2.add(new DefaultMutableTreeNode(new Node("小叶")));
+        node2.add(new DefaultMutableTreeNode(new Node("小雯")));
+        node2.add(new DefaultMutableTreeNode(new Node("小夏")));
  
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(new User("职员管理"));
-        top.add(new DefaultMutableTreeNode(new User("总经理")));
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node("职员管理"));
+        top.add(new DefaultMutableTreeNode(new Node("总经理")));
         top.add(node1);
         top.add(node2);
         

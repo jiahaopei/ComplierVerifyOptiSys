@@ -18,8 +18,7 @@ class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 7686967801067184641L;
 	
 	private final TreeCellRenderer renderer;  
-    public List<User> keys = new ArrayList<>();
-    public String name;
+    public List<Node> keys = new ArrayList<>();
   
     public CustomTreeCellRenderer(TreeCellRenderer renderer) {  
         this.renderer = renderer;  
@@ -39,7 +38,7 @@ class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
         } else {
             c.setOpaque(false);
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            User user = (User) node.getUserObject(); 
+            Node user = (Node) node.getUserObject(); 
             
             if (keys != null && keys.contains(user)) {
                 c.setForeground(Color.YELLOW);  
