@@ -32,7 +32,7 @@ public class Node {
 	// 重点在toString，节点的显示文本就是toString
     public String toString() {
     	if (label != null && label.trim().length() != 0) {
-    		value = value + "\t\t// " + label;
+    		return value + "        // " + label;
     	}
         return value;
     }

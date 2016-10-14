@@ -12,11 +12,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import org.w3c.dom.ls.LSInput;
 
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
@@ -152,7 +149,7 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
 		setBounds(50, 30, 800, 600);
-		setTitle("Source File : " + srcPath.substring(srcPath.lastIndexOf("/") + 1));		// 由输入文件指定
+		setTitle("Source File : " + getSrcFileName());		// 由输入文件指定
 //		setAlwaysOnTop(true);
 		
 		menuPanel = new JPanel();
@@ -195,7 +192,7 @@ public class MainWindow extends JFrame {
 		proveScrollPane.setBackground(Color.DARK_GRAY);
 		
 		// 树
-		sourceRoot = new DefaultMutableTreeNode();
+		sourceRoot = new DefaultMutableTreeNode(new Node(getSrcFileName()));
 		sourceModel = new DefaultTreeModel(sourceRoot);
 		sourceTree = new JTree(sourceModel);
 		sourceTree.putClientProperty("JTree.lineStyle", "None");	// 撤销父子节点之间的连线
@@ -504,11 +501,14 @@ public class MainWindow extends JFrame {
 					sourceModel.removeNodeFromParent(cur);
 				}
 				// 增加新的节点
-				DefaultMutableTreeNode tmp = makeTree(sources, sourceLabels);
+				DefaultMutableTreeNode tmp = makeTree(sources, sourceLabels, sourceModel);
 				sourceModel.insertNodeInto(tmp, sourceRoot, 0);
 				sourceModel.reload();
-				TreeNode[] nodes = sourceModel.getPathToRoot(tmp.getLastChild());
-				sourceTree.makeVisible(new TreePath(nodes));
+				if (!tmp.isLeaf()) {
+					TreeNode[] nodes = sourceModel.getPathToRoot(tmp.getLastChild());
+					sourceTree.makeVisible(new TreePath(nodes));
+				}
+//				showAllNodes(sourceRoot, sourceModel, sourceTree);
 								
 				lblStatus.setText("Status : (Completed)");
 			}
@@ -516,10 +516,60 @@ public class MainWindow extends JFrame {
 		}.execute();
 	}
 
-	protected DefaultMutableTreeNode makeTree(List<String> codes, List<String> labels) {
+	protected DefaultMutableTreeNode makeTree(List<String> codes, List<String> labels, DefaultTreeModel model) {
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(getSrcFileName() + " : "));
 		
+		for (int i = 0; i < codes.size(); i++) {
+			String value = codes.get(i);
+			if (value == null || value.trim().length() == 0) continue;
+			
+			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+					new Node(value, labels.get(i)));
+			int newLevel = getLevel(newNode);
+			DefaultMutableTreeNode parentNode = top;
+			
+			Enumeration<DefaultMutableTreeNode> goals = top.breadthFirstEnumeration();
+            while (goals.hasMoreElements()) {
+            	DefaultMutableTreeNode cur = goals.nextElement();
+            	int curLevel = getLevel(cur);
+            	
+            	// 为第一层子节点
+            	if (curLevel == 0 && newLevel == 1) {
+            		parentNode = cur;
+            		break;
+            	} else if (curLevel != 0 && curLevel + 1 == newLevel && isParentAndSon(cur, newNode)) {
+            		parentNode = cur;
+            		break;
+            	}
+            }
+            
+            model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+		}
 		
-		return makeSourceTree();
+		return top;
+	}
+	
+	private int getLevel(DefaultMutableTreeNode newNode) {
+		Node a = (Node) newNode.getUserObject();
+		if (a.getLabel() == null || a.getLabel().trim().length() == 0) {
+			return 0;
+		} else {
+			String label = a.getLabel();
+			String[] ls = label.trim().split("\\.");
+			return ls.length;
+		}
+	}
+	
+	private boolean isParentAndSon(DefaultMutableTreeNode cur, DefaultMutableTreeNode newNode) {
+		Node a = (Node) cur.getUserObject();
+		Node b = (Node) newNode.getUserObject();
+		
+		String subLabel = b.getLabel().substring(0, b.getLabel().lastIndexOf("."));
+		return a.getLabel().equals(subLabel);
+	}
+	
+	private String getSrcFileName() {
+		return srcPath.substring(srcPath.lastIndexOf("/") + 1);
 	}
 
 	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {
@@ -557,5 +607,4 @@ public class MainWindow extends JFrame {
         
 		return top;
 	}
-	
 }
