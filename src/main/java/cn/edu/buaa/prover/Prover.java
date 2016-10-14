@@ -45,7 +45,7 @@ public class Prover {
 	
 	private final Logger logger = LoggerFactory.getLogger(Prover.class);
 	
-	public Prover(Recorder recorder, String fileName) {
+	public Prover(Recorder recorder, String srcPath) {
 		loadAxioms("src/main/resources/axiom/ppcAxiom.xls");
 		// showAxioms();
 
@@ -57,7 +57,7 @@ public class Prover {
 		
 		this.recorder = recorder;
 		
-		this.sequences = createSequencesFile(fileName);
+		this.sequences = createSequencesFile(srcPath);
 	}
 	
 	public boolean runProver(String key, String label) {		
@@ -445,10 +445,10 @@ public class Prover {
 
 	}
 
-	public BufferedWriter createSequencesFile(String fileName) {
+	public BufferedWriter createSequencesFile(String srcPath) {
 		BufferedWriter bw = null;
 		
-		if (fileName == null) {
+		if (srcPath == null) {
 			try {
 				bw =  new BufferedWriter(new FileWriter(CommonsDefine.OUTPUT_PATH + "prover.v"));
 			} catch (IOException e) {
@@ -456,6 +456,7 @@ public class Prover {
 			}
 			
 		} else {
+			String fileName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
 			int end = fileName.indexOf(".");
 			fileName = fileName.substring(0, end);
 			try {

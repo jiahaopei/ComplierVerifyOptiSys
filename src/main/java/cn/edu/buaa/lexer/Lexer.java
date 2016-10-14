@@ -23,6 +23,7 @@ import cn.edu.buaa.recorder.Recorder;
 public class Lexer {
 	
 	private Recorder recorder;
+	private String srcDir;
 	private String srcName;
 	private List<String> srcs;
 	private List<String> labels;
@@ -33,10 +34,11 @@ public class Lexer {
 	
 	private final Logger logger = LoggerFactory.getLogger(Lexer.class);
 
-	public Lexer(String fileName, Recorder recorder) {
+	public Lexer(String srcPath, Recorder recorder) {
 		this.recorder = recorder;
-		srcName = fileName;
-		srcs = getContent(fileName);
+		this.srcDir = srcPath.substring(0, srcPath.lastIndexOf("/") + 1);
+		this.srcName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
+		srcs = getContent(srcName);
 		labels = new ArrayList<>();
 		tokens = new ArrayList<Token>();
 		fileNames = new HashSet<>();
@@ -339,6 +341,7 @@ public class Lexer {
 			libName = libName.substring(0, libName.indexOf("."));
 			if (!fileNames.contains(libName)) {
 				fileNames.add(libName);
+				
 			} else {
 				return;		// 表示此文件已经处理过了
 			}
@@ -347,7 +350,7 @@ public class Lexer {
 		}
 		
 		// 找不到的源文件即为系统文件
-		File file = new File(CommonsDefine.INPUT_PATH + libName);
+		File file = new File(srcDir + libName);
 		if (!file.exists()) {
 			return;
 		}
@@ -409,16 +412,16 @@ public class Lexer {
 		
 	}
 
-	private List<String> getContent(String fileName) {
-		logger.info("预处理源代码开始...(" + fileName + ")");
-		recorder.insertLine("预处理源代码开始...(" + fileName + ")");
+	private List<String> getContent(String srcName) {
+		logger.info("预处理源代码开始...(" + srcName + ")");
+		recorder.insertLine("预处理源代码开始...(" + srcName + ")");
 		
 		BufferedReader reader = null;
 		List<String> codes = new ArrayList<>();
 
 		try {
 			reader = new BufferedReader(
-					new FileReader(CommonsDefine.INPUT_PATH + fileName));
+					new FileReader(srcDir + srcName));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				codes.add(line);
@@ -608,10 +611,10 @@ public class Lexer {
 		
 	}
 	
-	public void outputLabelSrc(String fileName) {
+	public void outputLabelSrc() {
 		recorder.insertLine("====================Labeled C Code==================");
 		
-		String path = CommonsDefine.OUTPUT_PATH + "/label_" + fileName;
+		String path = CommonsDefine.OUTPUT_PATH + "/label_" + srcName;
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(path));
@@ -682,16 +685,15 @@ public class Lexer {
 	}
 
 	public static void main(String[] args) {
-		
 		// 公共记录
-		Recorder recorder = new Recorder();	
-		String fileName = "evenSum.c";
+		Recorder recorder = new Recorder();
 		
-		Lexer lexer = new Lexer(fileName, recorder);
+		String srcPath = "src/main/resources/input/evenSum.c";
+		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
 //		lexer.outputLabels();
-		lexer.outputLabelSrc(fileName);
+		lexer.outputLabelSrc();
 		lexer.outputLexer();
 	}
 

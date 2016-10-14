@@ -16,22 +16,22 @@ public class Main {
 	public static void main(String[] args) {
 		// 公共记录
 		Recorder recorder = new Recorder();
-		String fileName = "evenSum.c";
-		
-		Lexer lexer = new Lexer(fileName, recorder);
+
+		String srcPath = "src/main/resources/input/evenSum.c";
+		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
-		lexer.outputLabelSrc(fileName);
+		lexer.outputLabelSrc();
 		lexer.outputLexer();
-
+		
 		Parser parser = new Parser(lexer.getTokens(), recorder);
 		parser.runParser();
 		parser.outputParser();
 
-		Prover prover = new Prover(recorder, fileName);
+		Prover prover = new Prover(recorder, srcPath);
 		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
 		assembler.runAssembler();
-		assembler.generateAssemblerFile(fileName);
+		assembler.generateAssemblerFile(srcPath);
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();
 		

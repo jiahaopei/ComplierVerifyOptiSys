@@ -15,7 +15,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.w3c.dom.ls.LSInput;
+
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
+
+import cn.edu.buaa.assembler.Assembler;
+import cn.edu.buaa.lexer.Lexer;
+import cn.edu.buaa.parser.Parser;
+import cn.edu.buaa.prover.Prover;
+import cn.edu.buaa.recorder.Recorder;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -29,7 +37,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
@@ -37,6 +47,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingWorker;
 
 
 public class MainWindow extends JFrame {
@@ -81,6 +92,15 @@ public class MainWindow extends JFrame {
 	private DefaultMutableTreeNode proveRoot;
 	private JTree proveTree;
 	private JScrollPane proveScrollPane;
+	
+	/**
+	 * System
+	 */
+	private String srcPath = "src/main/resources/input/evenSum.c";
+	private List<String> sources;
+	private List<String> sourceLabels;
+	private List<String> goals;
+	private List<String> goalLabels;
 	
 	/**
 	 * Launch the application.
@@ -131,7 +151,7 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
 		setBounds(50, 30, 800, 600);
-		setTitle("Source File : ");		// 由输入文件指定
+		setTitle("Source File : " + srcPath.substring(srcPath.lastIndexOf("/") + 1));		// 由输入文件指定
 //		setAlwaysOnTop(true);
 		
 		menuPanel = new JPanel();
@@ -286,7 +306,7 @@ public class MainWindow extends JFrame {
 		lblStatus = new JLabel();
 		lblStatus.setHorizontalAlignment(JLabel.LEFT);
 		lblStatus.setForeground(Color.WHITE);
-		lblStatus.setText("Status : ");
+		lblStatus.setText("Status : (Started)");
 		
 		btnRun = new JButton("Run");
 		btnRun.setUI(new CustomButtonUI());
@@ -294,8 +314,8 @@ public class MainWindow extends JFrame {
 		btnRun.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Run");
-				
+				lblStatus.setText("Status : (Running)");
+				runApp();
 			}
 		});
 		btnRun.setUI(new CustomButtonUI());
@@ -313,9 +333,8 @@ public class MainWindow extends JFrame {
 				
 				int value = chooser.showOpenDialog(MainWindow.this);
 				if (value == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					System.out.println(file.getAbsolutePath());
-					
+					File file = chooser.getSelectedFile();					
+					srcPath = file.getAbsolutePath();
 					setTitle("Source File : " + file.getName());
 				}
 			}
@@ -328,7 +347,6 @@ public class MainWindow extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				System.exit(0);
-				
 			}
 		});
 		
@@ -438,6 +456,53 @@ public class MainWindow extends JFrame {
 		menuPanel.setLayout(gl_menuPanel);
 		contentPane.setLayout(gl_contentPane);
 		statusPanel.setLayout(gl_statusPanel);
+	}
+	
+	// 运行整个业务系统
+	protected void runApp() {
+		new SwingWorker<List<String>, String>() {
+
+			@Override
+			protected List<String> doInBackground() throws Exception {
+				// 公共记录
+				Recorder recorder = new Recorder();
+
+				Lexer lexer = new Lexer(srcPath, recorder);
+				lexer.runLexer();
+				lexer.outputSrc();
+				lexer.outputLabelSrc();
+				lexer.outputLexer();
+				
+				Parser parser = new Parser(lexer.getTokens(), recorder);
+				parser.runParser();
+				parser.outputParser();
+
+				Prover prover = new Prover(recorder, srcPath);
+				Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
+				assembler.runAssembler();
+				assembler.generateAssemblerFile(srcPath);
+				assembler.generateSymbolTableFile();
+				assembler.outputAssembler();
+				
+				sources = lexer.getSrcs();
+				sourceLabels = lexer.getLabels();
+				return null;
+			}
+			
+			@Override
+			protected void process(List<String> chunks) {
+				super.process(chunks);
+			}
+			
+			@Override
+			protected void done() {
+				
+				
+				
+				lblStatus.setText("Status : (Completed)");
+			}
+			
+		}.execute();
 	}
 
 	protected void showAllNodes(DefaultMutableTreeNode root, DefaultTreeModel model, JTree tree) {
