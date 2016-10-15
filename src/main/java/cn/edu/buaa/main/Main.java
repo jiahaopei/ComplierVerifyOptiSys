@@ -34,6 +34,6 @@ public class Main {
 		assembler.generateAssemblerFile(srcPath);
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();
-		
+				
 	}
 }

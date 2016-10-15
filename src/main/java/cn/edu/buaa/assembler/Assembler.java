@@ -40,6 +40,14 @@ public class Assembler {
 		this.assemblerDTO = assemblerDTO;
 		
 	}
+	
+	public List<String> getValues() {
+		return assemblerDTO.getValues();
+	}
+	
+	public List<String> getLabels() {
+		return assemblerDTO.getLabels();
+	}
 
 	public void runAssembler() {
 		logger.info("=========Assemble=========");

@@ -70,11 +70,8 @@ public class AssemblerDTO {
 	 * @param line
 	 * @param label
 	 */
-	public void insertIntoData(String line, String label) {
-		if (label != null && label.trim().length() != 0) {
-			line = AssemblerUtils.generateLabel(line, label);
-		}
-		assFileHandler.insert(line, "DATA");
+	public void insertIntoData(String value, String label) {
+		assFileHandler.insert(value, label, "DATA");
 		
 	}
 	
@@ -83,11 +80,8 @@ public class AssemblerDTO {
 	 * @param line
 	 * @param label
 	 */
-	public void insertIntoText(String line, String label) {
-		if (label != null && label.trim().length() != 0) {
-			line = AssemblerUtils.generateLabel(line, label);
-		}
-		assFileHandler.insert(line, "TEXT");
+	public void insertIntoText(String value, String label) {
+		assFileHandler.insert(value, label, "TEXT");
 		
 	}
 	
@@ -137,7 +131,15 @@ public class AssemblerDTO {
 		return assFileHandler.getResult();
 		
 	}
-
+	
+	public List<String> getValues() {
+		return assFileHandler.getValues();
+	}
+	
+	public List<String> getLabels() {
+		return assFileHandler.getLabels();
+	}
+	
 	public int getLabelCnt() {
 		return labelCnt;
 	}

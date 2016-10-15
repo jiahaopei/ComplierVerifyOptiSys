@@ -17,11 +17,15 @@ import cn.edu.buaa.constant.CommonsDefine;
 public class AssemblerFileHandler {
 	
 	private List<String> result;
+	private List<String> values;
+	private List<String> labels;
 	private int dataPointer;		// .data域
 	private int textPointer;		// .text域
 	
 	public AssemblerFileHandler() {
-		this.result = new ArrayList<>();	
+		this.result = new ArrayList<>();
+		this.values = new ArrayList<>();
+		this.labels = new ArrayList<>();
 		this.dataPointer = 0;
 		this.textPointer = 0;
 		
@@ -31,6 +35,14 @@ public class AssemblerFileHandler {
 		return result;
 	}
 	
+	public List<String> getValues() {
+		return values;
+	}
+
+	public List<String> getLabels() {
+		return labels;
+	}
+
 	public void generateHeader() {
 		this.result.add("");
 		this.result.add("	.section .rodata");
@@ -38,21 +50,40 @@ public class AssemblerFileHandler {
 		this.result.add("");
 		this.result.add("	.section \".text\"");
 		
+		this.values.add("");
+		this.values.add("	.section .rodata");
+		this.values.add("");
+		this.values.add("	.section \".text\"");
+		
+		this.labels.add("");
+		this.labels.add("");
+		this.labels.add("");
+		this.labels.add("");
+		
 		this.dataPointer = textPointer + 2;
 		this.textPointer = dataPointer + 2;
 	}
 	
 	// 插入一行生成的汇编代码
-	public void insert(String value, String type) {
+	public void insert(String value, String label, String type) {
+		String line = value;
+		if (label != null && label.trim().length() != 0) {
+			line = AssemblerUtils.generateLabel(value, label);
+		}
+		
 		// 插入到data域
 		if(type.equals("DATA")) {
-			result.add(dataPointer, value);
+			result.add(dataPointer, line);
+			values.add(dataPointer, value);
+			labels.add(dataPointer, label);
 			dataPointer++;
 			textPointer++;
 		
 		// 插入到代码段
 		} else if (type.equals("TEXT")) {
-			result.add(textPointer, value);
+			result.add(textPointer, line);
+			values.add(textPointer, value);
+			labels.add(textPointer, label);
 			textPointer++;
 			
 		} else {
