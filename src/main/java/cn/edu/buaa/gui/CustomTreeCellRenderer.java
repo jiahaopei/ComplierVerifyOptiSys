@@ -22,7 +22,7 @@ class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
   
     public CustomTreeCellRenderer(TreeCellRenderer renderer) {  
         this.renderer = renderer;  
-    }  
+    }
   
     @Override
     public Component getTreeCellRendererComponent(  

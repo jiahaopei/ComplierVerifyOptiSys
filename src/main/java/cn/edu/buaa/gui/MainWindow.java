@@ -335,13 +335,15 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
-		btnExit = new JButton("Exit");
+		btnExit = new JButton("About");
 		btnExit.setUI(new CustomButtonUI());
 		btnExit.setForeground(Color.RED);
 		btnExit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.exit(0);
+				
+				
+				
 			}
 		});
 		

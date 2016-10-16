@@ -3,7 +3,8 @@ package cn.edu.buaa.gui;
 public class Node {
 	private String value;
 	private String label;
-	
+	private boolean flag;
+
 	public Node(String value) {
     	this(value, "");
 	}
@@ -28,10 +29,18 @@ public class Node {
 	public void setLabel(String label) {
 		this.label = label.trim();
 	}
+	
+	public boolean isFlag() {
+		return flag;
+	}
 
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+	
 	// 重点在toString，节点的显示文本就是toString
     public String toString() {
-    	if (label != null && label.trim().length() != 0) {
+    	if (!flag && label != null && label.trim().length() != 0) {
     		return value + "        // " + label;
     	}
         return value;
