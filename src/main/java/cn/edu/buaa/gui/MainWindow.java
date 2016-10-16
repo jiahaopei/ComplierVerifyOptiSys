@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
@@ -42,6 +44,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingWorker;
@@ -80,14 +83,17 @@ public class MainWindow extends JFrame {
 	private JTree sourceTree;
 	private CustomTreeCellRenderer sourceRenderer;
 	private JScrollPane sourceScrollPane;
+	
 	private DefaultTreeModel goalModel;
 	private DefaultMutableTreeNode goalRoot;
 	private JTree goalTree;
 	private CustomTreeCellRenderer goalRenderer;
 	private JScrollPane goalScrollPane;
+	
 	private DefaultTreeModel proveModel;
 	private DefaultMutableTreeNode proveRoot;
 	private JTree proveTree;
+	private CustomTreeCellRenderer proveRenderer;
 	private JScrollPane proveScrollPane;
 	
 	/**
@@ -98,6 +104,9 @@ public class MainWindow extends JFrame {
 	private List<String> sourceLabels;
 	private List<String> goals;
 	private List<String> goalLabels;
+	private List<String> proves;
+	private List<String> proveLabels;
+	
 	
 	/**
 	 * Launch the application.
@@ -146,8 +155,7 @@ public class MainWindow extends JFrame {
 		});
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//setBounds(50, 30, 1000, 710);	// 设置窗口大小
-		setBounds(50, 30, 800, 600);
+		setBounds(50, 30, 950, 660);	// 设置窗口大小
 		setTitle("Source File : " + getSrcFileName() + ".c");		// 由输入文件指定
 //		setAlwaysOnTop(true);
 		
@@ -207,16 +215,19 @@ public class MainWindow extends JFrame {
                 
                 sourceRenderer.keys.clear();
                 goalRenderer.keys.clear();
+                proveRenderer.keys.clear();
                 goalModel.reload(goalRoot.getLastChild());
+                proveModel.reload(proveRoot.getLastChild());
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	Node user = (Node) node.getUserObject();
                 	
                 	goalRenderer.keys.add(user);
+                	proveRenderer.keys.add(user);
                 	
-                	Enumeration<DefaultMutableTreeNode> goals = goalRoot.breadthFirstEnumeration();
-                    while (goals.hasMoreElements()) {
-                    	DefaultMutableTreeNode cur = goals.nextElement();
+                	Enumeration<DefaultMutableTreeNode> gs = goalRoot.breadthFirstEnumeration();
+                    while (gs.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = gs.nextElement();
                     	if (user.equals(cur.getUserObject())) {
                     		// 高亮显示               
                     		TreeNode[] nodes = goalModel.getPathToRoot(cur);
@@ -225,9 +236,21 @@ public class MainWindow extends JFrame {
                     		goalTree.scrollPathToVisible(treePath);
                     	}
                     }
+                    
+                    Enumeration<DefaultMutableTreeNode> ps = proveRoot.breadthFirstEnumeration();
+                    while (ps.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = ps.nextElement();
+                    	if (user.equals(cur.getUserObject())) {
+                    		TreeNode[] nodes = proveModel.getPathToRoot(cur);
+                    		TreePath treePath = new TreePath(nodes);
+                    		proveTree.makeVisible(treePath);
+                    		proveTree.scrollPathToVisible(treePath);
+                    	}
+                    }
                 }
-                goalTree.repaint();
                 sourceTree.repaint();
+                goalTree.repaint();
+                proveTree.repaint();
             }
         });
 		sourceScrollPane.setViewportView(sourceTree);
@@ -248,16 +271,19 @@ public class MainWindow extends JFrame {
                 
                 sourceRenderer.keys.clear();
                 goalRenderer.keys.clear();
+                proveRenderer.keys.clear();
                 sourceModel.reload(sourceRoot.getLastChild());
+                proveModel.reload(proveRoot.getLastChild());
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	Node user = (Node) node.getUserObject();
                 	
                 	sourceRenderer.keys.add(user);
+                	proveRenderer.keys.add(user);
                 	
-                	Enumeration<DefaultMutableTreeNode> goals = sourceRoot.breadthFirstEnumeration();
-                    while (goals.hasMoreElements()) {
-                    	DefaultMutableTreeNode cur = goals.nextElement();
+                	Enumeration<DefaultMutableTreeNode> ss = sourceRoot.breadthFirstEnumeration();
+                    while (ss.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = ss.nextElement();
                     	if (user.equals(cur.getUserObject())) {
                     		TreeNode[] nodes = sourceModel.getPathToRoot(cur);
                     		TreePath treePath = new TreePath(nodes);
@@ -265,28 +291,77 @@ public class MainWindow extends JFrame {
                     		sourceTree.scrollPathToVisible(treePath);
                     	}
                     }
+                    
+                    Enumeration<DefaultMutableTreeNode> ps = proveRoot.breadthFirstEnumeration();
+                    while (ps.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = ps.nextElement();
+                    	if (user.equals(cur.getUserObject())) {
+                    		TreeNode[] nodes = proveModel.getPathToRoot(cur);
+                    		TreePath treePath = new TreePath(nodes);
+                    		proveTree.makeVisible(treePath);
+                    		proveTree.scrollPathToVisible(treePath);
+                    	}
+                    }
                 }
-                goalTree.repaint();
                 sourceTree.repaint();
+                goalTree.repaint();
+                proveTree.repaint();
             }
         });
 		goalScrollPane.setViewportView(goalTree);
 		
-		proveRoot = makeSourceTree();
+		proveRoot = new DefaultMutableTreeNode(new Node("ProveChain"));;
 		proveModel = new DefaultTreeModel(proveRoot);
 		proveTree = new JTree(proveModel);
 		proveTree.putClientProperty("JTree.lineStyle", "None");
 		proveTree.setBackground(Color.LIGHT_GRAY);
+		proveTree.setRootVisible(false);
+		proveRenderer = new CustomTreeCellRenderer(proveTree.getCellRenderer());
+		proveTree.setCellRenderer(proveRenderer);
 		proveTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) proveTree.getLastSelectedPathComponent();
-                if (node == null) return;
-                
-                Object object = node.getUserObject();
-                Node user = (Node) object;
-                System.out.println("你选择了：" + user.toString());
- 
+            	 TreePath[] paths = proveTree.getSelectionPaths();
+                 if (paths == null) return;
+                 
+                 sourceRenderer.keys.clear();
+                 goalRenderer.keys.clear();
+                 proveRenderer.keys.clear();
+                 sourceModel.reload(sourceRoot.getLastChild());
+                 goalModel.reload(goalRoot.getLastChild());
+                 for (TreePath path : paths) {
+                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                 	Node user = (Node) node.getUserObject();
+                 	
+                 	sourceRenderer.keys.add(user);
+                 	goalRenderer.keys.add(user);
+                 	
+                 	Enumeration<DefaultMutableTreeNode> ss = sourceRoot.breadthFirstEnumeration();
+                    while (ss.hasMoreElements()) {
+                    	DefaultMutableTreeNode cur = ss.nextElement();
+                    	if (user.equals(cur.getUserObject())) {
+                    		TreeNode[] nodes = sourceModel.getPathToRoot(cur);
+                    		TreePath treePath = new TreePath(nodes);
+                    		sourceTree.makeVisible(treePath);
+                    		sourceTree.scrollPathToVisible(treePath);
+                    	}
+                    }
+                 	
+                 	Enumeration<DefaultMutableTreeNode> gs = goalRoot.breadthFirstEnumeration();
+                     while (gs.hasMoreElements()) {
+                     	DefaultMutableTreeNode cur = gs.nextElement();
+                     	if (user.equals(cur.getUserObject())) {
+                     		// 高亮显示               
+                     		TreeNode[] nodes = goalModel.getPathToRoot(cur);
+                     		TreePath treePath = new TreePath(nodes);
+                     		goalTree.makeVisible(treePath);
+                     		goalTree.scrollPathToVisible(treePath);
+                     	}
+                     }
+                 }
+                 sourceTree.repaint();
+                 goalTree.repaint();
+                 proveTree.repaint();
             }
         });
 		proveScrollPane.setViewportView(proveTree);
@@ -341,9 +416,13 @@ public class MainWindow extends JFrame {
 		btnExit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				
-				
+				Icon icon = new ImageIcon("src/main/resources/picture/buaa.jpg"); 
+				String content = "Compiler Verification System\n"
+								+ "Version : 1.0.1\n"
+								+ "Author : Chen Zhiwei\n"
+								+ "E-Mail : chen476328361@163.com\n"
+								+ "Copyright © 2016-2018 BUAA. All rights reserved.";
+				JOptionPane.showMessageDialog(MainWindow.this, content, null, JOptionPane.PLAIN_MESSAGE, icon);	
 			}
 		});
 		
@@ -454,7 +533,7 @@ public class MainWindow extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 		statusPanel.setLayout(gl_statusPanel);
 	}
-	
+
 	// 运行整个业务系统
 	protected void runApp() {
 		new SwingWorker<List<String>, String>() {
@@ -481,11 +560,14 @@ public class MainWindow extends JFrame {
 				assembler.generateSymbolTableFile();
 				assembler.outputAssembler();
 				
-				sources = lexer.getSrcs();
+				sources = lexer.getSources();
 				sourceLabels = lexer.getLabels();
 				
 				goals = assembler.getValues();
 				goalLabels = assembler.getLabels();
+				
+				proves = prover.getProves();
+				proveLabels = prover.getProveLabels();
 				
 				return null;
 			}
@@ -505,7 +587,7 @@ public class MainWindow extends JFrame {
 					DefaultMutableTreeNode cur = children.nextElement();
 					sourceModel.removeNodeFromParent(cur);		// 删除旧的节点
 				}
-				DefaultMutableTreeNode tmp = makeTree(sources, sourceLabels, sourceModel, getSrcFileName() + ".c");
+				DefaultMutableTreeNode tmp = makeSourceTree(getSrcFileName() + ".c");
 				sourceModel.insertNodeInto(tmp, sourceRoot, 0);		// 增加新的节点
 				sourceModel.reload();
 				if (!tmp.isLeaf()) {
@@ -532,14 +614,57 @@ public class MainWindow extends JFrame {
 				/**
 				 * 绘制proveTree
 				 */
-								
+				children = proveRoot.children();
+				while (children.hasMoreElements()) {
+					DefaultMutableTreeNode cur = children.nextElement();
+					proveModel.removeNodeFromParent(cur);		// 删除旧的节点
+				}
+				tmp = makeProveTree(getSrcFileName() + ".v");
+				proveModel.insertNodeInto(tmp, proveRoot, 0);		// 增加新的节点
+				proveModel.reload();
+				if (!tmp.isLeaf()) {
+					TreeNode[] nodes = proveModel.getPathToRoot(tmp.getLastChild());
+					proveTree.makeVisible(new TreePath(nodes));
+				}		
 				
 				lblStatus.setText("Status : (Completed)");
 			}
 			
 		}.execute();
 	}
-
+	
+	protected DefaultMutableTreeNode makeProveTree(String topName) {
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
+		for (int i = 0; i < proves.size(); i++) {
+			String value = proves.get(i);
+			String label = proveLabels.get(i);
+			if (label == null || label.trim().length() == 0) {
+				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+						new Node(value));
+				DefaultMutableTreeNode parentNode = top;
+				proveModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+			} else {
+				DefaultMutableTreeNode father = new DefaultMutableTreeNode(new Node("# " + label, label, true));
+				while (i < proves.size()) {
+					String subValue = proves.get(i);
+					String subLabel = proveLabels.get(i);
+					if (subLabel == null || subLabel.trim().length() == 0 || !subLabel.equals(label)) {
+						break;
+					}
+					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+							new Node(subValue, subLabel, true));
+					DefaultMutableTreeNode parentNode = father;
+					proveModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+					
+					i++;
+				}
+				i--;
+				proveModel.insertNodeInto(father, top, top.getChildCount());
+			}
+		}
+		
+		return top;		
+	}
 	
 	protected DefaultMutableTreeNode makeGoalTree(String topName) {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
@@ -550,9 +675,9 @@ public class MainWindow extends JFrame {
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 						new Node(value));
 				DefaultMutableTreeNode parentNode = top;
-				sourceModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+				goalModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
 			} else {
-				DefaultMutableTreeNode father = new DefaultMutableTreeNode(new Node("# " + label, label));
+				DefaultMutableTreeNode father = new DefaultMutableTreeNode(new Node("# " + label, label, true));
 				while (i < goals.size()) {
 					String subValue = goals.get(i);
 					String subLabel = goalLabels.get(i);
@@ -562,27 +687,27 @@ public class MainWindow extends JFrame {
 					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 							new Node(subValue, subLabel));
 					DefaultMutableTreeNode parentNode = father;
-					sourceModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+					goalModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
 					
 					i++;
 				}
 				i--;
-				sourceModel.insertNodeInto(father, top, top.getChildCount());
+				goalModel.insertNodeInto(father, top, top.getChildCount());
 			}
 		}
 		
 		return top;
 	}
 
-	protected DefaultMutableTreeNode makeTree(List<String> codes, List<String> labels, DefaultTreeModel model, String topName) {
+	protected DefaultMutableTreeNode makeSourceTree(String topName) {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
 		
-		for (int i = 0; i < codes.size(); i++) {
-			String value = codes.get(i);
+		for (int i = 0; i < sources.size(); i++) {
+			String value = sources.get(i);
 			if (value == null || value.trim().length() == 0) continue;
 			
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new Node(value, labels.get(i)));
+					new Node(value, sourceLabels.get(i)));
 			int newLevel = getLevel(newNode);
 			DefaultMutableTreeNode parentNode = top;
 			
@@ -601,7 +726,7 @@ public class MainWindow extends JFrame {
             	}
             }
             
-            model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+            sourceModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
 		}
 		
 		return top;
@@ -643,27 +768,5 @@ public class MainWindow extends JFrame {
         	DefaultMutableTreeNode cur = subs.nextElement();
         	showAllNodes(cur, model, tree);
         }
-	}
-
-	private DefaultMutableTreeNode makeSourceTree() {
-		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(new Node("软件部"));
-		DefaultMutableTreeNode node11 = new DefaultMutableTreeNode(new Node("小组"));
-		node11.add(new DefaultMutableTreeNode(new Node("hehe")));
-		node11.add(new DefaultMutableTreeNode(new Node("haha")));
-        node1.add(node11);
-        node1.add(new DefaultMutableTreeNode(new Node("小虎")));
-        node1.add(new DefaultMutableTreeNode(new Node("小龙")));
- 
-        DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(new Node("销售部"));
-        node2.add(new DefaultMutableTreeNode(new Node("小叶")));
-        node2.add(new DefaultMutableTreeNode(new Node("小雯")));
-        node2.add(new DefaultMutableTreeNode(new Node("小夏")));
- 
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node("职员管理"));
-//        top.add(new DefaultMutableTreeNode(new Node("总经理")));
-//        top.add(node1);
-//        top.add(node2);
-        
-		return top;
 	}
 }

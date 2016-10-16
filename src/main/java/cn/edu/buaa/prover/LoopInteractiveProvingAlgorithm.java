@@ -21,7 +21,8 @@ public class LoopInteractiveProvingAlgorithm {
 	
 	public static boolean process(List<Proposition> srcPropositions, String name, Map<String, 
 			List<Proposition>> loopInvariants, BufferedWriter bufferedWriter, 
-			Recorder recorder, BufferedWriter sequences) throws IOException {
+			Recorder recorder, BufferedWriter sequences, 
+			List<String> proves, List<String> proveLabels, String label) throws IOException {
 		
 		logger.info("LoopInteractiveProvingAlgorithm.process");
 		
@@ -71,6 +72,9 @@ public class LoopInteractiveProvingAlgorithm {
 			sequences.write("辅助前提 :\n");
 			sequences.write("P0 = " + assistPremises[0]);
 			sequences.newLine();
+			
+			proves.add("P0 = " + assistPremises[0]);
+			proveLabels.add(label);
 		}
 		
 		// 生成推导序列
@@ -131,6 +135,9 @@ public class LoopInteractiveProvingAlgorithm {
 				line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
 				sequences.write(line);
 				sequences.newLine();
+				
+				proves.add(line);
+				proveLabels.add(label);
 			}
 			sequences.newLine();
 			sequences.flush();

@@ -34,6 +34,9 @@ public class Main {
 		assembler.generateAssemblerFile(srcPath);
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();
-				
+		
+		System.out.println(prover.getProves());
+		System.out.println(prover.getProveLabels());
+		System.out.println(prover.getProves().size() + " " + prover.getProveLabels().size());
 	}
 }

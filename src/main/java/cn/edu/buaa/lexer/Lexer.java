@@ -26,6 +26,8 @@ public class Lexer {
 	private String srcDir;
 	private String srcName;
 	private List<String> srcs;
+	
+	private List<String> sources;
 	private List<String> labels;
 	
 	private List<Token> tokens;
@@ -39,6 +41,7 @@ public class Lexer {
 		this.srcDir = srcPath.substring(0, srcPath.lastIndexOf("/") + 1);
 		this.srcName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
 		srcs = getContent(srcName);
+		sources = new ArrayList<>();
 		labels = new ArrayList<>();
 		tokens = new ArrayList<Token>();
 		fileNames = new HashSet<>();
@@ -48,6 +51,10 @@ public class Lexer {
 		return srcs;
 	}
 	
+	public List<String> getSources() {
+		return sources;
+	}
+
 	public List<String> getLabels() {
 		return labels;
 	}
@@ -73,6 +80,7 @@ public class Lexer {
 			for (int i = 0; i < srcs.size(); i++) {
 				String line = srcs.get(i);
 				String label = "";
+				String tmpLine = line;
 				
 				if (line.contains("}")) {
 					stack.pop();
@@ -99,6 +107,8 @@ public class Lexer {
 				writer.write(line);
 				writer.newLine();
 				writer.flush();
+				
+				sources.add(tmpLine);
 				labels.add(label);
 
 				if (line.contains("{")) {
@@ -362,6 +372,8 @@ public class Lexer {
 					new FileWriter(CommonsDefine.OUTPUT_PATH + "/label_" + libName));
 			
 			for (String line : libs) {
+				String label = "";
+				String tmpLine = line;
 				
 				if (line.contains("}")) {
 					stack.pop();
@@ -377,9 +389,9 @@ public class Lexer {
 						line += " ";
 					}
 					
-					String l = generateLabel(stack);
-					if (l.trim().length() != 0) {
-						line = line + "// " + l.trim();
+					label = generateLabel(stack);
+					if (label.trim().length() != 0) {
+						line = line + "// " + label.trim();
 					}
 				}
 				
@@ -387,7 +399,10 @@ public class Lexer {
 				writer.write(line);
 				writer.newLine();
 				writer.flush();
-
+				
+				sources.add(tmpLine);
+				labels.add(label);
+				
 				if (line.contains("{")) {
 					stack.push(0);
 				}

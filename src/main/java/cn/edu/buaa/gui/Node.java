@@ -3,15 +3,20 @@ package cn.edu.buaa.gui;
 public class Node {
 	private String value;
 	private String label;
-	private boolean flag;
+	private boolean flag;	// flag为false时才显示标号
 
 	public Node(String value) {
     	this(value, "");
 	}
 	
     public Node(String value, String label) {
+    	this(value, label, false);
+	}
+    
+    public Node(String value, String label, boolean flag) {
     	this.value = value.trim();
     	this.label = label.trim();
+    	this.flag = flag;
 	}
 	
 	public String getValue() {
@@ -53,14 +58,28 @@ public class Node {
     		return false;
     	} else if (bNode.getLabel() == null || bNode.getLabel().trim().length() == 0) {
     		return false;
+    	} else if (label.equals(bNode.getLabel())) {
+    		return true;
     	} else {
-        	String a = label.contains("_") ?  
-        			label.substring(0, label.lastIndexOf("_")) : label;
-        	String b = bNode.getLabel().contains("_") ? 
-        			bNode.getLabel().substring(0, bNode.getLabel().lastIndexOf("_")) : bNode.getLabel();
-        	return a.equals(b);
+    		String[] as = label.split(",");
+    		String[] bs = bNode.getLabel().split(",");
+    		for (int i = 0; i < as.length; i++) {
+    			if (as[i] == null || as[i].trim().length() == 0) {
+    				continue;
+    			}
+    			for (int j = 0; j < bs.length; j++) {
+    				if (bs[j] == null || bs[j].trim().length() == 0) {
+    					continue;
+    				}
+    				String a = as[i].contains("_") ?
+    	        			as[i].substring(0, as[i].lastIndexOf("_")) : as[i];
+    	        	String b = bs[j].contains("_") ? 
+    	        			bs[j].substring(0, bs[j].lastIndexOf("_")) : bs[j];
+    				if (a.trim().equals(b.trim())) return true;
+    			}
+    		}
+        	return false;
     	}
-    	
     }
     
 }

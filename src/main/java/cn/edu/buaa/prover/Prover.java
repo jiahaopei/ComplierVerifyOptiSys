@@ -37,6 +37,9 @@ public class Prover {
 		
 	private Recorder recorder;
 	
+	private List<String> proves;
+	private List<String> proveLabels;
+	
 	// 保存证明序列文件
 	private BufferedWriter sequences;
 	
@@ -56,10 +59,19 @@ public class Prover {
 		// showAllLoopInvariants();
 		
 		this.recorder = recorder;
-		
 		this.sequences = createSequencesFile(srcPath);
+		this.proves = new ArrayList<>();
+		this.proveLabels = new ArrayList<>();
 	}
 	
+	public List<String> getProves() {
+		return proves;
+	}
+
+	public List<String> getProveLabels() {
+		return proveLabels;
+	}
+
 	public boolean runProver(String key, String label) {		
 		List<String> objectCodePatterns = getObjectCodePatterns(key);
 		createOutputFile(key);
@@ -122,6 +134,16 @@ public class Prover {
 				sequences.write("目标码模式命题 :\n");
 				ProverHelper.saveAllProposition(propositions, sequences);
 				sequences.flush();
+				
+				for (Proposition proposition : propositions) {
+					String line = proposition.toStr();
+					if (proposition.getProof() != null) {
+						line = proposition.getProof() + " = " + line;
+					}
+					proves.add(line);
+					proveLabels.add(label);
+					
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -161,6 +183,9 @@ public class Prover {
 						String line = dto.getProves().get(i) + ProverDefine.TAB + dto.getProofs().get(i);
 						sequences.write(line);
 						sequences.newLine();
+						
+						proves.add(line);
+						proveLabels.add(label);
 					}
 					sequences.newLine();
 					sequences.flush();
@@ -205,7 +230,8 @@ public class Prover {
 			recorder.insertLine("=================循环交互证明算法===================");
 			try {
 				logger.info("调用循环交互证明算法");
-				isSame = LoopInteractiveProvingAlgorithm.process(propositions, name, loopInvariants, bufferedWriter, recorder, sequences);
+				isSame = LoopInteractiveProvingAlgorithm.process(propositions, name, loopInvariants, bufferedWriter, recorder, 
+						sequences, proves, proveLabels, label);
 				recorder.insertLine("综上，给定的目标语义和推理出的语义是否一致 :");
 				recorder.insertLine(Boolean.toString(isSame));
 				

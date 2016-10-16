@@ -49,8 +49,6 @@ public class CustomPanel extends JPanel {
 		// 设置字体
 		g2d.setFont(new Font("Arial", Font.BOLD, 16));
 		g2d.setColor(Color.DARK_GRAY);
-		//g2d.drawString("Compiler Verification System", 15, 24);
-		
+		//g2d.drawString("Compiler Verification System", 15, 24);	
 	}
-	
 }
