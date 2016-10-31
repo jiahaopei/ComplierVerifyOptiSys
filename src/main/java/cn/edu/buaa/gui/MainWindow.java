@@ -633,6 +633,11 @@ public class MainWindow extends JFrame {
 		}.execute();
 	}
 	
+	/**
+	 * 绘制证明树
+	 * @param topName
+	 * @return
+	 */
 	protected DefaultMutableTreeNode makeProveTree(String topName) {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
 		for (int i = 0; i < proves.size(); i++) {
@@ -666,6 +671,11 @@ public class MainWindow extends JFrame {
 		return top;		
 	}
 	
+	/**
+	 * 绘制目标码树
+	 * @param topName
+	 * @return
+	 */
 	protected DefaultMutableTreeNode makeGoalTree(String topName) {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
 		for (int i = 0; i < goals.size(); i++) {
@@ -699,6 +709,11 @@ public class MainWindow extends JFrame {
 		return top;
 	}
 
+	/**
+	 * 绘制源代码树
+	 * @param topName
+	 * @return
+	 */
 	protected DefaultMutableTreeNode makeSourceTree(String topName) {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
 		
