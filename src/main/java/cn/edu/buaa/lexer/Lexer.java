@@ -72,7 +72,7 @@ public class Lexer {
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(
-					new FileWriter(CommonsDefine.OUTPUT_PATH + "/label_" + srcName));
+					new FileWriter(CommonsDefine.OUTPUT_PATH + "label_" + srcName));
 			fileNames.add(srcName.substring(0, srcName.indexOf(".")));
 			
 			Stack<Integer> stack = new Stack<>();
@@ -435,8 +435,7 @@ public class Lexer {
 		List<String> codes = new ArrayList<>();
 
 		try {
-			reader = new BufferedReader(
-					new FileReader(srcDir + srcName));
+			reader =  new BufferedReader(new FileReader(srcDir + srcName));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				codes.add(line);
@@ -565,7 +564,7 @@ public class Lexer {
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(
-					new FileWriter(CommonsDefine.OUTPUT_PATH + "/label_" + fileName));
+					new FileWriter(CommonsDefine.OUTPUT_PATH + "label_" + fileName));
 
 			int len = 50;
 			Stack<Integer> stack = new Stack<>();
@@ -629,7 +628,7 @@ public class Lexer {
 	public void outputLabelSrc() {
 		recorder.insertLine("====================Labeled C Code==================");
 		
-		String path = CommonsDefine.OUTPUT_PATH + "/label_" + srcName;
+		String path = CommonsDefine.OUTPUT_PATH + "label_" + srcName;
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(path));
@@ -703,11 +702,11 @@ public class Lexer {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		
-		String srcPath = "src/main/resources/input/evenSum.c";
+		String srcPath = "conf/input/evenSum.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
-//		lexer.outputLabels();
+		lexer.outputLabels();
 		lexer.outputLabelSrc();
 		lexer.outputLexer();
 	}

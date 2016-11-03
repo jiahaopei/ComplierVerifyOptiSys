@@ -1,9 +1,9 @@
 package cn.edu.buaa.constant;
 
 public class CommonsDefine {
-	
-	public static final String OUTPUT_PATH = "src/main/resources/output/";
-//	public static final String INPUT_PATH = "src/main/resources/input/";
-	public static final String DEBUG_PATH = "src/main/resources/debug/";
-	
+
+	public static final String OUTPUT_PATH = "output/";
+	public static final String DEBUG_PATH = "debug/";
+	public static final String[] names = { "if", "if_else", "while", "do_while", "for" };
+
 }

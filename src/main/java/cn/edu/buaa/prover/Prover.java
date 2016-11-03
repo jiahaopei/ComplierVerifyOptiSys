@@ -2,11 +2,10 @@ package cn.edu.buaa.prover;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,13 +48,13 @@ public class Prover {
 	private final Logger logger = LoggerFactory.getLogger(Prover.class);
 	
 	public Prover(Recorder recorder, String srcPath) {
-		loadAxioms("src/main/resources/axiom/ppcAxiom.xls");
+		loadAxioms("/axiom/ppcAxiom.xls");
 		// showAxioms();
 
-		loadAllObjectCodePatterns("src/main/resources/statement/");
+		loadAllObjectCodePatterns("/statement/");
 		// showAllObjectCodePatterns();
 		
-		loadPrecoditions("src/main/resources/precodition/");
+		loadPrecoditions("/precodition/");
 		// showAllLoopInvariants();
 		
 		this.recorder = recorder;
@@ -269,8 +268,9 @@ public class Prover {
 		axioms = new HashMap<>();
 
 		Workbook readwb = null;
-		try {
-			readwb = Workbook.getWorkbook(new File(path));
+		try {			
+			readwb = Workbook.getWorkbook(
+					this.getClass().getResourceAsStream(path));
 			Sheet readsheet = readwb.getSheet(0);
 
 			// 读取xls文档
@@ -329,14 +329,13 @@ public class Prover {
 
 	public void loadPrecoditions(String dirName) {
 		loopInvariants = new HashMap<>();
-
-		File dir = new File(dirName);
-		for (String fileName : dir.list()) {
+		
+		for (String fileName : CommonsDefine.names) {
+			fileName += ".txt";
 			String path = dirName;
 			if (!path.endsWith("/"))
 				path += "/";
-			path += fileName;
-
+			path += fileName;			
 			List<Proposition> value = loadSingleLoopInvariants(path);
 			String key = fileName.substring(0, fileName.indexOf('.'));
 			loopInvariants.put(key, value);
@@ -348,7 +347,9 @@ public class Prover {
 		List<Proposition> singleLoopInvariants = new ArrayList<>();
 		BufferedReader in = null;
 		try {
-			in = new BufferedReader(new FileReader(path));
+			in =  new BufferedReader(
+					new InputStreamReader(
+							this.getClass().getResourceAsStream(path)));
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				Proposition proposition = LoopInteractiveProvingAlgorithm.analyzeString(line);
@@ -386,10 +387,10 @@ public class Prover {
 	}
 
 	public void loadAllObjectCodePatterns(String dirName) {
-		allObjectCodePatterns = new HashMap<>();
-
-		File dir = new File(dirName);
-		for (String fileName : dir.list()) {
+		allObjectCodePatterns = new HashMap<>();	
+		
+		for (String fileName : CommonsDefine.names) {
+			fileName += ".txt";
 			String path = dirName;
 			if (!path.endsWith("/"))
 				path += "/";
@@ -406,7 +407,9 @@ public class Prover {
 		List<String> objectCodePatterns = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(path));
+			reader =  new BufferedReader(
+					new InputStreamReader(
+							this.getClass().getResourceAsStream(path)));
 			String line = null;
 			while (null != (line = reader.readLine())) {
 				line = line.trim();
@@ -507,6 +510,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder, null);
-		prover.runProver("do_while", "9.4");
+		prover.runProver("for", "9.4");
 	}
 }

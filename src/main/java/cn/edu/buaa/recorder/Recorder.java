@@ -14,6 +14,8 @@ public class Recorder {
 	public static final String TAB = "  "; 
 	
 	public Recorder() {
+		initDir();
+		
 		try {
 			out = new BufferedWriter(
 					new FileWriter(CommonsDefine.OUTPUT_PATH + "record.txt"));
@@ -24,6 +26,19 @@ public class Recorder {
 		cleanLog();
 	}
 	
+	private void initDir() {
+		File outDir = new File(CommonsDefine.OUTPUT_PATH);
+		if (!outDir.exists()) {
+			outDir.mkdirs();
+		}
+			
+		File debugDir = new File(CommonsDefine.DEBUG_PATH);
+		if (!debugDir.exists()) {
+			debugDir.mkdirs();
+		}
+		
+	}
+
 	private void cleanLog() {
 		String path = CommonsDefine.OUTPUT_PATH;
 		String suffix = ".log";
