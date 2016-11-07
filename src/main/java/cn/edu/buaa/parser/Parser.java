@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.slf4j.Logger;
@@ -24,8 +25,12 @@ public class Parser {
 	private List<Token> tokens;
 	private int index;
 	private SyntaxTree tree;
+	private Map<String, String> variableTable;
+	private Map<String, String> globalVariableTable;
+	private boolean isGlobal;
 	
 	private Recorder recorder;
+	
 	
 	private final Logger logger = LoggerFactory.getLogger(Parser.class);
 	
@@ -33,6 +38,8 @@ public class Parser {
 		this.tokens = tokens;
 		this.index = 0;
 		this.tree = null;
+		this.variableTable = new HashMap<>();
+		this.globalVariableTable = new HashMap<>();
 		this.recorder = recorder;
 	}
 	
@@ -110,6 +117,8 @@ public class Parser {
 		funcStatementTree.setRoot(root);
 		funcStatementTree.setCurrent(root);
 		tree.addChildNode(root, father);
+		variableTable.clear();
+		String funcName = "";
 		
 		while (index < tokens.size()) {
 			// 如果是函数返回类型
@@ -132,12 +141,13 @@ public class Parser {
 			} else if (getTokenType(index).equals("IDENTIFIER")) {
 				SyntaxTreeNode funcNameRoot = new SyntaxTreeNode("FunctionName");
 				funcStatementTree.addChildNode(funcNameRoot, root);
-
+				funcName = getTokenValue(index);
+				
 				HashMap<String, String> extraInfo = new HashMap<>();
 				extraInfo.put("type", "FUNCTION_NAME");
 				funcStatementTree.addChildNode(
 						new SyntaxTreeNode(
-								tokens.get(index).getValue(), 
+								getTokenValue(index), 
 								"IDENTIFIER", 
 								extraInfo,
 								getTokenLabel(index) + "_fs"), 
@@ -157,7 +167,7 @@ public class Parser {
 						
 						// extra_info
 						HashMap<String, String> extraInfo = new HashMap<>();
-						extraInfo.put("type", tokens.get(index).getValue());
+						extraInfo.put("type", getTokenValue(index));
 						funcStatementTree.addChildNode(
 								new SyntaxTreeNode(
 										getTokenValue(index), 
@@ -177,11 +187,13 @@ public class Parser {
 											extraInfo,
 											getTokenLabel(index + 1) + "_fs"), 
 									param);
+							variableTable.put(getTokenValue(index + 1), getTokenValue(index));
+							
 						} else {
-							recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
-							logger.info("函数定义 : 语法非法");
+							recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法非法");
+							logger.info(funcName + "函数定义 : 语法非法");
 							try {
-								throw new Exception("函数定义参数错误");
+								throw new Exception(funcName + "函数定义参数错误");
 							} catch (Exception e) {
 								e.printStackTrace();
 								System.exit(1);
@@ -201,8 +213,8 @@ public class Parser {
 				break;
 				
 			} else {
-				recorder.insertLine(Recorder.TAB + "函数定义 : 语法非法");
-				logger.info("函数定义 : 语法非法");
+				recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法非法");
+				logger.info(funcName + "函数定义 : 语法非法");
 				try {
 					throw new Exception("Error in functionStatement! : " + getTokenType(index));
 				} catch (Exception e) {
@@ -213,9 +225,8 @@ public class Parser {
 			}
 		}
 		
-		recorder.insertLine(Recorder.TAB + "函数定义 : 语法合法");
-		logger.info("函数定义 : 语法合法");
-		
+		recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法合法");
+		logger.info(funcName + "函数定义 : 语法合法");
 	}
 	
 	// 处理大括号里的部分
@@ -318,7 +329,12 @@ public class Parser {
 								extraInfo,
 								getTokenLabel(index) + "_st"), 
 						root);
-			
+				if (isGlobal) {
+					globalVariableTable.put(getTokenValue(index), tmpVariableType);
+				} else {
+					variableTable.put(getTokenValue(index), tmpVariableType);
+				}
+				
 			// 数组大小	
 			} else if (getTokenType(index).equals("DIGIT_CONSTANT")) {
 				HashMap<String, String> extraInfo = new HashMap<>();
@@ -397,6 +413,12 @@ public class Parser {
 										getTokenLabel(index) + "_st"), 
 								tmpTree.getRoot());
 						
+						if (isGlobal) {
+							globalVariableTable.put(getTokenValue(index), tmpVariableType);
+						} else {
+							variableTable.put(getTokenValue(index), tmpVariableType);
+						}
+						
 					} else if (getTokenType(index).equals("COMMA")) { 
 						// 继续执行
 						
@@ -452,6 +474,13 @@ public class Parser {
 		while(!getTokenType(index).equals("SEMICOLON")) {			
 			// 被赋值的变量
 			if(getTokenType(index).equals("IDENTIFIER")) {
+				if (!variableTable.containsKey(getTokenValue(index)) 
+						&& !globalVariableTable.containsKey(getTokenValue(index))) {
+					throw new RuntimeException(
+							"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+					
+				}
+				
 				assignTree.addChildNode(
 						new SyntaxTreeNode(
 								getTokenValue(index), 
@@ -855,7 +884,8 @@ public class Parser {
 					getTokenLabel(index) + "_re"
 					);
 			returnTree.addChildNode(returnNode, root);
-			index++;	
+			index++;
+			
 		} else {
 			recorder.insertLine(Recorder.TAB + "return语句 : 语法非法");
 			logger.info("return语句 : 语法非法");
@@ -922,6 +952,13 @@ public class Parser {
 				if (ParserUtils.isOperator(getTokenValue(index + 1))
 						|| getTokenType(index + 1).equals("SEMICOLON")
 						|| getTokenType(index + 1).equals("RL_BRACKET")) {
+					
+					if (!variableTable.containsKey(getTokenValue(index))
+							&& !globalVariableTable.containsKey(getTokenValue(index))) {
+						throw new RuntimeException(
+								"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+					}
+					
 					SyntaxTree tmpTree = new SyntaxTree();
 					SyntaxTreeNode variableRoot = new SyntaxTreeNode("Expression", "Variable", null, null);
 					tmpTree.setRoot(variableRoot);
@@ -974,9 +1011,8 @@ public class Parser {
 							System.exit(1);
 						}
 					}
-				}
-				
-				else {
+					
+				}else {
 					recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
 					logger.info("表达式语句 : 语法非法");
 					try {
@@ -1098,6 +1134,15 @@ public class Parser {
 					if (getTokenType(index).equals("IDENTIFIER")
 							|| getTokenType(index).equals("DIGIT_CONSTANT")
 							|| getTokenType(index).equals("STRING_CONSTANT")) {
+						
+						if (getTokenType(index).equals("IDENTIFIER") 
+								&& !variableTable.containsKey(getTokenValue(index))
+								&& !globalVariableTable.containsKey(getTokenValue(index))) {
+							throw new RuntimeException(
+									"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+							
+						}
+						
 						funcCallTree.addChildNode(
 								new SyntaxTreeNode(
 										getTokenValue(index), 
@@ -1232,7 +1277,7 @@ public class Parser {
 		// 遍历所有的token
 		while (index < tokens.size()) {
 			String sentencePattern = judgeSentencePattern();
-			
+						
 			// include语句
 			if(sentencePattern.equals("INCLUDE")) {
 				_include(root);
@@ -1243,7 +1288,9 @@ public class Parser {
 				
 			// 声明语句
 			} else if(sentencePattern.equals("STATEMENT")) {
+				isGlobal = true;
 				_statement(root);
+				isGlobal = false;
 				
 			// 函数调用
 			} else if(sentencePattern.equals("FUNCTION_CALL")) {
@@ -1329,8 +1376,6 @@ public class Parser {
 
 		Parser parser = new Parser(lexer.getTokens(), recorder);
 		parser.runParser();
-		parser.outputParser();
-		
+		parser.outputParser();	
 	}
-	
 }

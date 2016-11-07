@@ -1,66 +1,68 @@
-预处理源代码开始...(test7.c)
+预处理源代码开始...(evenSum.c)
 预处理源代码结束
 词法分析开始...
-预处理源代码开始...(func1.c)
-预处理源代码结束
-预处理源代码开始...(func2.c)
-预处理源代码结束
 词法分析结束!
 ====================Source C Code==================
 #include <stdio.h>
-#include <ctype.h>
-#include "func1.h"
-#include "func2.h"
-
-int inc(int x) {
-    int z;
-    z = x + 1;
-    return z;
-}
 
 int main() {
-    int a, b, c;
-    int d;
-    int e;
+    int n;
+    int i;
+    int sum;
+    int tmp;
 
-    a = 1;
-    b = 2;
-    c = add(a, 3);
-    d = sub(a, c, b);
-    e = inc(4);
+    scanf("%d", &n);    
+    sum = 0;
 
-    printf("The add result is : %d\n", c);
-    printf("The sub result is : %d\n", d);
+    for(i = 1; i <= n; i++) { 
+        tmp = i % 2;
+        if(tmp == 0) {
+            sum = sum + i;
+        } else {
+            sum = sum - i * 2;
+        
+        } 
+    }   
+
+    i = !n;
+    i = ~n;
+
+
+    printf("sum is %d", sum);
+
     return 0;
 }
 
 ====================Labeled C Code==================
 #include <stdio.h>                                // 1
-#include <ctype.h>                                // 2
-#include "func1.h"                                // 7
-#include "func2.h"                                // 12
 
-int inc(int x) {                                  // 13
-    int z;                                        // 13.1
-    z = x + 1;                                    // 13.2
-    return z;                                     // 13.3
-}                                                 // 14
+int main() {                                      // 2
+    int n;                                        // 2.1
+    int i;                                        // 2.2
+    int sum;                                      // 2.3
+    int tmp;                                      // 2.4
 
-int main() {                                      // 15
-    int a, b, c;                                  // 15.1
-    int d;                                        // 15.2
-    int e;                                        // 15.3
+    scanf("%d", &n);                              // 2.5
+    sum = 0;                                      // 2.6
 
-    a = 1;                                        // 15.4
-    b = 2;                                        // 15.5
-    c = add(a, 3);                                // 15.6
-    d = sub(a, c, b);                             // 15.7
-    e = inc(4);                                   // 15.8
+    for(i = 1; i <= n; i++) {                     // 2.7
+        tmp = i % 2;                              // 2.7.1
+        if(tmp == 0) {                            // 2.7.2
+            sum = sum + i;                        // 2.7.2.1
+        } else {                                  // 2.7.3
+            sum = sum - i * 2;                    // 2.7.3.1
+        
+        }                                         // 2.7.4
+    }                                             // 2.8
 
-    printf("The add result is : %d\n", c);        // 15.9
-    printf("The sub result is : %d\n", d);        // 15.10
-    return 0;                                     // 15.11
-}                                                 // 16
+    i = !n;                                       // 2.9
+    i = ~n;                                       // 2.10
+
+
+    printf("sum is %d", sum);                     // 2.11
+
+    return 0;                                     // 2.12
+}                                                 // 3
 
 ====================Lexer==================
 (#, SHARP, 1)
@@ -68,221 +70,264 @@ int main() {                                      // 15
 (<, LT, 1)
 (stdio.h, IDENTIFIER, 1)
 (>, GT, 1)
-(#, SHARP, 2)
-(include, INCLUDE, 2)
-(<, LT, 2)
-(ctype.h, IDENTIFIER, 2)
-(>, GT, 2)
-(#, SHARP, 3)
-(include, INCLUDE, 3)
-(", DOUBLE_QUOTE, 3)
-(func1.h, IDENTIFIER, 3)
-(", DOUBLE_QUOTE, 3)
-(#, SHARP, 3)
-(include, INCLUDE, 3)
-(<, LT, 3)
-(stdio.h, IDENTIFIER, 3)
-(>, GT, 3)
-(#, SHARP, 4)
-(include, INCLUDE, 4)
-(", DOUBLE_QUOTE, 4)
-(func1.h, IDENTIFIER, 4)
-(", DOUBLE_QUOTE, 4)
-(int, INT, 5)
-(add, IDENTIFIER, 5)
-((, LL_BRACKET, 5)
-(int, INT, 5)
-(x, IDENTIFIER, 5)
-(,, COMMA, 5)
-(int, INT, 5)
-(y, IDENTIFIER, 5)
-(), RL_BRACKET, 5)
-({, LB_BRACKET, 5)
-(int, INT, 5.1)
-(z, IDENTIFIER, 5.1)
-(;, SEMICOLON, 5.1)
-(z, IDENTIFIER, 5.2)
-(=, ASSIGN, 5.2)
-(x, IDENTIFIER, 5.2)
-(+, PLUS, 5.2)
-(y, IDENTIFIER, 5.2)
-(;, SEMICOLON, 5.2)
-(printf, IDENTIFIER, 5.3)
-((, LL_BRACKET, 5.3)
-(", DOUBLE_QUOTE, 5.3)
-(add function %d\n, STRING_CONSTANT, 5.3)
-(", DOUBLE_QUOTE, 5.3)
-(,, COMMA, 5.3)
-(z, IDENTIFIER, 5.3)
-(), RL_BRACKET, 5.3)
-(;, SEMICOLON, 5.3)
-(printf, IDENTIFIER, 5.4)
-((, LL_BRACKET, 5.4)
-(", DOUBLE_QUOTE, 5.4)
-(add x %d, y %d\n, STRING_CONSTANT, 5.4)
-(", DOUBLE_QUOTE, 5.4)
-(,, COMMA, 5.4)
-(x, IDENTIFIER, 5.4)
-(,, COMMA, 5.4)
-(y, IDENTIFIER, 5.4)
-(), RL_BRACKET, 5.4)
-(;, SEMICOLON, 5.4)
-(printf, IDENTIFIER, 5.5)
-((, LL_BRACKET, 5.5)
-(", DOUBLE_QUOTE, 5.5)
-(addd addd\n, STRING_CONSTANT, 5.5)
-(", DOUBLE_QUOTE, 5.5)
-(), RL_BRACKET, 5.5)
-(;, SEMICOLON, 5.5)
-(return, RETURN, 5.6)
-(z, IDENTIFIER, 5.6)
-(;, SEMICOLON, 5.6)
-(}, RB_BRACKET, 6)
-(#, SHARP, 8)
-(include, INCLUDE, 8)
-(", DOUBLE_QUOTE, 8)
-(func2.h, IDENTIFIER, 8)
-(", DOUBLE_QUOTE, 8)
-(#, SHARP, 8)
-(include, INCLUDE, 8)
-(<, LT, 8)
-(stdio.h, IDENTIFIER, 8)
-(>, GT, 8)
-(#, SHARP, 9)
-(include, INCLUDE, 9)
-(", DOUBLE_QUOTE, 9)
-(func2.h, IDENTIFIER, 9)
-(", DOUBLE_QUOTE, 9)
-(int, INT, 10)
-(sub, IDENTIFIER, 10)
-((, LL_BRACKET, 10)
-(int, INT, 10)
-(x, IDENTIFIER, 10)
-(,, COMMA, 10)
-(int, INT, 10)
-(y, IDENTIFIER, 10)
-(,, COMMA, 10)
-(int, INT, 10)
-(d, IDENTIFIER, 10)
-(), RL_BRACKET, 10)
-({, LB_BRACKET, 10)
-(int, INT, 10.1)
-(z, IDENTIFIER, 10.1)
-(;, SEMICOLON, 10.1)
-(z, IDENTIFIER, 10.2)
-(=, ASSIGN, 10.2)
-(x, IDENTIFIER, 10.2)
-(-, MINUS, 10.2)
-(y, IDENTIFIER, 10.2)
-(-, MINUS, 10.2)
-(d, IDENTIFIER, 10.2)
-(;, SEMICOLON, 10.2)
-(printf, IDENTIFIER, 10.3)
-((, LL_BRACKET, 10.3)
-(", DOUBLE_QUOTE, 10.3)
-(sub function %d\n, STRING_CONSTANT, 10.3)
-(", DOUBLE_QUOTE, 10.3)
-(,, COMMA, 10.3)
-(z, IDENTIFIER, 10.3)
-(), RL_BRACKET, 10.3)
-(;, SEMICOLON, 10.3)
-(return, RETURN, 10.4)
-(z, IDENTIFIER, 10.4)
-(;, SEMICOLON, 10.4)
-(}, RB_BRACKET, 11)
-(int, INT, 13)
-(inc, IDENTIFIER, 13)
-((, LL_BRACKET, 13)
-(int, INT, 13)
-(x, IDENTIFIER, 13)
-(), RL_BRACKET, 13)
-({, LB_BRACKET, 13)
-(int, INT, 13.1)
-(z, IDENTIFIER, 13.1)
-(;, SEMICOLON, 13.1)
-(z, IDENTIFIER, 13.2)
-(=, ASSIGN, 13.2)
-(x, IDENTIFIER, 13.2)
-(+, PLUS, 13.2)
-(1, DIGIT_CONSTANT, 13.2)
-(;, SEMICOLON, 13.2)
-(return, RETURN, 13.3)
-(z, IDENTIFIER, 13.3)
-(;, SEMICOLON, 13.3)
-(}, RB_BRACKET, 14)
-(int, INT, 15)
-(main, IDENTIFIER, 15)
-((, LL_BRACKET, 15)
-(), RL_BRACKET, 15)
-({, LB_BRACKET, 15)
-(int, INT, 15.1)
-(a, IDENTIFIER, 15.1)
-(,, COMMA, 15.1)
-(b, IDENTIFIER, 15.1)
-(,, COMMA, 15.1)
-(c, IDENTIFIER, 15.1)
-(;, SEMICOLON, 15.1)
-(int, INT, 15.2)
-(d, IDENTIFIER, 15.2)
-(;, SEMICOLON, 15.2)
-(int, INT, 15.3)
-(e, IDENTIFIER, 15.3)
-(;, SEMICOLON, 15.3)
-(a, IDENTIFIER, 15.4)
-(=, ASSIGN, 15.4)
-(1, DIGIT_CONSTANT, 15.4)
-(;, SEMICOLON, 15.4)
-(b, IDENTIFIER, 15.5)
-(=, ASSIGN, 15.5)
-(2, DIGIT_CONSTANT, 15.5)
-(;, SEMICOLON, 15.5)
-(c, IDENTIFIER, 15.6)
-(=, ASSIGN, 15.6)
-(add, IDENTIFIER, 15.6)
-((, LL_BRACKET, 15.6)
-(a, IDENTIFIER, 15.6)
-(,, COMMA, 15.6)
-(3, DIGIT_CONSTANT, 15.6)
-(), RL_BRACKET, 15.6)
-(;, SEMICOLON, 15.6)
-(d, IDENTIFIER, 15.7)
-(=, ASSIGN, 15.7)
-(sub, IDENTIFIER, 15.7)
-((, LL_BRACKET, 15.7)
-(a, IDENTIFIER, 15.7)
-(,, COMMA, 15.7)
-(c, IDENTIFIER, 15.7)
-(,, COMMA, 15.7)
-(b, IDENTIFIER, 15.7)
-(), RL_BRACKET, 15.7)
-(;, SEMICOLON, 15.7)
-(e, IDENTIFIER, 15.8)
-(=, ASSIGN, 15.8)
-(inc, IDENTIFIER, 15.8)
-((, LL_BRACKET, 15.8)
-(4, DIGIT_CONSTANT, 15.8)
-(), RL_BRACKET, 15.8)
-(;, SEMICOLON, 15.8)
-(printf, IDENTIFIER, 15.9)
-((, LL_BRACKET, 15.9)
-(", DOUBLE_QUOTE, 15.9)
-(The add result is : %d\n, STRING_CONSTANT, 15.9)
-(", DOUBLE_QUOTE, 15.9)
-(,, COMMA, 15.9)
-(c, IDENTIFIER, 15.9)
-(), RL_BRACKET, 15.9)
-(;, SEMICOLON, 15.9)
-(printf, IDENTIFIER, 15.10)
-((, LL_BRACKET, 15.10)
-(", DOUBLE_QUOTE, 15.10)
-(The sub result is : %d\n, STRING_CONSTANT, 15.10)
-(", DOUBLE_QUOTE, 15.10)
-(,, COMMA, 15.10)
-(d, IDENTIFIER, 15.10)
-(), RL_BRACKET, 15.10)
-(;, SEMICOLON, 15.10)
-(return, RETURN, 15.11)
-(0, DIGIT_CONSTANT, 15.11)
-(;, SEMICOLON, 15.11)
-(}, RB_BRACKET, 16)
+(int, INT, 2)
+(main, IDENTIFIER, 2)
+((, LL_BRACKET, 2)
+(), RL_BRACKET, 2)
+({, LB_BRACKET, 2)
+(int, INT, 2.1)
+(n, IDENTIFIER, 2.1)
+(;, SEMICOLON, 2.1)
+(int, INT, 2.2)
+(i, IDENTIFIER, 2.2)
+(;, SEMICOLON, 2.2)
+(int, INT, 2.3)
+(sum, IDENTIFIER, 2.3)
+(;, SEMICOLON, 2.3)
+(int, INT, 2.4)
+(tmp, IDENTIFIER, 2.4)
+(;, SEMICOLON, 2.4)
+(scanf, IDENTIFIER, 2.5)
+((, LL_BRACKET, 2.5)
+(", DOUBLE_QUOTE, 2.5)
+(%d, STRING_CONSTANT, 2.5)
+(", DOUBLE_QUOTE, 2.5)
+(,, COMMA, 2.5)
+(&, BIT_AND, 2.5)
+(n, IDENTIFIER, 2.5)
+(), RL_BRACKET, 2.5)
+(;, SEMICOLON, 2.5)
+(sum, IDENTIFIER, 2.6)
+(=, ASSIGN, 2.6)
+(0, DIGIT_CONSTANT, 2.6)
+(;, SEMICOLON, 2.6)
+(for, FOR, 2.7)
+((, LL_BRACKET, 2.7)
+(i, IDENTIFIER, 2.7)
+(=, ASSIGN, 2.7)
+(1, DIGIT_CONSTANT, 2.7)
+(;, SEMICOLON, 2.7)
+(i, IDENTIFIER, 2.7)
+(<=, LET, 2.7)
+(n, IDENTIFIER, 2.7)
+(;, SEMICOLON, 2.7)
+(i, IDENTIFIER, 2.7)
+(++, SELF_PLUS, 2.7)
+(), RL_BRACKET, 2.7)
+({, LB_BRACKET, 2.7)
+(tmp, IDENTIFIER, 2.7.1)
+(=, ASSIGN, 2.7.1)
+(i, IDENTIFIER, 2.7.1)
+(%, MOD, 2.7.1)
+(2, DIGIT_CONSTANT, 2.7.1)
+(;, SEMICOLON, 2.7.1)
+(if, IF, 2.7.2)
+((, LL_BRACKET, 2.7.2)
+(tmp, IDENTIFIER, 2.7.2)
+(==, EQU, 2.7.2)
+(0, DIGIT_CONSTANT, 2.7.2)
+(), RL_BRACKET, 2.7.2)
+({, LB_BRACKET, 2.7.2)
+(sum, IDENTIFIER, 2.7.2.1)
+(=, ASSIGN, 2.7.2.1)
+(sum, IDENTIFIER, 2.7.2.1)
+(+, PLUS, 2.7.2.1)
+(i, IDENTIFIER, 2.7.2.1)
+(;, SEMICOLON, 2.7.2.1)
+(}, RB_BRACKET, 2.7.3)
+(else, ELSE, 2.7.3)
+({, LB_BRACKET, 2.7.3)
+(sum, IDENTIFIER, 2.7.3.1)
+(=, ASSIGN, 2.7.3.1)
+(sum, IDENTIFIER, 2.7.3.1)
+(-, MINUS, 2.7.3.1)
+(i, IDENTIFIER, 2.7.3.1)
+(*, MUL, 2.7.3.1)
+(2, DIGIT_CONSTANT, 2.7.3.1)
+(;, SEMICOLON, 2.7.3.1)
+(}, RB_BRACKET, 2.7.4)
+(}, RB_BRACKET, 2.8)
+(i, IDENTIFIER, 2.9)
+(=, ASSIGN, 2.9)
+(!, NOT, 2.9)
+(n, IDENTIFIER, 2.9)
+(;, SEMICOLON, 2.9)
+(i, IDENTIFIER, 2.10)
+(=, ASSIGN, 2.10)
+(~, BIT_NOT, 2.10)
+(n, IDENTIFIER, 2.10)
+(;, SEMICOLON, 2.10)
+(printf, IDENTIFIER, 2.11)
+((, LL_BRACKET, 2.11)
+(", DOUBLE_QUOTE, 2.11)
+(sum is %d, STRING_CONSTANT, 2.11)
+(", DOUBLE_QUOTE, 2.11)
+(,, COMMA, 2.11)
+(sum, IDENTIFIER, 2.11)
+(), RL_BRACKET, 2.11)
+(;, SEMICOLON, 2.11)
+(return, RETURN, 2.12)
+(0, DIGIT_CONSTANT, 2.12)
+(;, SEMICOLON, 2.12)
+(}, RB_BRACKET, 3)
+
+语法分析开始...
+  include语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  if-else语句 : 语法合法
+  for语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
+  return语句 : 语法合法
+  main函数定义 : 语法合法
+语法分析结束!
+====================Parser==================
+( self: Sentence null null, father: null, left: null, right: null )
+( self: Include null null, father: Sentence, left: null, right: FunctionStatement )
+( self: # SHARP 1_in, father: Include, left: null, right: include )
+( self: include INCLUDE 1_in, father: Include, left: #, right: < )
+( self: < LT 1_in, father: Include, left: include, right: stdio.h )
+( self: stdio.h IDENTIFIER 1_in, father: Include, left: <, right: > )
+( self: > GT 1_in, father: Include, left: stdio.h, right: null )
+( self: FunctionStatement null null, father: Sentence, left: Include, right: null )
+( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
+( self: int FIELD_TYPE 2_fs, father: Type, left: null, right: null )
+( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
+( self: main IDENTIFIER 2_fs, father: FunctionName, left: null, right: null )
+( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
+( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
+( self: Statement null null, father: Sentence, left: null, right: Statement )
+( self: Type null null, father: Statement, left: null, right: n )
+( self: int FIELD_TYPE 2.1_st, father: Type, left: null, right: null )
+( self: n IDENTIFIER 2.1_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: i )
+( self: int FIELD_TYPE 2.2_st, father: Type, left: null, right: null )
+( self: i IDENTIFIER 2.2_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: sum )
+( self: int FIELD_TYPE 2.3_st, father: Type, left: null, right: null )
+( self: sum IDENTIFIER 2.3_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: FunctionCall )
+( self: Type null null, father: Statement, left: null, right: tmp )
+( self: int FIELD_TYPE 2.4_st, father: Type, left: null, right: null )
+( self: tmp IDENTIFIER 2.4_st, father: Statement, left: Type, right: null )
+( self: FunctionCall null null, father: Sentence, left: Statement, right: Assignment )
+( self: scanf FUNCTION_NAME 2.5_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: scanf, right: null )
+( self: %d STRING_CONSTANT 2.5_fc, father: CallParameterList, left: null, right: & )
+( self: & BIT_AND 2.5_fc, father: CallParameterList, left: %d, right: n )
+( self: n IDENTIFIER 2.5_fc, father: CallParameterList, left: &, right: null )
+( self: Assignment null null, father: Sentence, left: FunctionCall, right: Control )
+( self: sum IDENTIFIER 2.6_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 0 _Constant 2.6_ex, father: Expression, left: null, right: null )
+( self: Control ForControl 2.7_fo, father: Sentence, left: Assignment, right: Assignment )
+( self: Assignment null null, father: Control, left: null, right: Expression )
+( self: i IDENTIFIER 2.7_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 1 _Constant 2.7_ex, father: Expression, left: null, right: null )
+( self: Expression SingleOrDoubleOperand null, father: Control, left: Assignment, right: Sentence )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: i _Variable 2.7_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
+( self: n _Variable 2.7_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: <= _Operator 2.7_ex, father: Operator, left: null, right: null )
+( self: Sentence null null, father: Control, left: Expression, right: Expression )
+( self: Assignment null null, father: Sentence, left: null, right: Control )
+( self: tmp IDENTIFIER 2.7.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: tmp, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: i _Variable 2.7.1_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 2 _Constant 2.7.1_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: % _Operator 2.7.1_ex, father: Operator, left: null, right: null )
+( self: Control IfElseControl null, father: Sentence, left: Assignment, right: null )
+( self: IfControl null 2.7.2_if, father: Control, left: null, right: ElseControl )
+( self: Expression SingleOrDoubleOperand null, father: IfControl, left: null, right: Sentence )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: tmp _Variable 2.7.2_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 0 _Constant 2.7.2_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: == _Operator 2.7.2_ex, father: Operator, left: null, right: null )
+( self: Sentence null null, father: IfControl, left: Expression, right: null )
+( self: Assignment null null, father: Sentence, left: null, right: null )
+( self: sum IDENTIFIER 2.7.2.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: sum _Variable 2.7.2.1_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
+( self: i _Variable 2.7.2.1_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: + _Operator 2.7.2.1_ex, father: Operator, left: null, right: null )
+( self: ElseControl null 2.7.3_el, father: Control, left: IfControl, right: null )
+( self: Sentence null null, father: ElseControl, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: null, right: null )
+( self: sum IDENTIFIER 2.7.3.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: sum _Variable 2.7.3.1_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Expression )
+( self: i _Variable 2.7.3.1_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 2 _Constant 2.7.3.1_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: Operator )
+( self: * _Operator 2.7.3.1_ex, father: Operator, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Operator, right: null )
+( self: - _Operator 2.7.3.1_ex, father: Operator, left: null, right: null )
+( self: Expression SingleOrDoubleOperand null, father: Control, left: Sentence, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: i _Variable 2.7_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ++ _Operator 2.7_ex, father: Operator, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Control, right: Assignment )
+( self: i IDENTIFIER 2.9_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: n _Variable 2.9_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ! _Operator 2.9_ex, father: Operator, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Assignment, right: FunctionCall )
+( self: i IDENTIFIER 2.10_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: n _Variable 2.10_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ~ _Operator 2.10_ex, father: Operator, left: null, right: null )
+( self: FunctionCall null null, father: Sentence, left: Assignment, right: Return )
+( self: printf FUNCTION_NAME 2.11_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
+( self: sum is %d STRING_CONSTANT 2.11_fc, father: CallParameterList, left: null, right: sum )
+( self: sum IDENTIFIER 2.11_fc, father: CallParameterList, left: sum is %d, right: null )
+( self: Return null null, father: Sentence, left: FunctionCall, right: null )
+( self: return RETURN 2.12_re, father: Return, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 0 _Constant 2.12_ex, father: Expression, left: null, right: null )
 
