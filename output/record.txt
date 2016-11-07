@@ -1,0 +1,288 @@
+预处理源代码开始...(test7.c)
+预处理源代码结束
+词法分析开始...
+预处理源代码开始...(func1.c)
+预处理源代码结束
+预处理源代码开始...(func2.c)
+预处理源代码结束
+词法分析结束!
+====================Source C Code==================
+#include <stdio.h>
+#include <ctype.h>
+#include "func1.h"
+#include "func2.h"
+
+int inc(int x) {
+    int z;
+    z = x + 1;
+    return z;
+}
+
+int main() {
+    int a, b, c;
+    int d;
+    int e;
+
+    a = 1;
+    b = 2;
+    c = add(a, 3);
+    d = sub(a, c, b);
+    e = inc(4);
+
+    printf("The add result is : %d\n", c);
+    printf("The sub result is : %d\n", d);
+    return 0;
+}
+
+====================Labeled C Code==================
+#include <stdio.h>                                // 1
+#include <ctype.h>                                // 2
+#include "func1.h"                                // 7
+#include "func2.h"                                // 12
+
+int inc(int x) {                                  // 13
+    int z;                                        // 13.1
+    z = x + 1;                                    // 13.2
+    return z;                                     // 13.3
+}                                                 // 14
+
+int main() {                                      // 15
+    int a, b, c;                                  // 15.1
+    int d;                                        // 15.2
+    int e;                                        // 15.3
+
+    a = 1;                                        // 15.4
+    b = 2;                                        // 15.5
+    c = add(a, 3);                                // 15.6
+    d = sub(a, c, b);                             // 15.7
+    e = inc(4);                                   // 15.8
+
+    printf("The add result is : %d\n", c);        // 15.9
+    printf("The sub result is : %d\n", d);        // 15.10
+    return 0;                                     // 15.11
+}                                                 // 16
+
+====================Lexer==================
+(#, SHARP, 1)
+(include, INCLUDE, 1)
+(<, LT, 1)
+(stdio.h, IDENTIFIER, 1)
+(>, GT, 1)
+(#, SHARP, 2)
+(include, INCLUDE, 2)
+(<, LT, 2)
+(ctype.h, IDENTIFIER, 2)
+(>, GT, 2)
+(#, SHARP, 3)
+(include, INCLUDE, 3)
+(", DOUBLE_QUOTE, 3)
+(func1.h, IDENTIFIER, 3)
+(", DOUBLE_QUOTE, 3)
+(#, SHARP, 3)
+(include, INCLUDE, 3)
+(<, LT, 3)
+(stdio.h, IDENTIFIER, 3)
+(>, GT, 3)
+(#, SHARP, 4)
+(include, INCLUDE, 4)
+(", DOUBLE_QUOTE, 4)
+(func1.h, IDENTIFIER, 4)
+(", DOUBLE_QUOTE, 4)
+(int, INT, 5)
+(add, IDENTIFIER, 5)
+((, LL_BRACKET, 5)
+(int, INT, 5)
+(x, IDENTIFIER, 5)
+(,, COMMA, 5)
+(int, INT, 5)
+(y, IDENTIFIER, 5)
+(), RL_BRACKET, 5)
+({, LB_BRACKET, 5)
+(int, INT, 5.1)
+(z, IDENTIFIER, 5.1)
+(;, SEMICOLON, 5.1)
+(z, IDENTIFIER, 5.2)
+(=, ASSIGN, 5.2)
+(x, IDENTIFIER, 5.2)
+(+, PLUS, 5.2)
+(y, IDENTIFIER, 5.2)
+(;, SEMICOLON, 5.2)
+(printf, IDENTIFIER, 5.3)
+((, LL_BRACKET, 5.3)
+(", DOUBLE_QUOTE, 5.3)
+(add function %d\n, STRING_CONSTANT, 5.3)
+(", DOUBLE_QUOTE, 5.3)
+(,, COMMA, 5.3)
+(z, IDENTIFIER, 5.3)
+(), RL_BRACKET, 5.3)
+(;, SEMICOLON, 5.3)
+(printf, IDENTIFIER, 5.4)
+((, LL_BRACKET, 5.4)
+(", DOUBLE_QUOTE, 5.4)
+(add x %d, y %d\n, STRING_CONSTANT, 5.4)
+(", DOUBLE_QUOTE, 5.4)
+(,, COMMA, 5.4)
+(x, IDENTIFIER, 5.4)
+(,, COMMA, 5.4)
+(y, IDENTIFIER, 5.4)
+(), RL_BRACKET, 5.4)
+(;, SEMICOLON, 5.4)
+(printf, IDENTIFIER, 5.5)
+((, LL_BRACKET, 5.5)
+(", DOUBLE_QUOTE, 5.5)
+(addd addd\n, STRING_CONSTANT, 5.5)
+(", DOUBLE_QUOTE, 5.5)
+(), RL_BRACKET, 5.5)
+(;, SEMICOLON, 5.5)
+(return, RETURN, 5.6)
+(z, IDENTIFIER, 5.6)
+(;, SEMICOLON, 5.6)
+(}, RB_BRACKET, 6)
+(#, SHARP, 8)
+(include, INCLUDE, 8)
+(", DOUBLE_QUOTE, 8)
+(func2.h, IDENTIFIER, 8)
+(", DOUBLE_QUOTE, 8)
+(#, SHARP, 8)
+(include, INCLUDE, 8)
+(<, LT, 8)
+(stdio.h, IDENTIFIER, 8)
+(>, GT, 8)
+(#, SHARP, 9)
+(include, INCLUDE, 9)
+(", DOUBLE_QUOTE, 9)
+(func2.h, IDENTIFIER, 9)
+(", DOUBLE_QUOTE, 9)
+(int, INT, 10)
+(sub, IDENTIFIER, 10)
+((, LL_BRACKET, 10)
+(int, INT, 10)
+(x, IDENTIFIER, 10)
+(,, COMMA, 10)
+(int, INT, 10)
+(y, IDENTIFIER, 10)
+(,, COMMA, 10)
+(int, INT, 10)
+(d, IDENTIFIER, 10)
+(), RL_BRACKET, 10)
+({, LB_BRACKET, 10)
+(int, INT, 10.1)
+(z, IDENTIFIER, 10.1)
+(;, SEMICOLON, 10.1)
+(z, IDENTIFIER, 10.2)
+(=, ASSIGN, 10.2)
+(x, IDENTIFIER, 10.2)
+(-, MINUS, 10.2)
+(y, IDENTIFIER, 10.2)
+(-, MINUS, 10.2)
+(d, IDENTIFIER, 10.2)
+(;, SEMICOLON, 10.2)
+(printf, IDENTIFIER, 10.3)
+((, LL_BRACKET, 10.3)
+(", DOUBLE_QUOTE, 10.3)
+(sub function %d\n, STRING_CONSTANT, 10.3)
+(", DOUBLE_QUOTE, 10.3)
+(,, COMMA, 10.3)
+(z, IDENTIFIER, 10.3)
+(), RL_BRACKET, 10.3)
+(;, SEMICOLON, 10.3)
+(return, RETURN, 10.4)
+(z, IDENTIFIER, 10.4)
+(;, SEMICOLON, 10.4)
+(}, RB_BRACKET, 11)
+(int, INT, 13)
+(inc, IDENTIFIER, 13)
+((, LL_BRACKET, 13)
+(int, INT, 13)
+(x, IDENTIFIER, 13)
+(), RL_BRACKET, 13)
+({, LB_BRACKET, 13)
+(int, INT, 13.1)
+(z, IDENTIFIER, 13.1)
+(;, SEMICOLON, 13.1)
+(z, IDENTIFIER, 13.2)
+(=, ASSIGN, 13.2)
+(x, IDENTIFIER, 13.2)
+(+, PLUS, 13.2)
+(1, DIGIT_CONSTANT, 13.2)
+(;, SEMICOLON, 13.2)
+(return, RETURN, 13.3)
+(z, IDENTIFIER, 13.3)
+(;, SEMICOLON, 13.3)
+(}, RB_BRACKET, 14)
+(int, INT, 15)
+(main, IDENTIFIER, 15)
+((, LL_BRACKET, 15)
+(), RL_BRACKET, 15)
+({, LB_BRACKET, 15)
+(int, INT, 15.1)
+(a, IDENTIFIER, 15.1)
+(,, COMMA, 15.1)
+(b, IDENTIFIER, 15.1)
+(,, COMMA, 15.1)
+(c, IDENTIFIER, 15.1)
+(;, SEMICOLON, 15.1)
+(int, INT, 15.2)
+(d, IDENTIFIER, 15.2)
+(;, SEMICOLON, 15.2)
+(int, INT, 15.3)
+(e, IDENTIFIER, 15.3)
+(;, SEMICOLON, 15.3)
+(a, IDENTIFIER, 15.4)
+(=, ASSIGN, 15.4)
+(1, DIGIT_CONSTANT, 15.4)
+(;, SEMICOLON, 15.4)
+(b, IDENTIFIER, 15.5)
+(=, ASSIGN, 15.5)
+(2, DIGIT_CONSTANT, 15.5)
+(;, SEMICOLON, 15.5)
+(c, IDENTIFIER, 15.6)
+(=, ASSIGN, 15.6)
+(add, IDENTIFIER, 15.6)
+((, LL_BRACKET, 15.6)
+(a, IDENTIFIER, 15.6)
+(,, COMMA, 15.6)
+(3, DIGIT_CONSTANT, 15.6)
+(), RL_BRACKET, 15.6)
+(;, SEMICOLON, 15.6)
+(d, IDENTIFIER, 15.7)
+(=, ASSIGN, 15.7)
+(sub, IDENTIFIER, 15.7)
+((, LL_BRACKET, 15.7)
+(a, IDENTIFIER, 15.7)
+(,, COMMA, 15.7)
+(c, IDENTIFIER, 15.7)
+(,, COMMA, 15.7)
+(b, IDENTIFIER, 15.7)
+(), RL_BRACKET, 15.7)
+(;, SEMICOLON, 15.7)
+(e, IDENTIFIER, 15.8)
+(=, ASSIGN, 15.8)
+(inc, IDENTIFIER, 15.8)
+((, LL_BRACKET, 15.8)
+(4, DIGIT_CONSTANT, 15.8)
+(), RL_BRACKET, 15.8)
+(;, SEMICOLON, 15.8)
+(printf, IDENTIFIER, 15.9)
+((, LL_BRACKET, 15.9)
+(", DOUBLE_QUOTE, 15.9)
+(The add result is : %d\n, STRING_CONSTANT, 15.9)
+(", DOUBLE_QUOTE, 15.9)
+(,, COMMA, 15.9)
+(c, IDENTIFIER, 15.9)
+(), RL_BRACKET, 15.9)
+(;, SEMICOLON, 15.9)
+(printf, IDENTIFIER, 15.10)
+((, LL_BRACKET, 15.10)
+(", DOUBLE_QUOTE, 15.10)
+(The sub result is : %d\n, STRING_CONSTANT, 15.10)
+(", DOUBLE_QUOTE, 15.10)
+(,, COMMA, 15.10)
+(d, IDENTIFIER, 15.10)
+(), RL_BRACKET, 15.10)
+(;, SEMICOLON, 15.10)
+(return, RETURN, 15.11)
+(0, DIGIT_CONSTANT, 15.11)
+(;, SEMICOLON, 15.11)
+(}, RB_BRACKET, 16)
+

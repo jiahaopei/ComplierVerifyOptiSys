@@ -40,11 +40,13 @@ public class Lexer {
 		this.recorder = recorder;
 		this.srcDir = srcPath.substring(0, srcPath.lastIndexOf("/") + 1);
 		this.srcName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
-		srcs = getContent(srcName);
+		
 		sources = new ArrayList<>();
 		labels = new ArrayList<>();
 		tokens = new ArrayList<Token>();
 		fileNames = new HashSet<>();
+		
+		srcs = getContent(srcName);
 	}
 
 	public List<String> getSrcs() {
@@ -349,6 +351,14 @@ public class Lexer {
 		
 		if (libName.contains(".")) {
 			libName = libName.substring(0, libName.indexOf("."));
+			// 是否是C语言自带的头文件
+			for (String header : CommonsDefine.LIBS) {
+				if (header.equals(libName + ".h")) {
+					return;
+				}
+			}
+			
+			// 为自定义的头文件
 			if (!fileNames.contains(libName)) {
 				fileNames.add(libName);
 				
@@ -356,13 +366,19 @@ public class Lexer {
 				return;		// 表示此文件已经处理过了
 			}
 			
-			libName += ".c";
 		}
 		
-		// 找不到的源文件即为系统文件
-		File file = new File(srcDir + libName);
+		// 找不到头文件
+		File file = new File(srcDir + libName + ".h");
 		if (!file.exists()) {
-			return;
+			throw new RuntimeException("Can't find header file : " + libName + ".h");
+		}
+		
+		// 找不到源文件
+		libName += ".c";
+		file = new File(srcDir + libName);
+		if (!file.exists()) {
+			throw new RuntimeException("Can't find source file : " + libName);
 		}
 		
 		List<String> libs = getContent(libName);
@@ -702,7 +718,7 @@ public class Lexer {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test7.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
