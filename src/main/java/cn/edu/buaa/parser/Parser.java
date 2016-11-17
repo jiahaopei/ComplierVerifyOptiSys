@@ -29,8 +29,9 @@ public class Parser {
 	private Map<String, String> globalVariableTable;
 	private boolean isGlobal;
 	
-	private Recorder recorder;
+	private Map<String, String> functions;
 	
+	private Recorder recorder;
 	
 	private final Logger logger = LoggerFactory.getLogger(Parser.class);
 	
@@ -40,6 +41,7 @@ public class Parser {
 		this.tree = null;
 		this.variableTable = new HashMap<>();
 		this.globalVariableTable = new HashMap<>();
+		this.functions = new HashMap<>();
 		this.recorder = recorder;
 	}
 	
@@ -207,9 +209,29 @@ public class Parser {
 				
 			// 如果是遇见了左大括号
 			} else if (getTokenType(index).equals("LB_BRACKET")) {
+				// 规则 8.1（强制）： 函数应当具有原型声明，且原型在函数的定义和调用范围内都是可见的。
+				if (!funcName.equals("main") && !functions.containsKey(funcName)) {
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index) + "]: The function should have a prototype declaration '" + funcName + "'");
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
 				// 跳过左大括号
 				index++;
 				_block(funcStatementTree);
+				break;
+			
+			// 如果是分号，即函数声明
+			} else if (getTokenType(index).equals("SEMICOLON")) {
+				SyntaxTreeNode end = new SyntaxTreeNode("SEMICOLON");
+				funcStatementTree.addChildNode(end, root);
+				functions.put(funcName, funcName);
+				index++;
 				break;
 				
 			} else {
@@ -330,8 +352,40 @@ public class Parser {
 								getTokenLabel(index) + "_st"), 
 						root);
 				if (isGlobal) {
+					if (globalVariableTable.containsKey(getTokenValue(index))) {
+						try {
+							throw new Exception(
+									"Error ["+ getTokenLabel(index) + "] : Repeat variable definition " 
+											+ getTokenValue(index));
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+						
+					} else if (variableTable.containsKey(getTokenValue(index))) {
+						System.err.print("Warning ["+ getTokenLabel(index) 
+							+ "] : the identifier of the internal scope should not be the same as the identifier with an external scope! '" 
+								+ getTokenValue(index) + "'\n");
+					}
+					
 					globalVariableTable.put(getTokenValue(index), tmpVariableType);
 				} else {
+					if (variableTable.containsKey(getTokenValue(index))) {
+						try {
+							throw new Exception(
+									"Error ["+ getTokenLabel(index) + "] : Repeat variable definition " 
+											+ getTokenValue(index));
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+						
+					} else if (globalVariableTable.containsKey(getTokenValue(index))) {
+						System.err.print("Warning ["+ getTokenLabel(index) 
+						+ "] : the identifier of the internal scope should not be the same as the identifier with an external scope! '" 
+							+ getTokenValue(index) + "'\n");
+					}
+					
 					variableTable.put(getTokenValue(index), tmpVariableType);
 				}
 				
@@ -414,8 +468,40 @@ public class Parser {
 								tmpTree.getRoot());
 						
 						if (isGlobal) {
+							if (globalVariableTable.containsKey(getTokenValue(index))) {
+								try {
+									throw new Exception(
+											"Error ["+ getTokenLabel(index) + "] : Repeat variable definition " 
+													+ getTokenValue(index));
+								} catch (Exception e) {
+									e.printStackTrace();
+									System.exit(1);
+								}
+								
+							} else if (variableTable.containsKey(getTokenValue(index))) {
+								System.err.print("Warning ["+ getTokenLabel(index) 
+								+ "] : the identifier of the internal scope should not be the same as the identifier with an external scope! '" 
+									+ getTokenValue(index) + "'\n");
+							}
+							
 							globalVariableTable.put(getTokenValue(index), tmpVariableType);
 						} else {
+							if (variableTable.containsKey(getTokenValue(index))) {
+								try {
+									throw new Exception(
+											"Error ["+ getTokenLabel(index) + "] : Repeat variable definition " 
+													+ getTokenValue(index));
+								} catch (Exception e) {
+									e.printStackTrace();
+									System.exit(1);
+								}
+								
+							} else if (globalVariableTable.containsKey(getTokenValue(index))) {
+								System.err.print("Warning ["+ getTokenLabel(index) 
+								+ "] : the identifier of the internal scope should not be the same as the identifier with an external scope! '" 
+									+ getTokenValue(index) + "'\n");
+							}
+							
 							variableTable.put(getTokenValue(index), tmpVariableType);
 						}
 						

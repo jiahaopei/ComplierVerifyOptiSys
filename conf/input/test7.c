@@ -3,11 +3,7 @@
 #include "func1.h"
 #include "func2.h"
 
-int inc(int x) {
-    int z;
-    z = x + 1;
-    return z;
-}
+int inc(int x);
 
 int main() {
     int a, b, c;
@@ -23,4 +19,10 @@ int main() {
     printf("The add result is : %d\n", c);
     printf("The sub result is : %d\n", d);
     return 0;
+}
+
+int inc(int x) {
+    int z;
+    z = x + 1;
+    return z;
 }

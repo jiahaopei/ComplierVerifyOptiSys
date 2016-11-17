@@ -14,7 +14,6 @@ public class Token {
 	private String label;
 	
 	public Token() {
-		
 	}
 	
 	public Token(String type, String value, String label) {
@@ -59,6 +58,11 @@ public class Token {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + getValue() + ", " + getType() + ", " + getLabel() + ")";
 	}
 	
 }

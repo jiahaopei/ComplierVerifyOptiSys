@@ -163,6 +163,8 @@ public class Assembler {
 
 	// 函数定义句型，处理main函数和其它函数的定义
 	private void _functionStatement(SyntaxTreeNode father) {
+		if(!checkHead(father)) return;
+		
 		SyntaxTreeNode currentNode = father.getFirstSon(); // 第一个儿子
 		String funcName = null;
 		String label = null;
@@ -287,6 +289,18 @@ public class Assembler {
 			currentNode = currentNode.getRight();
 		}
 
+	}
+	
+	// 函数声明语句不应该生成目标码
+	private boolean checkHead(SyntaxTreeNode father) {
+		SyntaxTreeNode currentNode = father.getFirstSon(); // 第一个儿子
+		while (currentNode != null) {
+			if (currentNode.getValue().equals("SEMICOLON")) {
+				return false;
+			}
+			currentNode = currentNode.getRight();
+		}
+		return true;
 	}
 
 	// 变量声明
@@ -1302,7 +1316,7 @@ public class Assembler {
 		// 公共记录
 		Recorder recorder = new Recorder();
 
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test7.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();

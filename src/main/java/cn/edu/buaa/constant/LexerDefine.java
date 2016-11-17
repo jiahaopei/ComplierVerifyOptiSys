@@ -6,8 +6,8 @@ import java.util.HashMap;
 public class LexerDefine {
 
 	// token比较大的分类
-	public static final String[] TOKEN_STYLE = 
-		{ "KEY_WORD", "IDENTIFIER", "DIGIT_CONSTANT", "OPERATOR", "SEPARATOR", "STRING_CONSTANT" };
+	public static final String[] TOKEN_STYLE = { 
+			"KEY_WORD", "IDENTIFIER", "DIGIT_CONSTANT", "OPERATOR", "SEPARATOR", "STRING_CONSTANT" };
 
 	// 将关键字、运算符、分隔符进行具体化
 	public static final Map<String, String> DETAIL_TOKEN_STYLE = new HashMap<String, String>() {
@@ -68,7 +68,9 @@ public class LexerDefine {
 	};
 
 	// 分隔符
-	public static final String[] delimiters = { "(", ")", "{", "}", "[", "]", ",", "\"", ";" };
+	public static final String[] delimiters = { 
+			"(", ")", "{", "}", "[", "]", ",", "\"", ";" 
+	};
 
 	// 运算符
 	public static final String[] operators = { 
@@ -87,4 +89,8 @@ public class LexerDefine {
 			{ "include", "return" } 
 	};
 	
+	// 三字母词
+	public static final String[] trigraphs = {
+			"??=", "??)", "??!", "??(", "??'", "??>", "??/", "??<", "??-"
+	};
 }
