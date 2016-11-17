@@ -633,7 +633,8 @@ public class Parser {
 				recorder.insertLine(Recorder.TAB + "while语句 : 语法非法");
 				logger.info("while语句 : 语法非法");
 				try {
-					throw new Exception("while statement body must be surrouded by '{}' : " + getTokenValue(index));
+					throw new Exception(
+							"Error [" + getTokenLabel(index) + "] : while statement shall be a compound statement!({..})");
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);
@@ -780,7 +781,8 @@ public class Parser {
 				recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
 				logger.info("if-else语句 : 语法非法");
 				try {
-					throw new Exception("if statement must be surrounded by '{}'");
+					throw new Exception(
+							"Error [" + getTokenLabel(index) + "] : if statement shall be a compound statement!({..})");
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);
@@ -823,7 +825,8 @@ public class Parser {
 				 recorder.insertLine(Recorder.TAB + "if-else语句 : 语法非法");
 				 logger.info("if-else语句 : 语法非法");
 				 try {
-					throw new Exception("else statement must be surrounded by '{}'");
+					 throw new Exception(
+								"Error [" + getTokenLabel(index) + "] : else statement shall be a compound statement!({..})");
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);
@@ -895,7 +898,8 @@ public class Parser {
 				recorder.insertLine(Recorder.TAB + "for语句 : 语法非法");
 				logger.info("for语句 : 语法非法");
 				try {
-					throw new Exception("for statement must be surrounded by '{}'");
+					throw new Exception(
+							"Error [" + getTokenLabel(index) + "] : for statement shall be a compound statement!({..})");
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(1);

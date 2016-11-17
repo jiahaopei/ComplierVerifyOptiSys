@@ -24,6 +24,9 @@ public class LexerDefine {
 			put("while", "WHILE");
 			put("do", "DO");
 			put("return", "RETURN");
+			put("break", "BREAK");
+			put("continue", "CONTINUE");
+			put("goto", "GOTO");
 
 			put("=", "ASSIGN");
 			
@@ -86,7 +89,7 @@ public class LexerDefine {
 	public static final String[][] keywords = { 
 			{ "int", "float", "double", "char", "void" },
 			{ "if", "for", "while", "do", "else" }, 
-			{ "include", "return" } 
+			{ "include", "return", "break", "continue", "goto" } 
 	};
 	
 	// 三字母词

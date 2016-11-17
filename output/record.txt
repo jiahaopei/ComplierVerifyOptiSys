@@ -1,74 +1,78 @@
-预处理源代码开始...(test7.c)
+预处理源代码开始...(evenSum.c)
 预处理源代码结束
 词法分析开始...
-预处理源代码开始...(func1.h)
-预处理源代码结束
-预处理源代码开始...(func1.c)
-预处理源代码结束
-预处理源代码开始...(func2.h)
-预处理源代码结束
-预处理源代码开始...(func2.c)
-预处理源代码结束
 词法分析结束!
 ====================Source C Code==================
 #include <stdio.h>
-#include <ctype.h>
-#include "func1.h"
-#include "func2.h"
-
-int inc(int x);
 
 int main() {
-    int a, b, c;
-    int d;
-    int e;
+    int n;
+    int i;
+    int sum;
+    int tmp;
+    double a, b;
 
-    a = 1;
-    b = 2;
-    c = add(a, 3);
-    d = sub(a, c, b);
-    e = inc(4);
 
-    printf("The add result is : %d\n", c);
-    printf("The sub result is : %d\n", d);
+    scanf("%d %f %f", &n, &a, &b);    
+    sum = 0;
+
+    for(i = 1; i <= n; i++) {
+        tmp = i % 2;
+        if(tmp == 0) {
+            sum = sum + i;
+        } else {
+            sum = sum - i * 2;
+        
+        } 
+    }   
+
+    i = !n;
+    i = ~n;
+    if (a != b) {
+        a = a * b;
+    }
+
+
+    printf("sum is %d", sum);
+
     return 0;
-}
-
-int inc(int x) {
-    int z;
-    z = x + 1;
-    return z;
 }
 
 ====================Labeled C Code==================
 #include <stdio.h>                                // 1
-#include <ctype.h>                                // 2
-#include "func1.h"                                // 3
-#include "func2.h"                                // 4
 
-int inc(int x);                                   // 5
+int main() {                                      // 2
+    int n;                                        // 2.1
+    int i;                                        // 2.2
+    int sum;                                      // 2.3
+    int tmp;                                      // 2.4
+    double a, b;                                  // 2.5
 
-int main() {                                      // 6
-    int a, b, c;                                  // 6.1
-    int d;                                        // 6.2
-    int e;                                        // 6.3
 
-    a = 1;                                        // 6.4
-    b = 2;                                        // 6.5
-    c = add(a, 3);                                // 6.6
-    d = sub(a, c, b);                             // 6.7
-    e = inc(4);                                   // 6.8
+    scanf("%d %f %f", &n, &a, &b);                // 2.6
+    sum = 0;                                      // 2.7
 
-    printf("The add result is : %d\n", c);        // 6.9
-    printf("The sub result is : %d\n", d);        // 6.10
-    return 0;                                     // 6.11
-}                                                 // 7
+    for(i = 1; i <= n; i++) {                     // 2.8
+        tmp = i % 2;                              // 2.8.1
+        if(tmp == 0) {                            // 2.8.2
+            sum = sum + i;                        // 2.8.2.1
+        } else {                                  // 2.8.3
+            sum = sum - i * 2;                    // 2.8.3.1
+        
+        }                                         // 2.8.4
+    }                                             // 2.9
 
-int inc(int x) {                                  // 8
-    int z;                                        // 8.1
-    z = x + 1;                                    // 8.2
-    return z;                                     // 8.3
-}                                                 // 9
+    i = !n;                                       // 2.10
+    i = ~n;                                       // 2.11
+    if (a != b) {                                 // 2.12
+        a = a * b;                                // 2.12.1
+    }                                             // 2.13
+
+
+    printf("sum is %d", sum);                     // 2.14
+
+    return 0;                                     // 2.15
+}                                                 // 3
 
 ====================Lexer==================
 (#, SHARP, 1)
@@ -76,804 +80,439 @@ int inc(int x) {                                  // 8
 (<, LT, 1)
 (stdio.h, IDENTIFIER, 1)
 (>, GT, 1)
-(#, SHARP, 2)
-(include, INCLUDE, 2)
-(<, LT, 2)
-(ctype.h, IDENTIFIER, 2)
-(>, GT, 2)
-(#, SHARP, 3)
-(include, INCLUDE, 3)
-(", DOUBLE_QUOTE, 3)
-(func1.h, IDENTIFIER, 3)
-(", DOUBLE_QUOTE, 3)
-(#, SHARP, 4)
-(include, INCLUDE, 4)
-(", DOUBLE_QUOTE, 4)
-(func2.h, IDENTIFIER, 4)
-(", DOUBLE_QUOTE, 4)
-(int, INT, 5)
-(inc, IDENTIFIER, 5)
-((, LL_BRACKET, 5)
-(int, INT, 5)
-(x, IDENTIFIER, 5)
-(), RL_BRACKET, 5)
-(;, SEMICOLON, 5)
-(int, INT, 6)
-(main, IDENTIFIER, 6)
-((, LL_BRACKET, 6)
-(), RL_BRACKET, 6)
-({, LB_BRACKET, 6)
-(int, INT, 6.1)
-(a, IDENTIFIER, 6.1)
-(,, COMMA, 6.1)
-(b, IDENTIFIER, 6.1)
-(,, COMMA, 6.1)
-(c, IDENTIFIER, 6.1)
-(;, SEMICOLON, 6.1)
-(int, INT, 6.2)
-(d, IDENTIFIER, 6.2)
-(;, SEMICOLON, 6.2)
-(int, INT, 6.3)
-(e, IDENTIFIER, 6.3)
-(;, SEMICOLON, 6.3)
-(a, IDENTIFIER, 6.4)
-(=, ASSIGN, 6.4)
-(1, DIGIT_CONSTANT, 6.4)
-(;, SEMICOLON, 6.4)
-(b, IDENTIFIER, 6.5)
-(=, ASSIGN, 6.5)
-(2, DIGIT_CONSTANT, 6.5)
-(;, SEMICOLON, 6.5)
-(c, IDENTIFIER, 6.6)
-(=, ASSIGN, 6.6)
-(add, IDENTIFIER, 6.6)
-((, LL_BRACKET, 6.6)
-(a, IDENTIFIER, 6.6)
-(,, COMMA, 6.6)
-(3, DIGIT_CONSTANT, 6.6)
-(), RL_BRACKET, 6.6)
-(;, SEMICOLON, 6.6)
-(d, IDENTIFIER, 6.7)
-(=, ASSIGN, 6.7)
-(sub, IDENTIFIER, 6.7)
-((, LL_BRACKET, 6.7)
-(a, IDENTIFIER, 6.7)
-(,, COMMA, 6.7)
-(c, IDENTIFIER, 6.7)
-(,, COMMA, 6.7)
-(b, IDENTIFIER, 6.7)
-(), RL_BRACKET, 6.7)
-(;, SEMICOLON, 6.7)
-(e, IDENTIFIER, 6.8)
-(=, ASSIGN, 6.8)
-(inc, IDENTIFIER, 6.8)
-((, LL_BRACKET, 6.8)
-(4, DIGIT_CONSTANT, 6.8)
-(), RL_BRACKET, 6.8)
-(;, SEMICOLON, 6.8)
-(printf, IDENTIFIER, 6.9)
-((, LL_BRACKET, 6.9)
-(", DOUBLE_QUOTE, 6.9)
-(The add result is : %d\n, STRING_CONSTANT, 6.9)
-(", DOUBLE_QUOTE, 6.9)
-(,, COMMA, 6.9)
-(c, IDENTIFIER, 6.9)
-(), RL_BRACKET, 6.9)
-(;, SEMICOLON, 6.9)
-(printf, IDENTIFIER, 6.10)
-((, LL_BRACKET, 6.10)
-(", DOUBLE_QUOTE, 6.10)
-(The sub result is : %d\n, STRING_CONSTANT, 6.10)
-(", DOUBLE_QUOTE, 6.10)
-(,, COMMA, 6.10)
-(d, IDENTIFIER, 6.10)
-(), RL_BRACKET, 6.10)
-(;, SEMICOLON, 6.10)
-(return, RETURN, 6.11)
-(0, DIGIT_CONSTANT, 6.11)
-(;, SEMICOLON, 6.11)
-(}, RB_BRACKET, 7)
-(int, INT, 8)
-(inc, IDENTIFIER, 8)
-((, LL_BRACKET, 8)
-(int, INT, 8)
-(x, IDENTIFIER, 8)
-(), RL_BRACKET, 8)
-({, LB_BRACKET, 8)
-(int, INT, 8.1)
-(z, IDENTIFIER, 8.1)
-(;, SEMICOLON, 8.1)
-(z, IDENTIFIER, 8.2)
-(=, ASSIGN, 8.2)
-(x, IDENTIFIER, 8.2)
-(+, PLUS, 8.2)
-(1, DIGIT_CONSTANT, 8.2)
-(;, SEMICOLON, 8.2)
-(return, RETURN, 8.3)
-(z, IDENTIFIER, 8.3)
-(;, SEMICOLON, 8.3)
-(}, RB_BRACKET, 9)
-(#, SHARP, 10)
-(include, INCLUDE, 10)
-(<, LT, 10)
-(stdio.h, IDENTIFIER, 10)
-(>, GT, 10)
-(int, INT, 11)
-(add, IDENTIFIER, 11)
-((, LL_BRACKET, 11)
-(int, INT, 11)
-(x, IDENTIFIER, 11)
-(,, COMMA, 11)
-(int, INT, 11)
-(y, IDENTIFIER, 11)
-(), RL_BRACKET, 11)
-(;, SEMICOLON, 11)
-(#, SHARP, 12)
-(include, INCLUDE, 12)
-(<, LT, 12)
-(stdio.h, IDENTIFIER, 12)
-(>, GT, 12)
-(#, SHARP, 13)
-(include, INCLUDE, 13)
-(", DOUBLE_QUOTE, 13)
-(func1.h, IDENTIFIER, 13)
-(", DOUBLE_QUOTE, 13)
-(int, INT, 14)
-(add, IDENTIFIER, 14)
-((, LL_BRACKET, 14)
-(int, INT, 14)
-(x, IDENTIFIER, 14)
-(,, COMMA, 14)
-(int, INT, 14)
-(y, IDENTIFIER, 14)
-(), RL_BRACKET, 14)
-({, LB_BRACKET, 14)
-(int, INT, 14.1)
-(z, IDENTIFIER, 14.1)
-(;, SEMICOLON, 14.1)
-(z, IDENTIFIER, 14.2)
-(=, ASSIGN, 14.2)
-(x, IDENTIFIER, 14.2)
-(+, PLUS, 14.2)
-(y, IDENTIFIER, 14.2)
-(;, SEMICOLON, 14.2)
-(printf, IDENTIFIER, 14.3)
-((, LL_BRACKET, 14.3)
-(", DOUBLE_QUOTE, 14.3)
-(add function %d\n, STRING_CONSTANT, 14.3)
-(", DOUBLE_QUOTE, 14.3)
-(,, COMMA, 14.3)
-(z, IDENTIFIER, 14.3)
-(), RL_BRACKET, 14.3)
-(;, SEMICOLON, 14.3)
-(printf, IDENTIFIER, 14.4)
-((, LL_BRACKET, 14.4)
-(", DOUBLE_QUOTE, 14.4)
-(add x %d, y %d\n, STRING_CONSTANT, 14.4)
-(", DOUBLE_QUOTE, 14.4)
-(,, COMMA, 14.4)
-(x, IDENTIFIER, 14.4)
-(,, COMMA, 14.4)
-(y, IDENTIFIER, 14.4)
-(), RL_BRACKET, 14.4)
-(;, SEMICOLON, 14.4)
-(printf, IDENTIFIER, 14.5)
-((, LL_BRACKET, 14.5)
-(", DOUBLE_QUOTE, 14.5)
-(addd addd\n, STRING_CONSTANT, 14.5)
-(", DOUBLE_QUOTE, 14.5)
-(), RL_BRACKET, 14.5)
-(;, SEMICOLON, 14.5)
-(return, RETURN, 14.6)
-(z, IDENTIFIER, 14.6)
-(;, SEMICOLON, 14.6)
-(}, RB_BRACKET, 15)
-(#, SHARP, 16)
-(include, INCLUDE, 16)
-(<, LT, 16)
-(stdio.h, IDENTIFIER, 16)
-(>, GT, 16)
-(int, INT, 17)
-(sub, IDENTIFIER, 17)
-((, LL_BRACKET, 17)
-(int, INT, 17)
-(x, IDENTIFIER, 17)
-(,, COMMA, 17)
-(int, INT, 17)
-(y, IDENTIFIER, 17)
-(,, COMMA, 17)
-(int, INT, 17)
-(d, IDENTIFIER, 17)
-(), RL_BRACKET, 17)
-(;, SEMICOLON, 17)
-(#, SHARP, 18)
-(include, INCLUDE, 18)
-(<, LT, 18)
-(stdio.h, IDENTIFIER, 18)
-(>, GT, 18)
-(#, SHARP, 19)
-(include, INCLUDE, 19)
-(", DOUBLE_QUOTE, 19)
-(func2.h, IDENTIFIER, 19)
-(", DOUBLE_QUOTE, 19)
-(int, INT, 20)
-(sub, IDENTIFIER, 20)
-((, LL_BRACKET, 20)
-(int, INT, 20)
-(x, IDENTIFIER, 20)
-(,, COMMA, 20)
-(int, INT, 20)
-(y, IDENTIFIER, 20)
-(,, COMMA, 20)
-(int, INT, 20)
-(d, IDENTIFIER, 20)
-(), RL_BRACKET, 20)
-({, LB_BRACKET, 20)
-(int, INT, 20.1)
-(z, IDENTIFIER, 20.1)
-(;, SEMICOLON, 20.1)
-(z, IDENTIFIER, 20.2)
-(=, ASSIGN, 20.2)
-(x, IDENTIFIER, 20.2)
-(-, MINUS, 20.2)
-(y, IDENTIFIER, 20.2)
-(-, MINUS, 20.2)
-(d, IDENTIFIER, 20.2)
-(;, SEMICOLON, 20.2)
-(printf, IDENTIFIER, 20.3)
-((, LL_BRACKET, 20.3)
-(", DOUBLE_QUOTE, 20.3)
-(sub function %d\n, STRING_CONSTANT, 20.3)
-(", DOUBLE_QUOTE, 20.3)
-(,, COMMA, 20.3)
-(z, IDENTIFIER, 20.3)
-(), RL_BRACKET, 20.3)
-(;, SEMICOLON, 20.3)
-(return, RETURN, 20.4)
-(z, IDENTIFIER, 20.4)
-(;, SEMICOLON, 20.4)
-(}, RB_BRACKET, 21)
+(int, INT, 2)
+(main, IDENTIFIER, 2)
+((, LL_BRACKET, 2)
+(), RL_BRACKET, 2)
+({, LB_BRACKET, 2)
+(int, INT, 2.1)
+(n, IDENTIFIER, 2.1)
+(;, SEMICOLON, 2.1)
+(int, INT, 2.2)
+(i, IDENTIFIER, 2.2)
+(;, SEMICOLON, 2.2)
+(int, INT, 2.3)
+(sum, IDENTIFIER, 2.3)
+(;, SEMICOLON, 2.3)
+(int, INT, 2.4)
+(tmp, IDENTIFIER, 2.4)
+(;, SEMICOLON, 2.4)
+(double, DOUBLE, 2.5)
+(a, IDENTIFIER, 2.5)
+(,, COMMA, 2.5)
+(b, IDENTIFIER, 2.5)
+(;, SEMICOLON, 2.5)
+(scanf, IDENTIFIER, 2.6)
+((, LL_BRACKET, 2.6)
+(", DOUBLE_QUOTE, 2.6)
+(%d %f %f, STRING_CONSTANT, 2.6)
+(", DOUBLE_QUOTE, 2.6)
+(,, COMMA, 2.6)
+(&, BIT_AND, 2.6)
+(n, IDENTIFIER, 2.6)
+(,, COMMA, 2.6)
+(&, BIT_AND, 2.6)
+(a, IDENTIFIER, 2.6)
+(,, COMMA, 2.6)
+(&, BIT_AND, 2.6)
+(b, IDENTIFIER, 2.6)
+(), RL_BRACKET, 2.6)
+(;, SEMICOLON, 2.6)
+(sum, IDENTIFIER, 2.7)
+(=, ASSIGN, 2.7)
+(0, DIGIT_CONSTANT, 2.7)
+(;, SEMICOLON, 2.7)
+(for, FOR, 2.8)
+((, LL_BRACKET, 2.8)
+(i, IDENTIFIER, 2.8)
+(=, ASSIGN, 2.8)
+(1, DIGIT_CONSTANT, 2.8)
+(;, SEMICOLON, 2.8)
+(i, IDENTIFIER, 2.8)
+(<=, LET, 2.8)
+(n, IDENTIFIER, 2.8)
+(;, SEMICOLON, 2.8)
+(i, IDENTIFIER, 2.8)
+(++, SELF_PLUS, 2.8)
+(), RL_BRACKET, 2.8)
+({, LB_BRACKET, 2.8)
+(tmp, IDENTIFIER, 2.8.1)
+(=, ASSIGN, 2.8.1)
+(i, IDENTIFIER, 2.8.1)
+(%, MOD, 2.8.1)
+(2, DIGIT_CONSTANT, 2.8.1)
+(;, SEMICOLON, 2.8.1)
+(if, IF, 2.8.2)
+((, LL_BRACKET, 2.8.2)
+(tmp, IDENTIFIER, 2.8.2)
+(==, EQU, 2.8.2)
+(0, DIGIT_CONSTANT, 2.8.2)
+(), RL_BRACKET, 2.8.2)
+({, LB_BRACKET, 2.8.2)
+(sum, IDENTIFIER, 2.8.2.1)
+(=, ASSIGN, 2.8.2.1)
+(sum, IDENTIFIER, 2.8.2.1)
+(+, PLUS, 2.8.2.1)
+(i, IDENTIFIER, 2.8.2.1)
+(;, SEMICOLON, 2.8.2.1)
+(}, RB_BRACKET, 2.8.3)
+(else, ELSE, 2.8.3)
+({, LB_BRACKET, 2.8.3)
+(sum, IDENTIFIER, 2.8.3.1)
+(=, ASSIGN, 2.8.3.1)
+(sum, IDENTIFIER, 2.8.3.1)
+(-, MINUS, 2.8.3.1)
+(i, IDENTIFIER, 2.8.3.1)
+(*, MUL, 2.8.3.1)
+(2, DIGIT_CONSTANT, 2.8.3.1)
+(;, SEMICOLON, 2.8.3.1)
+(}, RB_BRACKET, 2.8.4)
+(}, RB_BRACKET, 2.9)
+(i, IDENTIFIER, 2.10)
+(=, ASSIGN, 2.10)
+(!, NOT, 2.10)
+(n, IDENTIFIER, 2.10)
+(;, SEMICOLON, 2.10)
+(i, IDENTIFIER, 2.11)
+(=, ASSIGN, 2.11)
+(~, BIT_NOT, 2.11)
+(n, IDENTIFIER, 2.11)
+(;, SEMICOLON, 2.11)
+(if, IF, 2.12)
+((, LL_BRACKET, 2.12)
+(a, IDENTIFIER, 2.12)
+(!=, UNE, 2.12)
+(b, IDENTIFIER, 2.12)
+(), RL_BRACKET, 2.12)
+({, LB_BRACKET, 2.12)
+(a, IDENTIFIER, 2.12.1)
+(=, ASSIGN, 2.12.1)
+(a, IDENTIFIER, 2.12.1)
+(*, MUL, 2.12.1)
+(b, IDENTIFIER, 2.12.1)
+(;, SEMICOLON, 2.12.1)
+(}, RB_BRACKET, 2.13)
+(printf, IDENTIFIER, 2.14)
+((, LL_BRACKET, 2.14)
+(", DOUBLE_QUOTE, 2.14)
+(sum is %d, STRING_CONSTANT, 2.14)
+(", DOUBLE_QUOTE, 2.14)
+(,, COMMA, 2.14)
+(sum, IDENTIFIER, 2.14)
+(), RL_BRACKET, 2.14)
+(;, SEMICOLON, 2.14)
+(return, RETURN, 2.15)
+(0, DIGIT_CONSTANT, 2.15)
+(;, SEMICOLON, 2.15)
+(}, RB_BRACKET, 3)
 
 语法分析开始...
   include语句 : 语法合法
-  include语句 : 语法合法
-  include语句 : 语法合法
-  include语句 : 语法合法
-  inc函数定义 : 语法合法
   变量声明语句 : 语法合法
   变量声明语句 : 语法合法
   变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  函数调用语句 : 语法合法
   表达式语句 : 语法合法
   赋值语句 : 语法合法
   表达式语句 : 语法合法
   赋值语句 : 语法合法
-  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
   赋值语句 : 语法合法
-  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
   赋值语句 : 语法合法
-  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
   赋值语句 : 语法合法
-  函数调用语句 : 语法合法
+  if-else语句 : 语法合法
+  for语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  if-else语句 : 语法合法
   函数调用语句 : 语法合法
   表达式语句 : 语法合法
   return语句 : 语法合法
   main函数定义 : 语法合法
-  变量声明语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  表达式语句 : 语法合法
-  return语句 : 语法合法
-  inc函数定义 : 语法合法
-  include语句 : 语法合法
-  add函数定义 : 语法合法
-  include语句 : 语法合法
-  include语句 : 语法合法
-  变量声明语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  函数调用语句 : 语法合法
-  函数调用语句 : 语法合法
-  函数调用语句 : 语法合法
-  表达式语句 : 语法合法
-  return语句 : 语法合法
-  add函数定义 : 语法合法
-  include语句 : 语法合法
-  sub函数定义 : 语法合法
-  include语句 : 语法合法
-  include语句 : 语法合法
-  变量声明语句 : 语法合法
-  表达式语句 : 语法合法
-  赋值语句 : 语法合法
-  函数调用语句 : 语法合法
-  表达式语句 : 语法合法
-  return语句 : 语法合法
-  sub函数定义 : 语法合法
 语法分析结束!
 ====================Parser==================
 ( self: Sentence null null, father: null, left: null, right: null )
-( self: Include null null, father: Sentence, left: null, right: Include )
+( self: Include null null, father: Sentence, left: null, right: FunctionStatement )
 ( self: # SHARP 1_in, father: Include, left: null, right: include )
 ( self: include INCLUDE 1_in, father: Include, left: #, right: < )
 ( self: < LT 1_in, father: Include, left: include, right: stdio.h )
 ( self: stdio.h IDENTIFIER 1_in, father: Include, left: <, right: > )
 ( self: > GT 1_in, father: Include, left: stdio.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: Include )
-( self: # SHARP 2_in, father: Include, left: null, right: include )
-( self: include INCLUDE 2_in, father: Include, left: #, right: < )
-( self: < LT 2_in, father: Include, left: include, right: ctype.h )
-( self: ctype.h IDENTIFIER 2_in, father: Include, left: <, right: > )
-( self: > GT 2_in, father: Include, left: ctype.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: Include )
-( self: # SHARP 3_in, father: Include, left: null, right: include )
-( self: include INCLUDE 3_in, father: Include, left: #, right: " )
-( self: " DOUBLE_QUOTE 3_in, father: Include, left: include, right: func1.h )
-( self: func1.h IDENTIFIER 3_in, father: Include, left: ", right: " )
-( self: " DOUBLE_QUOTE 3_in, father: Include, left: func1.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: FunctionStatement )
-( self: # SHARP 4_in, father: Include, left: null, right: include )
-( self: include INCLUDE 4_in, father: Include, left: #, right: " )
-( self: " DOUBLE_QUOTE 4_in, father: Include, left: include, right: func2.h )
-( self: func2.h IDENTIFIER 4_in, father: Include, left: ", right: " )
-( self: " DOUBLE_QUOTE 4_in, father: Include, left: func2.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: FunctionStatement )
+( self: FunctionStatement null null, father: Sentence, left: Include, right: null )
 ( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 5_fs, father: Type, left: null, right: null )
+( self: int FIELD_TYPE 2_fs, father: Type, left: null, right: null )
 ( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: inc IDENTIFIER 5_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: SEMICOLON )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: null )
-( self: int FIELD_TYPE 5_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 5_fs, father: Parameter, left: int, right: null )
-( self: SEMICOLON null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: FunctionStatement null null, father: Sentence, left: FunctionStatement, right: FunctionStatement )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 6_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: main IDENTIFIER 6_fs, father: FunctionName, left: null, right: null )
+( self: main IDENTIFIER 2_fs, father: FunctionName, left: null, right: null )
 ( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
 ( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
 ( self: Statement null null, father: Sentence, left: null, right: Statement )
+( self: Type null null, father: Statement, left: null, right: n )
+( self: int FIELD_TYPE 2.1_st, father: Type, left: null, right: null )
+( self: n IDENTIFIER 2.1_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: i )
+( self: int FIELD_TYPE 2.2_st, father: Type, left: null, right: null )
+( self: i IDENTIFIER 2.2_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: sum )
+( self: int FIELD_TYPE 2.3_st, father: Type, left: null, right: null )
+( self: sum IDENTIFIER 2.3_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: tmp )
+( self: int FIELD_TYPE 2.4_st, father: Type, left: null, right: null )
+( self: tmp IDENTIFIER 2.4_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
 ( self: Type null null, father: Statement, left: null, right: a )
-( self: int FIELD_TYPE 6.1_st, father: Type, left: null, right: null )
-( self: a IDENTIFIER 6.1_st, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: double FIELD_TYPE 2.5_st, father: Type, left: null, right: null )
+( self: a IDENTIFIER 2.5_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: FunctionCall )
 ( self: Type null null, father: Statement, left: null, right: b )
-( self: int FIELD_TYPE null, father: Type, left: null, right: null )
-( self: b IDENTIFIER 6.1_st, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Statement )
-( self: Type null null, father: Statement, left: null, right: c )
-( self: int FIELD_TYPE null, father: Type, left: null, right: null )
-( self: c IDENTIFIER 6.1_st, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Statement )
-( self: Type null null, father: Statement, left: null, right: d )
-( self: int FIELD_TYPE 6.2_st, father: Type, left: null, right: null )
-( self: d IDENTIFIER 6.2_st, father: Statement, left: Type, right: null )
-( self: Statement null null, father: Sentence, left: Statement, right: Assignment )
-( self: Type null null, father: Statement, left: null, right: e )
-( self: int FIELD_TYPE 6.3_st, father: Type, left: null, right: null )
-( self: e IDENTIFIER 6.3_st, father: Statement, left: Type, right: null )
-( self: Assignment null null, father: Sentence, left: Statement, right: Assignment )
-( self: a IDENTIFIER 6.4_as, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
+( self: double FIELD_TYPE null, father: Type, left: null, right: null )
+( self: b IDENTIFIER 2.5_st, father: Statement, left: Type, right: null )
+( self: FunctionCall null null, father: Sentence, left: Statement, right: Assignment )
+( self: scanf FUNCTION_NAME 2.6_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: scanf, right: null )
+( self: %d %f %f STRING_CONSTANT 2.6_fc, father: CallParameterList, left: null, right: & )
+( self: & BIT_AND 2.6_fc, father: CallParameterList, left: %d %f %f, right: n )
+( self: n IDENTIFIER 2.6_fc, father: CallParameterList, left: &, right: & )
+( self: & BIT_AND 2.6_fc, father: CallParameterList, left: n, right: a )
+( self: a IDENTIFIER 2.6_fc, father: CallParameterList, left: &, right: & )
+( self: & BIT_AND 2.6_fc, father: CallParameterList, left: a, right: b )
+( self: b IDENTIFIER 2.6_fc, father: CallParameterList, left: &, right: null )
+( self: Assignment null null, father: Sentence, left: FunctionCall, right: Control )
+( self: sum IDENTIFIER 2.7_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
 ( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 1 _Constant 6.4_ex, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: b IDENTIFIER 6.5_as, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: b, right: null )
+( self: 0 _Constant 2.7_ex, father: Expression, left: null, right: null )
+( self: Control ForControl 2.8_fo, father: Sentence, left: Assignment, right: Assignment )
+( self: Assignment null null, father: Control, left: null, right: Expression )
+( self: i IDENTIFIER 2.8_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
 ( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 2 _Constant 6.5_ex, father: Expression, left: null, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: c IDENTIFIER 6.6_as, father: Assignment, left: null, right: FunctionCall )
-( self: FunctionCall null null, father: Assignment, left: c, right: null )
-( self: add FUNCTION_NAME 6.6_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: add, right: null )
-( self: a IDENTIFIER 6.6_fc, father: CallParameterList, left: null, right: 3 )
-( self: 3 DIGIT_CONSTANT 6.6_fc, father: CallParameterList, left: a, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: Assignment )
-( self: d IDENTIFIER 6.7_as, father: Assignment, left: null, right: FunctionCall )
-( self: FunctionCall null null, father: Assignment, left: d, right: null )
-( self: sub FUNCTION_NAME 6.7_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: sub, right: null )
-( self: a IDENTIFIER 6.7_fc, father: CallParameterList, left: null, right: c )
-( self: c IDENTIFIER 6.7_fc, father: CallParameterList, left: a, right: b )
-( self: b IDENTIFIER 6.7_fc, father: CallParameterList, left: c, right: null )
-( self: Assignment null null, father: Sentence, left: Assignment, right: FunctionCall )
-( self: e IDENTIFIER 6.8_as, father: Assignment, left: null, right: FunctionCall )
-( self: FunctionCall null null, father: Assignment, left: e, right: null )
-( self: inc FUNCTION_NAME 6.8_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: inc, right: null )
-( self: 4 DIGIT_CONSTANT 6.8_fc, father: CallParameterList, left: null, right: null )
-( self: FunctionCall null null, father: Sentence, left: Assignment, right: FunctionCall )
-( self: printf FUNCTION_NAME 6.9_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: The add result is : %d\n STRING_CONSTANT 6.9_fc, father: CallParameterList, left: null, right: c )
-( self: c IDENTIFIER 6.9_fc, father: CallParameterList, left: The add result is : %d\n, right: null )
-( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: Return )
-( self: printf FUNCTION_NAME 6.10_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: The sub result is : %d\n STRING_CONSTANT 6.10_fc, father: CallParameterList, left: null, right: d )
-( self: d IDENTIFIER 6.10_fc, father: CallParameterList, left: The sub result is : %d\n, right: null )
-( self: Return null null, father: Sentence, left: FunctionCall, right: null )
-( self: return RETURN 6.11_re, father: Return, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
-( self: Expression Constant null, father: Expression, left: null, right: null )
-( self: 0 _Constant 6.11_ex, father: Expression, left: null, right: null )
-( self: FunctionStatement null null, father: Sentence, left: FunctionStatement, right: Include )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 8_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: inc IDENTIFIER 8_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: null )
-( self: int FIELD_TYPE 8_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 8_fs, father: Parameter, left: int, right: null )
-( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: Statement null null, father: Sentence, left: null, right: Assignment )
-( self: Type null null, father: Statement, left: null, right: z )
-( self: int FIELD_TYPE 8.1_st, father: Type, left: null, right: null )
-( self: z IDENTIFIER 8.1_st, father: Statement, left: Type, right: null )
-( self: Assignment null null, father: Sentence, left: Statement, right: Return )
-( self: z IDENTIFIER 8.2_as, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: z, right: null )
+( self: 1 _Constant 2.8_ex, father: Expression, left: null, right: null )
+( self: Expression SingleOrDoubleOperand null, father: Control, left: Assignment, right: Sentence )
 ( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: x _Variable 8.2_ex, father: Expression, left: null, right: null )
+( self: i _Variable 2.8_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
+( self: n _Variable 2.8_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: <= _Operator 2.8_ex, father: Operator, left: null, right: null )
+( self: Sentence null null, father: Control, left: Expression, right: Expression )
+( self: Assignment null null, father: Sentence, left: null, right: Control )
+( self: tmp IDENTIFIER 2.8.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: tmp, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: i _Variable 2.8.1_ex, father: Expression, left: null, right: null )
 ( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
-( self: 1 _Constant 8.2_ex, father: Expression, left: null, right: null )
+( self: 2 _Constant 2.8.1_ex, father: Expression, left: null, right: null )
 ( self: Operator Operator null, father: Expression, left: Expression, right: null )
-( self: + _Operator 8.2_ex, father: Operator, left: null, right: null )
-( self: Return null null, father: Sentence, left: Assignment, right: null )
-( self: return RETURN 8.3_re, father: Return, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
-( self: Expression Variable null, father: Expression, left: null, right: null )
-( self: z _Variable 8.3_ex, father: Expression, left: null, right: null )
-( self: Include null null, father: Sentence, left: FunctionStatement, right: FunctionStatement )
-( self: # SHARP 10_in, father: Include, left: null, right: include )
-( self: include INCLUDE 10_in, father: Include, left: #, right: < )
-( self: < LT 10_in, father: Include, left: include, right: stdio.h )
-( self: stdio.h IDENTIFIER 10_in, father: Include, left: <, right: > )
-( self: > GT 10_in, father: Include, left: stdio.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: Include )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 11_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: add IDENTIFIER 11_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: SEMICOLON )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: Parameter )
-( self: int FIELD_TYPE 11_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 11_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: null )
-( self: int FIELD_TYPE 11_fs, father: Parameter, left: null, right: y )
-( self: y IDENTIFIER 11_fs, father: Parameter, left: int, right: null )
-( self: SEMICOLON null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: Include null null, father: Sentence, left: FunctionStatement, right: Include )
-( self: # SHARP 12_in, father: Include, left: null, right: include )
-( self: include INCLUDE 12_in, father: Include, left: #, right: < )
-( self: < LT 12_in, father: Include, left: include, right: stdio.h )
-( self: stdio.h IDENTIFIER 12_in, father: Include, left: <, right: > )
-( self: > GT 12_in, father: Include, left: stdio.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: FunctionStatement )
-( self: # SHARP 13_in, father: Include, left: null, right: include )
-( self: include INCLUDE 13_in, father: Include, left: #, right: " )
-( self: " DOUBLE_QUOTE 13_in, father: Include, left: include, right: func1.h )
-( self: func1.h IDENTIFIER 13_in, father: Include, left: ", right: " )
-( self: " DOUBLE_QUOTE 13_in, father: Include, left: func1.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: Include )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 14_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: add IDENTIFIER 14_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: Parameter )
-( self: int FIELD_TYPE 14_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 14_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: null )
-( self: int FIELD_TYPE 14_fs, father: Parameter, left: null, right: y )
-( self: y IDENTIFIER 14_fs, father: Parameter, left: int, right: null )
-( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: Statement null null, father: Sentence, left: null, right: Assignment )
-( self: Type null null, father: Statement, left: null, right: z )
-( self: int FIELD_TYPE 14.1_st, father: Type, left: null, right: null )
-( self: z IDENTIFIER 14.1_st, father: Statement, left: Type, right: null )
-( self: Assignment null null, father: Sentence, left: Statement, right: FunctionCall )
-( self: z IDENTIFIER 14.2_as, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: z, right: null )
+( self: % _Operator 2.8.1_ex, father: Operator, left: null, right: null )
+( self: Control IfElseControl null, father: Sentence, left: Assignment, right: null )
+( self: IfControl null 2.8.2_if, father: Control, left: null, right: ElseControl )
+( self: Expression SingleOrDoubleOperand null, father: IfControl, left: null, right: Sentence )
 ( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: x _Variable 14.2_ex, father: Expression, left: null, right: null )
+( self: tmp _Variable 2.8.2_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 0 _Constant 2.8.2_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: == _Operator 2.8.2_ex, father: Operator, left: null, right: null )
+( self: Sentence null null, father: IfControl, left: Expression, right: null )
+( self: Assignment null null, father: Sentence, left: null, right: null )
+( self: sum IDENTIFIER 2.8.2.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: sum _Variable 2.8.2.1_ex, father: Expression, left: null, right: null )
 ( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
-( self: y _Variable 14.2_ex, father: Expression, left: null, right: null )
+( self: i _Variable 2.8.2.1_ex, father: Expression, left: null, right: null )
 ( self: Operator Operator null, father: Expression, left: Expression, right: null )
-( self: + _Operator 14.2_ex, father: Operator, left: null, right: null )
-( self: FunctionCall null null, father: Sentence, left: Assignment, right: FunctionCall )
-( self: printf FUNCTION_NAME 14.3_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: add function %d\n STRING_CONSTANT 14.3_fc, father: CallParameterList, left: null, right: z )
-( self: z IDENTIFIER 14.3_fc, father: CallParameterList, left: add function %d\n, right: null )
-( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: FunctionCall )
-( self: printf FUNCTION_NAME 14.4_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: add x %d, y %d\n STRING_CONSTANT 14.4_fc, father: CallParameterList, left: null, right: x )
-( self: x IDENTIFIER 14.4_fc, father: CallParameterList, left: add x %d, y %d\n, right: y )
-( self: y IDENTIFIER 14.4_fc, father: CallParameterList, left: x, right: null )
-( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: Return )
-( self: printf FUNCTION_NAME 14.5_fc, father: FunctionCall, left: null, right: CallParameterList )
-( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: addd addd\n STRING_CONSTANT 14.5_fc, father: CallParameterList, left: null, right: null )
-( self: Return null null, father: Sentence, left: FunctionCall, right: null )
-( self: return RETURN 14.6_re, father: Return, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
-( self: Expression Variable null, father: Expression, left: null, right: null )
-( self: z _Variable 14.6_ex, father: Expression, left: null, right: null )
-( self: Include null null, father: Sentence, left: FunctionStatement, right: FunctionStatement )
-( self: # SHARP 16_in, father: Include, left: null, right: include )
-( self: include INCLUDE 16_in, father: Include, left: #, right: < )
-( self: < LT 16_in, father: Include, left: include, right: stdio.h )
-( self: stdio.h IDENTIFIER 16_in, father: Include, left: <, right: > )
-( self: > GT 16_in, father: Include, left: stdio.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: Include )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 17_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: sub IDENTIFIER 17_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: SEMICOLON )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: Parameter )
-( self: int FIELD_TYPE 17_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 17_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: Parameter )
-( self: int FIELD_TYPE 17_fs, father: Parameter, left: null, right: y )
-( self: y IDENTIFIER 17_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: null )
-( self: int FIELD_TYPE 17_fs, father: Parameter, left: null, right: d )
-( self: d IDENTIFIER 17_fs, father: Parameter, left: int, right: null )
-( self: SEMICOLON null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: Include null null, father: Sentence, left: FunctionStatement, right: Include )
-( self: # SHARP 18_in, father: Include, left: null, right: include )
-( self: include INCLUDE 18_in, father: Include, left: #, right: < )
-( self: < LT 18_in, father: Include, left: include, right: stdio.h )
-( self: stdio.h IDENTIFIER 18_in, father: Include, left: <, right: > )
-( self: > GT 18_in, father: Include, left: stdio.h, right: null )
-( self: Include null null, father: Sentence, left: Include, right: FunctionStatement )
-( self: # SHARP 19_in, father: Include, left: null, right: include )
-( self: include INCLUDE 19_in, father: Include, left: #, right: " )
-( self: " DOUBLE_QUOTE 19_in, father: Include, left: include, right: func2.h )
-( self: func2.h IDENTIFIER 19_in, father: Include, left: ", right: " )
-( self: " DOUBLE_QUOTE 19_in, father: Include, left: func2.h, right: null )
-( self: FunctionStatement null null, father: Sentence, left: Include, right: null )
-( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
-( self: int FIELD_TYPE 20_fs, father: Type, left: null, right: null )
-( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
-( self: sub IDENTIFIER 20_fs, father: FunctionName, left: null, right: null )
-( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
-( self: Parameter null null, father: FunctionParameterList, left: null, right: Parameter )
-( self: int FIELD_TYPE 20_fs, father: Parameter, left: null, right: x )
-( self: x IDENTIFIER 20_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: Parameter )
-( self: int FIELD_TYPE 20_fs, father: Parameter, left: null, right: y )
-( self: y IDENTIFIER 20_fs, father: Parameter, left: int, right: null )
-( self: Parameter null null, father: FunctionParameterList, left: Parameter, right: null )
-( self: int FIELD_TYPE 20_fs, father: Parameter, left: null, right: d )
-( self: d IDENTIFIER 20_fs, father: Parameter, left: int, right: null )
-( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
-( self: Statement null null, father: Sentence, left: null, right: Assignment )
-( self: Type null null, father: Statement, left: null, right: z )
-( self: int FIELD_TYPE 20.1_st, father: Type, left: null, right: null )
-( self: z IDENTIFIER 20.1_st, father: Statement, left: Type, right: null )
-( self: Assignment null null, father: Sentence, left: Statement, right: FunctionCall )
-( self: z IDENTIFIER 20.2_as, father: Assignment, left: null, right: Expression )
-( self: Expression SingleOrDoubleOperand null, father: Assignment, left: z, right: null )
+( self: + _Operator 2.8.2.1_ex, father: Operator, left: null, right: null )
+( self: ElseControl null 2.8.3_el, father: Control, left: IfControl, right: null )
+( self: Sentence null null, father: ElseControl, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: null, right: null )
+( self: sum IDENTIFIER 2.8.3.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: sum, right: null )
 ( self: Expression Variable null, father: Expression, left: null, right: Expression )
-( self: x _Variable 20.2_ex, father: Expression, left: null, right: null )
+( self: sum _Variable 2.8.3.1_ex, father: Expression, left: null, right: null )
 ( self: Expression Variable null, father: Expression, left: Expression, right: Expression )
-( self: y _Variable 20.2_ex, father: Expression, left: null, right: null )
-( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
-( self: d _Variable 20.2_ex, father: Expression, left: null, right: null )
+( self: i _Variable 2.8.3.1_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 2 _Constant 2.8.3.1_ex, father: Expression, left: null, right: null )
 ( self: Operator Operator null, father: Expression, left: Expression, right: Operator )
-( self: - _Operator 20.2_ex, father: Operator, left: null, right: null )
+( self: * _Operator 2.8.3.1_ex, father: Operator, left: null, right: null )
 ( self: Operator Operator null, father: Expression, left: Operator, right: null )
-( self: - _Operator 20.2_ex, father: Operator, left: null, right: null )
-( self: FunctionCall null null, father: Sentence, left: Assignment, right: Return )
-( self: printf FUNCTION_NAME 20.3_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: - _Operator 2.8.3.1_ex, father: Operator, left: null, right: null )
+( self: Expression SingleOrDoubleOperand null, father: Control, left: Sentence, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: i _Variable 2.8_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ++ _Operator 2.8_ex, father: Operator, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Control, right: Assignment )
+( self: i IDENTIFIER 2.10_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: n _Variable 2.10_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ! _Operator 2.10_ex, father: Operator, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Assignment, right: Control )
+( self: i IDENTIFIER 2.11_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: i, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Operator )
+( self: n _Variable 2.11_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: ~ _Operator 2.11_ex, father: Operator, left: null, right: null )
+( self: Control IfElseControl null, father: Sentence, left: Assignment, right: FunctionCall )
+( self: IfControl null 2.12_if, father: Control, left: null, right: null )
+( self: Expression SingleOrDoubleOperand null, father: IfControl, left: null, right: Sentence )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: a _Variable 2.12_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
+( self: b _Variable 2.12_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: != _Operator 2.12_ex, father: Operator, left: null, right: null )
+( self: Sentence null null, father: IfControl, left: Expression, right: null )
+( self: Assignment null null, father: Sentence, left: null, right: null )
+( self: a IDENTIFIER 2.12.1_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
+( self: Expression Variable null, father: Expression, left: null, right: Expression )
+( self: a _Variable 2.12.1_ex, father: Expression, left: null, right: null )
+( self: Expression Variable null, father: Expression, left: Expression, right: Operator )
+( self: b _Variable 2.12.1_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: * _Operator 2.12.1_ex, father: Operator, left: null, right: null )
+( self: FunctionCall null null, father: Sentence, left: Control, right: Return )
+( self: printf FUNCTION_NAME 2.14_fc, father: FunctionCall, left: null, right: CallParameterList )
 ( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
-( self: sub function %d\n STRING_CONSTANT 20.3_fc, father: CallParameterList, left: null, right: z )
-( self: z IDENTIFIER 20.3_fc, father: CallParameterList, left: sub function %d\n, right: null )
+( self: sum is %d STRING_CONSTANT 2.14_fc, father: CallParameterList, left: null, right: sum )
+( self: sum IDENTIFIER 2.14_fc, father: CallParameterList, left: sum is %d, right: null )
 ( self: Return null null, father: Sentence, left: FunctionCall, right: null )
-( self: return RETURN 20.4_re, father: Return, left: null, right: Expression )
+( self: return RETURN 2.15_re, father: Return, left: null, right: Expression )
 ( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
-( self: Expression Variable null, father: Expression, left: null, right: null )
-( self: z _Variable 20.4_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 0 _Constant 2.15_ex, father: Expression, left: null, right: null )
 
 目标码生成开始...
-目标码生成结束!
-===================Assembler==================
+if-else语句验证开始...
+if_else : 2.8.2_if, 2.8.3_el
 
-	.section .rodata
-	.align 2                                         # 6.9_fc
-.LC0:	                                            # 6.9_fc
-	.string	"The add result is : %d\n"               # 6.9_fc
-	.align 2                                         # 6.10_fc
-.LC1:	                                            # 6.10_fc
-	.string	"The sub result is : %d\n"               # 6.10_fc
+==============目标码模式===============
+<LOG-EXP>
+cmpi 7,0,0,0
+beq 7,.L1
+<STA-LIST_1>
+b .L2
+.L1:
+<STA-LIST_2>
+.L2:
 
-	.section ".text"
-	.align 2                                         # 6_fs
-	.globl main                                      # 6_fs
-	.type main, @function                            # 6_fs
-main:	                                            # 6_fs
-	stwu 1,-32(1)                                    # 6_fs
-	mflr 0                                           # 6_fs
-	stw 31,28(1)                                     # 6_fs
-	stw 0,36(1)                                      # 6_fs
-	mr 31,1                                          # 6_fs
+==============目标码模式命题===============
+P1 = GPR[0] = <LOG-EXP>
+P2 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001
+P3 = CR[7] == b100 -> PC = PC + 4 || CR[7] == b010 -> PC = PC + 4 || CR[7] == b001 -> PC = PC + @.L1
+P4 = <STA-LIST_1>
+P5 = PC = PC + @.L2
+P6 = .L1:
+P7 = <STA-LIST_2>
+P8 = .L2:
 
-	li 0,1                                           # 6.4_as
-	stw 0,8(31)                                      # 6.4_as
+==============推导序列===============
+S1 = GPR[0] = <LOG-EXP>		P1
+S2 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001		P2
+S3 = <LOG-EXP> < 0 -> CR[7] = b100 || <LOG-EXP> > 0 -> CR[7] = b010 || <LOG-EXP> == 0 -> CR[7] = b001		S1,S2,MP
+S4 = CR[7] == b100 -> PC = PC + 4 || CR[7] == b010 -> PC = PC + 4 || CR[7] == b001 -> PC = PC + @.L1		P3
+S5 = <LOG-EXP> < 0 -> PC = PC + 4 || <LOG-EXP> > 0 -> PC = PC + 4 || <LOG-EXP> == 0 -> PC = PC + @.L1		S3,S4,MP
+S6 = <STA-LIST_1>		P4
+S7 = PC = PC + @.L2		P5
+S8 = .L1:		P6
+S9 = <STA-LIST_2>		P7
+S10 = .L2:		P8
+S11 = (<LOG-EXP> < 0 -> PC = PC + 4 || <LOG-EXP> > 0 -> PC = PC + 4 || <LOG-EXP> == 0 -> PC = PC + @.L1) ∧ (<STA-LIST_1>) ∧ (PC = PC + @.L2) ∧ (.L1:) ∧ (<STA-LIST_2>) ∧ (.L2:)		S5, S6, S7, S8, S9, S10, CI
+S12 = (<LOG-EXP> != 0 -> <STA-LIST_1> || <LOG-EXP> == 0 -> <STA-LIST_2>)		S11, REDUCE
+S13 = (<LOG-EXP> != 0 -> σ(<STA-LIST_1>) || <LOG-EXP> == 0 -> σ(<STA-LIST_2>))		S12, σ
 
-	li 0,2                                           # 6.5_as
-	stw 0,12(31)                                     # 6.5_as
+=============给定的目标语义================
+<LOG-EXP> != 0 -> σ(<STA-LIST_1>) || <LOG-EXP> == 0 -> σ(<STA-LIST_2>)
 
-	lwz 3,8(31)                                      # 6.6_fc
-	li 4,3                                           # 6.6_fc
-	bl add                                           # 6.6_fc
+===============结论================
+给定的目标语义和推理出的语义是否一致 : 
+true
+if-else语句验证结果 : 验证成功
+if-else语句验证结束!
 
-	stw 3,16(31)                                     # 6.6_as
+for语句验证开始...
+for : 2.8_fo
 
-	lwz 3,8(31)                                      # 6.7_fc
-	lwz 4,16(31)                                     # 6.7_fc
-	lwz 5,12(31)                                     # 6.7_fc
-	bl sub                                           # 6.7_fc
+==============目标码模式===============
+<ASS-EXP_1>
+b .L2
+.L1:
+<STA-LIST>
+<ASS-EXP_2>
+.L2:
+<LOG-EXP>
+cmpi 7,0,0,0
+bne 7,.L1
 
-	stw 3,20(31)                                     # 6.7_as
+==============目标码模式命题===============
+P1 = <ASS-EXP_1>
+P2 = PC = PC + @.L2
+P3 = .L1:
+P4 = <STA-LIST>
+P5 = <ASS-EXP_2>
+P6 = .L2:
+P7 = GPR[0] = <LOG-EXP>
+P8 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001
+P9 = CR[7] == b100 -> PC = PC + @.L1 || CR[7] == b010 -> PC = PC + @.L1 || CR[7] == b001 -> PC = PC + 4
 
-	li 3,4                                           # 6.8_fc
-	bl inc                                           # 6.8_fc
+=================循环交互证明算法===================
+用户输入的语义 :
+σ(<ASS-EXP_1>)
+{<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** n || <LOG-EXP> == 0 -> skip
 
-	stw 3,24(31)                                     # 6.8_as
+辅助前提 :
+P0 = (σ(<ASS-EXP_1>)) ∧ ({<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** n || <LOG-EXP> == 0 -> skip)
 
-	lis 0,.LC0@ha                                    # 6.9_fc
-	addic 0,0,.LC0@l                                 # 6.9_fc
-	mr 3,0                                           # 6.9_fc
-	lwz 4,16(31)                                     # 6.9_fc
-	crxor 6,6,6                                      # 6.9_fc
-	bl printf                                        # 6.9_fc
+推导序列 :
+S1 = <ASS-EXP_1>		P1
+S2 = PC = PC + @.L2		P2
+S3 = .L1:		P3
+S4 = <STA-LIST>		P4
+S5 = <ASS-EXP_2>		P5
+S6 = .L2:		P6
+S7 = GPR[0] = <LOG-EXP>		P7
+S8 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001		P8
+S9 = <LOG-EXP> < 0 -> CR[7] = b100 || <LOG-EXP> > 0 -> CR[7] = b010 || <LOG-EXP> == 0 -> CR[7] = b001		S7,S8,MP
+S10 = CR[7] == b100 -> PC = PC + @.L1 || CR[7] == b010 -> PC = PC + @.L1 || CR[7] == b001 -> PC = PC + 4		P9
+S11 = <LOG-EXP> < 0 -> PC = PC + @.L1 || <LOG-EXP> > 0 -> PC = PC + @.L1 || <LOG-EXP> == 0 -> PC = PC + 4		S9,S10,MP
+S12 = (<ASS-EXP_1>) ∧ (PC = PC + @.L2) ∧ (.L1:) ∧ (<STA-LIST>) ∧ (<ASS-EXP_2>) ∧ (.L2:) ∧ (<LOG-EXP> < 0 -> PC = PC + @.L1 || <LOG-EXP> > 0 -> PC = PC + @.L1 || <LOG-EXP> == 0 -> PC = PC + 4)		S1, S2, S3, S4, S5, S6, S11, CI
+S13 = (<ASS-EXP_1>) ∧ (<LOG-EXP> != 0 -> <STA-LIST>; <ASS-EXP_2> || <LOG-EXP> == 0 -> null)		S12, REDUCE
+S14 = (σ(<ASS-EXP_1>)) ∧ (<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)] || <LOG-EXP> == 0 -> skip)		S13, σ
+S15 = (σ(<ASS-EXP_1>)) ∧ ({<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** N || <LOG-EXP> == 0 -> skip)		P0, n = N
+S16 = (σ(<ASS-EXP_1>)) ∧ ({<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** (N + 1) || <LOG-EXP> == 0 -> skip)		S14, S15, CI
 
-	lis 0,.LC1@ha                                    # 6.10_fc
-	addic 0,0,.LC1@l                                 # 6.10_fc
-	mr 3,0                                           # 6.10_fc
-	lwz 4,20(31)                                     # 6.10_fc
-	crxor 6,6,6                                      # 6.10_fc
-	bl printf                                        # 6.10_fc
+check(n == 1) :
+目标语义 : (σ(<ASS-EXP_1>)) ∧ (<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)] || <LOG-EXP> == 0 -> skip)
+推导序列证据 : S14
+目标语义和推理出的语义是否一致 : true
 
-	li 0,0                                           # 6.11_re
-	mr 3,0                                           # 6.11_re
-	lwz 11,0(1)                                      # 6_fs
-	lwz 0,4(11)                                      # 6_fs
-	mtlr 0                                           # 6_fs
-	lwz 31,-4(11)                                    # 6_fs
-	mr 1,11                                          # 6_fs
-	blr                                              # 6_fs
-	.size main,.-main                                # 6_fs
+check(n == N + 1) :
+目标语义 : (σ(<ASS-EXP_1>)) ∧ ({<LOG-EXP> != 0 -> [σ(<STA-LIST>); σ(<ASS-EXP_2>)]} ** (N + 1) || <LOG-EXP> == 0 -> skip)
+推导序列证据 : S16
+目标语义和推理出的语义是否一致 : true
 
-	.section .rodata
+综上，给定的目标语义和推理出的语义是否一致 :
+true
+for语句验证结果 : 验证成功
+for语句验证结束!
 
-	.section ".text"
-	.align 2                                         # 8_fs
-	.globl inc                                       # 8_fs
-	.type inc, @function                             # 8_fs
-inc:	                                             # 8_fs
-	stwu 1,-32(1)                                    # 8_fs
-	stw 31,28(1)                                     # 8_fs
-	mr 31,1                                          # 8_fs
-
-	lwz 9,28(31)                                     # 8.2_ex
-	li 0,1                                           # 8.2_ex
-	add 0,9,0                                        # 8.2_ex
-	stw 0,36(31)                                     # 8.2_ex
-
-	lwz 0,36(31)                                     # 8.2_as
-	stw 0,32(31)                                     # 8.2_as
-
-	lwz 0,32(31)                                     # 8.3_re
-	mr 3,0                                           # 8.3_re
-	lwz 11,0(1)                                      # 8_fs
-	lwz 31,-4(11)                                    # 8_fs
-	mr 1,11                                          # 8_fs
-	blr                                              # 8_fs
-	.size inc,.-inc                                  # 8_fs
-
-	.section .rodata
-	.align 2                                         # 14.3_fc
-.LC2:	                                            # 14.3_fc
-	.string	"add function %d\n"                      # 14.3_fc
-	.align 2                                         # 14.4_fc
-.LC3:	                                            # 14.4_fc
-	.string	"add x %d, y %d\n"                       # 14.4_fc
-	.align 2                                         # 14.5_fc
-.LC4:	                                            # 14.5_fc
-	.string	"addd addd\n"                            # 14.5_fc
-
-	.section ".text"
-	.align 2                                         # 14_fs
-	.globl add                                       # 14_fs
-	.type add, @function                             # 14_fs
-add:	                                             # 14_fs
-	stwu 1,-32(1)                                    # 14_fs
-	stw 31,28(1)                                     # 14_fs
-	mr 31,1                                          # 14_fs
-
-	lwz 9,36(31)                                     # 14.2_ex
-	lwz 0,40(31)                                     # 14.2_ex
-	add 0,9,0                                        # 14.2_ex
-	stw 0,48(31)                                     # 14.2_ex
-
-	lwz 0,48(31)                                     # 14.2_as
-	stw 0,44(31)                                     # 14.2_as
-
-	lis 0,.LC2@ha                                    # 14.3_fc
-	addic 0,0,.LC2@l                                 # 14.3_fc
-	mr 3,0                                           # 14.3_fc
-	lwz 4,44(31)                                     # 14.3_fc
-	crxor 6,6,6                                      # 14.3_fc
-	bl printf                                        # 14.3_fc
-
-	lis 0,.LC3@ha                                    # 14.4_fc
-	addic 0,0,.LC3@l                                 # 14.4_fc
-	mr 3,0                                           # 14.4_fc
-	lwz 4,36(31)                                     # 14.4_fc
-	lwz 5,40(31)                                     # 14.4_fc
-	crxor 6,6,6                                      # 14.4_fc
-	bl printf                                        # 14.4_fc
-
-	lis 0,.LC4@ha                                    # 14.5_fc
-	addic 0,0,.LC4@l                                 # 14.5_fc
-	mr 3,0                                           # 14.5_fc
-	crxor 6,6,6                                      # 14.5_fc
-	bl printf                                        # 14.5_fc
-
-	lwz 0,44(31)                                     # 14.6_re
-	mr 3,0                                           # 14.6_re
-	lwz 11,0(1)                                      # 14_fs
-	lwz 31,-4(11)                                    # 14_fs
-	mr 1,11                                          # 14_fs
-	blr                                              # 14_fs
-	.size add,.-add                                  # 14_fs
-
-	.section .rodata
-	.align 2                                         # 20.3_fc
-.LC5:	                                            # 20.3_fc
-	.string	"sub function %d\n"                      # 20.3_fc
-
-	.section ".text"
-	.align 2                                         # 20_fs
-	.globl sub                                       # 20_fs
-	.type sub, @function                             # 20_fs
-sub:	                                             # 20_fs
-	stwu 1,-32(1)                                    # 20_fs
-	stw 31,28(1)                                     # 20_fs
-	mr 31,1                                          # 20_fs
-
-	lwz 9,52(31)                                     # 20.2_ex
-	lwz 0,56(31)                                     # 20.2_ex
-	subf 0,9,0                                       # 20.2_ex
-	stw 0,64(31)                                     # 20.2_ex
-
-	lwz 9,48(31)                                     # 20.2_ex
-	lwz 0,64(31)                                     # 20.2_ex
-	subf 0,9,0                                       # 20.2_ex
-	stw 0,68(31)                                     # 20.2_ex
-
-	lwz 0,68(31)                                     # 20.2_as
-	stw 0,60(31)                                     # 20.2_as
-
-	lis 0,.LC5@ha                                    # 20.3_fc
-	addic 0,0,.LC5@l                                 # 20.3_fc
-	mr 3,0                                           # 20.3_fc
-	lwz 4,60(31)                                     # 20.3_fc
-	crxor 6,6,6                                      # 20.3_fc
-	bl printf                                        # 20.3_fc
-
-	lwz 0,60(31)                                     # 20.4_re
-	mr 3,0                                           # 20.4_re
-	lwz 11,0(1)                                      # 20_fs
-	lwz 31,-4(11)                                    # 20_fs
-	mr 1,11                                          # 20_fs
-	blr                                              # 20_fs
-	.size sub,.-sub                                  # 20_fs

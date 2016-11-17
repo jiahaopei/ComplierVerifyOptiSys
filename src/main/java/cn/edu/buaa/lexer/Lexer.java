@@ -151,7 +151,9 @@ public class Lexer {
 	
 	// 安全C子集集中检测，注意还有一些安全C子集规则在词法分析中检测完成
 	private void secureCheck() {
-		for (Token e : tokens) {	
+		for (Token e : tokens) {
+//			System.out.println(e);
+			
 			// 规则 4.2（强制）： 不能使用三字母词（trigraphs）
 			if (!checkTrigraphs(e)) {
 				try {
@@ -172,9 +174,28 @@ public class Lexer {
 					e1.printStackTrace();
 					System.exit(1);
 				}
+			}
+			
+			if (e.getType().equals("CONTINUE")) {
+				try {
+					throw new Exception(
+							"Error [" + e.getLabel() +"] : The continue statement shall not be used! '" + e.getValue() + "'");
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					System.exit(1);
+				}
 				
 			}
 			
+			if (e.getType().equals("GOTO")) {
+				try {
+					throw new Exception(
+							"Error [" + e.getLabel() +"] : The goto statement shall not be used! '" + e.getValue() + "'");
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					System.exit(1);
+				}
+			}
 			
 		}
 	}
@@ -786,6 +807,12 @@ public class Lexer {
 		}
 	}
 	
+	public void printAll() {
+		for (String string : sources) {
+			System.out.println(string);
+		}
+	}
+	
 	// 输出词法分析后的结果
 	public void outputLexer() {
 		BufferedWriter writer = null;
@@ -814,12 +841,6 @@ public class Lexer {
 		
 		recorder.insertLine(null);
 	}
-	
-	public void printAll() {
-		for (String string : sources) {
-			System.out.println(string);
-		}
-	}
 
 	public static void main(String[] args) {
 		// 公共记录
@@ -832,8 +853,7 @@ public class Lexer {
 //		lexer.outputLabels();
 		lexer.outputLabelSrc();
 		lexer.outputLexer();
-		
-		lexer.printAll();
+	
 	}
 
 }

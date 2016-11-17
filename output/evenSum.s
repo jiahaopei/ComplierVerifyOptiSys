@@ -1,135 +1,159 @@
 	.file	"evenSum.c"
 
 	.section .rodata
-	.align 2                                         # 3.5_fc
-.LC0:	                                            # 3.5_fc
-	.string	"%d"                                     # 3.5_fc
-	.align 2                                         # 3.11_fc
-.LC5:	                                            # 3.11_fc
-	.string	"sum is %d"                              # 3.11_fc
+	.align 2                                         # 2.6_fc
+.LC0:	                                            # 2.6_fc
+	.string	"%d %f %f"                               # 2.6_fc
+	.align 2                                         # 2.14_fc
+.LC7:	                                            # 2.14_fc
+	.string	"sum is %d"                              # 2.14_fc
 
 	.section ".text"
-	.align 2                                         # 3_fs
-	.globl main                                      # 3_fs
-	.type main, @function                            # 3_fs
-main:	                                            # 3_fs
-	stwu 1,-32(1)                                    # 3_fs
-	mflr 0                                           # 3_fs
-	stw 31,28(1)                                     # 3_fs
-	stw 0,36(1)                                      # 3_fs
-	mr 31,1                                          # 3_fs
+	.align 2                                         # 2_fs
+	.globl main                                      # 2_fs
+	.type main, @function                            # 2_fs
+main:	                                            # 2_fs
+	stwu 1,-32(1)                                    # 2_fs
+	mflr 0                                           # 2_fs
+	stw 31,28(1)                                     # 2_fs
+	stw 0,36(1)                                      # 2_fs
+	mr 31,1                                          # 2_fs
 
-	lis 0,.LC0@ha                                    # 3.5_fc
-	addic 0,0,.LC0@l                                 # 3.5_fc
-	mr 3,0                                           # 3.5_fc
-	lwz 4,12(31)                                     # 3.5_fc
-	crxor 6,6,6                                      # 3.5_fc
-	bl __isoc99_scanf                                # 3.5_fc
+	lis 0,.LC0@ha                                    # 2.6_fc
+	addic 0,0,.LC0@l                                 # 2.6_fc
+	mr 3,0                                           # 2.6_fc
+	lwz 4,8(31)                                      # 2.6_fc
+	lfd 5,24(31)                                     # 2.6_fc
+	lfd 6,28(31)                                     # 2.6_fc
+	crxor 6,6,6                                      # 2.6_fc
+	bl __isoc99_scanf                                # 2.6_fc
 
-	li 0,0                                           # 3.6_as
-	stw 0,20(31)                                     # 3.6_as
+	li 0,0                                           # 2.7_as
+	stw 0,16(31)                                     # 2.7_as
 
-	li 0,1                                           # 3.7_as
-	stw 0,16(31)                                     # 3.7_as
+	li 0,1                                           # 2.8_as
+	stw 0,12(31)                                     # 2.8_as
 
-	b .L1                                            # 3.7_fo
-.L2:	                                             # 3.7_fo
-	lwz 0,16(31)                                     # 3.7.1_ex
-	li 9,2                                           # 3.7.1_ex
-	divw 11,0,9                                      # 3.7.1_ex
-	mullw 9,11,9                                     # 3.7.1_ex
-	subf 0,9,0                                       # 3.7.1_ex
-	stw 0,28(31)                                     # 3.7.1_ex
+	b .L1                                            # 2.8_fo
+.L2:	                                             # 2.8_fo
+	lwz 0,12(31)                                     # 2.8.1_ex
+	li 9,2                                           # 2.8.1_ex
+	divw 11,0,9                                      # 2.8.1_ex
+	mullw 9,11,9                                     # 2.8.1_ex
+	subf 0,9,0                                       # 2.8.1_ex
+	stw 0,32(31)                                     # 2.8.1_ex
 
-	lwz 0,28(31)                                     # 3.7.1_as
-	stw 0,24(31)                                     # 3.7.1_as
+	lwz 0,32(31)                                     # 2.8.1_as
+	stw 0,20(31)                                     # 2.8.1_as
 
-	lwz 0,24(31)                                     # 3.7.2_ex
-	li 9,0                                           # 3.7.2_ex
-	cmp 7,0,0,9                                      # 3.7.2_ex
-	li 0,0                                           # 3.7.2_ex
-	li 9,1                                           # 3.7.2_ex
-	isel 0,9,0,30                                    # 3.7.2_ex
-	stw 0,28(31)                                     # 3.7.2_ex
+	lwz 0,20(31)                                     # 2.8.2_ex
+	li 9,0                                           # 2.8.2_ex
+	cmp 7,0,0,9                                      # 2.8.2_ex
+	li 0,0                                           # 2.8.2_ex
+	li 9,1                                           # 2.8.2_ex
+	isel 0,9,0,30                                    # 2.8.2_ex
+	stw 0,32(31)                                     # 2.8.2_ex
 
-	lwz 0,28(31)                                     # 3.7.2_if
-	cmpi 7,0,0,0                                     # 3.7.2_if
-	beq 7,.L3                                        # 3.7.2_if
+	lwz 0,32(31)                                     # 2.8.2_if
+	cmpi 7,0,0,0                                     # 2.8.2_if
+	beq 7,.L3                                        # 2.8.2_if
 
-	lwz 9,20(31)                                     # 3.7.2.1_ex
-	lwz 0,16(31)                                     # 3.7.2.1_ex
-	add 0,9,0                                        # 3.7.2.1_ex
-	stw 0,28(31)                                     # 3.7.2.1_ex
+	lwz 9,16(31)                                     # 2.8.2.1_ex
+	lwz 0,12(31)                                     # 2.8.2.1_ex
+	add 0,9,0                                        # 2.8.2.1_ex
+	stw 0,32(31)                                     # 2.8.2.1_ex
 
-	lwz 0,28(31)                                     # 3.7.2.1_as
-	stw 0,20(31)                                     # 3.7.2.1_as
+	lwz 0,32(31)                                     # 2.8.2.1_as
+	stw 0,16(31)                                     # 2.8.2.1_as
 
-	b .L4                                            # 3.7.3_el
-.L3:	                                             # 3.7.2_if
+	b .L4                                            # 2.8.3_el
+.L3:	                                             # 2.8.2_if
 
-	lwz 9,16(31)                                     # 3.7.3.1_ex
-	li 0,2                                           # 3.7.3.1_ex
-	mullw 0,9,0                                      # 3.7.3.1_ex
-	stw 0,28(31)                                     # 3.7.3.1_ex
+	lwz 9,12(31)                                     # 2.8.3.1_ex
+	li 0,2                                           # 2.8.3.1_ex
+	mullw 0,9,0                                      # 2.8.3.1_ex
+	stw 0,32(31)                                     # 2.8.3.1_ex
 
-	lwz 9,20(31)                                     # 3.7.3.1_ex
-	lwz 0,28(31)                                     # 3.7.3.1_ex
-	subf 0,9,0                                       # 3.7.3.1_ex
-	stw 0,32(31)                                     # 3.7.3.1_ex
+	lwz 9,16(31)                                     # 2.8.3.1_ex
+	lwz 0,32(31)                                     # 2.8.3.1_ex
+	subf 0,9,0                                       # 2.8.3.1_ex
+	stw 0,36(31)                                     # 2.8.3.1_ex
 
-	lwz 0,32(31)                                     # 3.7.3.1_as
-	stw 0,20(31)                                     # 3.7.3.1_as
+	lwz 0,36(31)                                     # 2.8.3.1_as
+	stw 0,16(31)                                     # 2.8.3.1_as
 
-.L4:	                                             # 3.7.3_el
+.L4:	                                             # 2.8.3_el
 
-	lwz 0,16(31)                                     # 3.7_ex
-	addic 0,0,1                                      # 3.7_ex
-	stw 0,16(31)                                     # 3.7_ex
+	lwz 0,12(31)                                     # 2.8_ex
+	addic 0,0,1                                      # 2.8_ex
+	stw 0,12(31)                                     # 2.8_ex
 
-.L1:	                                             # 3.7_fo
-	lwz 0,16(31)                                     # 3.7_ex
-	lwz 9,12(31)                                     # 3.7_ex
-	cmp 7,0,0,9                                      # 3.7_ex
-	li 0,1                                           # 3.7_ex
-	isel 0,0,0,29                                    # 3.7_ex
-	stw 0,28(31)                                     # 3.7_ex
+.L1:	                                             # 2.8_fo
+	lwz 0,12(31)                                     # 2.8_ex
+	lwz 9,8(31)                                      # 2.8_ex
+	cmp 7,0,0,9                                      # 2.8_ex
+	li 0,1                                           # 2.8_ex
+	isel 0,0,0,29                                    # 2.8_ex
+	stw 0,32(31)                                     # 2.8_ex
 
-	lwz 0,28(31)                                     # 3.7_fo
-	cmpi 7,0,0,0                                     # 3.7_fo
-	bne 7,.L2                                        # 3.7_fo
+	lwz 0,32(31)                                     # 2.8_fo
+	cmpi 7,0,0,0                                     # 2.8_fo
+	bne 7,.L2                                        # 2.8_fo
 
-	lwz 0,12(31)                                     # 3.9_ex
-	cmpi 7,0,0,0                                     # 3.9_ex
-	li 0,0                                           # 3.9_ex
-	li 9,1                                           # 3.9_ex
-	isel 0,9,0,30                                    # 3.9_ex
-	stw 0,28(31)                                     # 3.9_ex
+	lwz 0,8(31)                                      # 2.10_ex
+	cmpi 7,0,0,0                                     # 2.10_ex
+	li 0,0                                           # 2.10_ex
+	li 9,1                                           # 2.10_ex
+	isel 0,9,0,30                                    # 2.10_ex
+	stw 0,32(31)                                     # 2.10_ex
 
-	lwz 0,28(31)                                     # 3.9_as
-	stw 0,16(31)                                     # 3.9_as
+	lwz 0,32(31)                                     # 2.10_as
+	stw 0,12(31)                                     # 2.10_as
 
-	lwz 0,12(31)                                     # 3.10_ex
-	nor 0,0,0                                        # 3.10_ex
-	stw 0,28(31)                                     # 3.10_ex
+	lwz 0,8(31)                                      # 2.11_ex
+	nor 0,0,0                                        # 2.11_ex
+	stw 0,32(31)                                     # 2.11_ex
 
-	lwz 0,28(31)                                     # 3.10_as
-	stw 0,16(31)                                     # 3.10_as
+	lwz 0,32(31)                                     # 2.11_as
+	stw 0,12(31)                                     # 2.11_as
 
-	lis 0,.LC5@ha                                    # 3.11_fc
-	addic 0,0,.LC5@l                                 # 3.11_fc
-	mr 3,0                                           # 3.11_fc
-	lwz 4,20(31)                                     # 3.11_fc
-	crxor 6,6,6                                      # 3.11_fc
-	bl printf                                        # 3.11_fc
+	lfd 13,24(31)                                    # 2.12_ex
+	lfd 0,28(31)                                     # 2.12_ex
+	fcmpu 7,0,13                                     # 2.12_ex
+	li 0,0                                           # 2.12_ex
+	li 9,1                                           # 2.12_ex
+	isel 0,9,0,28                                    # 2.12_ex
+	stw 0,32(31)                                     # 2.12_ex
 
-	li 0,0                                           # 3.12_re
-	mr 3,0                                           # 3.12_re
-	lwz 11,0(1)                                      # 3_fs
-	lwz 0,4(11)                                      # 3_fs
-	mtlr 0                                           # 3_fs
-	lwz 31,-4(11)                                    # 3_fs
-	mr 1,11                                          # 3_fs
-	blr                                              # 3_fs
-	.size main,.-main                                # 3_fs
+	lwz 0,32(31)                                     # 2.12_if
+	cmpi 7,0,0,0                                     # 2.12_if
+	beq 7,.L5                                        # 2.12_if
+
+	lfd 13,24(31)                                    # 2.12.1_ex
+	lfd 0,28(31)                                     # 2.12.1_ex
+	fmul 0,13,0                                      # 2.12.1_ex
+	stfd 0,32(31)                                    # 2.12.1_ex
+
+	lfd 0,32(31)                                     # 2.12.1_as
+	stfd 0,24(31)                                    # 2.12.1_as
+
+.L5:	                                             # 2.12_if
+
+	lis 0,.LC7@ha                                    # 2.14_fc
+	addic 0,0,.LC7@l                                 # 2.14_fc
+	mr 3,0                                           # 2.14_fc
+	lwz 4,16(31)                                     # 2.14_fc
+	crxor 6,6,6                                      # 2.14_fc
+	bl printf                                        # 2.14_fc
+
+	li 0,0                                           # 2.15_re
+	mr 3,0                                           # 2.15_re
+	lwz 11,0(1)                                      # 2_fs
+	lwz 0,4(11)                                      # 2_fs
+	mtlr 0                                           # 2_fs
+	lwz 31,-4(11)                                    # 2_fs
+	mr 1,11                                          # 2_fs
+	blr                                              # 2_fs
+	.size main,.-main                                # 2_fs
 
 	.ident	"powerpc-e500v2-linux-gnuspe-gcc"

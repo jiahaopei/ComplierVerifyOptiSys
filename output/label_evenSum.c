@@ -5,26 +5,30 @@ int main() {                                      // 2
     int i;                                        // 2.2
     int sum;                                      // 2.3
     int tmp;                                      // 2.4
+    double a, b;                                  // 2.5
 
 
-    scanf("%d", &n);                              // 2.5
-    sum = 0;                                      // 2.6
+    scanf("%d %f %f", &n, &a, &b);                // 2.6
+    sum = 0;                                      // 2.7
 
-    for(i = 1; i <= n; i++) {                     // 2.7
-        tmp = i % 2;                              // 2.7.1
-        if(tmp == 0) {                            // 2.7.2
-            sum = sum + i;                        // 2.7.2.1
-        } else {                                  // 2.7.3
-            sum = sum - i * 2;                    // 2.7.3.1
+    for(i = 1; i <= n; i++) {                     // 2.8
+        tmp = i % 2;                              // 2.8.1
+        if(tmp == 0) {                            // 2.8.2
+            sum = sum + i;                        // 2.8.2.1
+        } else {                                  // 2.8.3
+            sum = sum - i * 2;                    // 2.8.3.1
         
-        }                                         // 2.7.4
-    }                                             // 2.8
+        }                                         // 2.8.4
+    }                                             // 2.9
 
-    i = !n;                                       // 2.9
-    i = ~n;                                       // 2.10
+    i = !n;                                       // 2.10
+    i = ~n;                                       // 2.11
+    if (a != b) {                                 // 2.12
+        a = a * b;                                // 2.12.1
+    }                                             // 2.13
 
 
-    printf("sum is %d", sum);                     // 2.11
+    printf("sum is %d", sum);                     // 2.14
 
-    return 0;                                     // 2.12
+    return 0;                                     // 2.15
 }                                                 // 3

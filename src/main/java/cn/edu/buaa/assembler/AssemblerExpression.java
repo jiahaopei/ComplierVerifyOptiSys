@@ -56,11 +56,11 @@ public class AssemblerExpression {
 				
 				// 双目运算符
 				if(AssemblerDefine.DOUBLE_OPERATORS.contains(operator)) {
-					solveDoubleOperator(operator, item.get("label"));
+					solveTwoOperator(operator, item.get("label"));
 					
 				// 单目运算符
 				} else if (AssemblerDefine.SINGLE_OPERATORS.contains(operator)) {
-					solveSingleOperator(operator, item.get("label"));
+					solveOneOperator(operator, item.get("label"));
 					
 				} else {
 					try {
@@ -225,7 +225,7 @@ public class AssemblerExpression {
 	}
 	
 	// 处理双目运算
-	private static void solveDoubleOperator(String operator, String label) {
+	private static void solveTwoOperator(String operator, String label) {
 		Map<String, String> operand_b = operandStack.pop();
 		Map<String, String> operand_a = operandStack.pop();
 
@@ -233,16 +233,16 @@ public class AssemblerExpression {
 		String fieldType = commonFieldType(operand_a, operand_b);
 		switch (fieldType) {
 		case "double":
-			solveDoubleOperatorDouble(operand_a, operand_b, operator, label);
+			solveTwoOperatorDouble(operand_a, operand_b, operator, label);
 			break;
 		case "float":
-			solveDoubleOperatorFloat(operand_a, operand_b, operator, label);
+			solveTwoOperatorFloat(operand_a, operand_b, operator, label);
 			break;
 		case "long":
-			solveDoubleOperatorLong(operand_a, operand_b, operator, label);
+			solveTwoOperatorLong(operand_a, operand_b, operator, label);
 			break;
 		case "int":
-			solveDoubleOperatorInt(operand_a, operand_b, operator, label);
+			solveTwoOperatorInt(operand_a, operand_b, operator, label);
 			break;
 
 		default:
@@ -252,7 +252,7 @@ public class AssemblerExpression {
 	}
 	
 	// 处理long型的双目运算
-	private static void solveDoubleOperatorLong(Map<String, String> operand_a, Map<String, String> operand_b,
+	private static void solveTwoOperatorLong(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {
 		// 同int型，测试发现对于long型power-pc支持得不是很好;
 		// 过大的long不支持，比较小的long直接当做int来处理了
@@ -270,11 +270,11 @@ public class AssemblerExpression {
 			}
 			operand_b.put("operand", value);
 		}
-		solveDoubleOperatorInt(operand_a, operand_b, operator, label);
+		solveTwoOperatorInt(operand_a, operand_b, operator, label);
 	}
 
 	// 处理float型的双目运算
-	private static void solveDoubleOperatorFloat(Map<String, String> operand_a, Map<String, String> operand_b,
+	private static void solveTwoOperatorFloat(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {
 		String line = null;
 		if (operator.equals("+")) {
@@ -679,13 +679,8 @@ public class AssemblerExpression {
 		} else if (operator.equals("%")) {
 			throw new RuntimeException("C中的取余操作只能应用于int类型 : float");
 			
-
-		// >=关系运算
-		} else if (operator.equals(">=")) {
-			throw new RuntimeException("float type not support : >=");
-			
-		// >关系运算符
-		} else if (operator.equals(">")) {
+		// 关系运算符
+		} else if (operator.equals(">") || operator.equals(">=")) {
 			// 第一个操作数
 			if (operand_a.get("type").equals("VARIABLE")) {
 				line = AssemblerUtils.PREFIX + "lfs 13,"
@@ -789,12 +784,8 @@ public class AssemblerExpression {
 			tmpMap.put("label", operand_a.get("label"));
 			operandStack.push(tmpMap);
 			
-		// <=符号
-		} else if (operator.equals("<=")) {
-			throw new RuntimeException("float not support this operator : <=");
-
-		// < 符号
-		} else if (operator.equals("<")) {
+		// 符号
+		} else if (operator.equals("<") || operator.equals("<=")) {
 			// 第一个操作数
 			if (operand_a.get("type").equals("VARIABLE")) {
 				line = AssemblerUtils.PREFIX + "lfs 13,"
@@ -900,11 +891,21 @@ public class AssemblerExpression {
 
 		// == 符号
 		} else if (operator.equals("==")) {
-			throw new RuntimeException("double not support this operator : ==");
+			try {
+				throw new Exception("Error [" + label + "] : Floating-point expressions shall not be tested for equality!");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 
 		// != 符号
 		} else if (operator.equals("!=")) {
-			throw new RuntimeException("double not support this operator : !=");
+			try {
+				throw new Exception("Error [" + label + "] : Floating-point expressions shall not be tested for inequality!");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			
 		} else {
 			throw new RuntimeException("other operator not support in double operator : " + operator);
@@ -942,7 +943,7 @@ public class AssemblerExpression {
 	}
 	
 	// 处理double型的双目运算
-	private static void solveDoubleOperatorDouble(Map<String, String> operand_a, Map<String, String> operand_b,
+	private static void solveTwoOperatorDouble(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {
 		String line = null;
 		if (operator.equals("+")) {
@@ -1347,13 +1348,8 @@ public class AssemblerExpression {
 		} else if (operator.equals("%")) {
 			throw new RuntimeException("C中的取余操作只能应用于int类型 : double");
 			
-
-		// >=关系运算
-		} else if (operator.equals(">=")) {
-			throw new RuntimeException("double type not support : >=");
-			
 		// >关系运算符
-		} else if (operator.equals(">")) {
+		} else if (operator.equals(">") || operator.equals(">=")) {
 			// 第一个操作数
 			if (operand_a.get("type").equals("VARIABLE")) {
 				line = AssemblerUtils.PREFIX + "lfd 13,"
@@ -1456,13 +1452,9 @@ public class AssemblerExpression {
 			tmpMap.put("operand", bss_tmp);
 			tmpMap.put("label", operand_a.get("label"));
 			operandStack.push(tmpMap);
-			
-		// <=符号
-		} else if (operator.equals("<=")) {
-			throw new RuntimeException("double not support this operator : <=");
 
 		// < 符号
-		} else if (operator.equals("<")) {
+		} else if (operator.equals("<") || operator.equals("<=")) {
 			// 第一个操作数
 			if (operand_a.get("type").equals("VARIABLE")) {
 				line = AssemblerUtils.PREFIX + "lfd 13,"
@@ -1567,12 +1559,22 @@ public class AssemblerExpression {
 			operandStack.push(tmpMap);
 
 		// == 符号
-		} else if (operator.equals("==")) {
-			throw new RuntimeException("double not support this operator : ==");
+		} else if (operator.equals("==")) {			
+			try {
+				throw new Exception("Error [" + label + "] : Floating-point expressions shall not be tested for equality!");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 
 		// != 符号
 		} else if (operator.equals("!=")) {
-			throw new RuntimeException("double not support this operator : !=");
+			try {
+				throw new Exception("Error [" + label + "] : Floating-point expressions shall not be tested for inequality!");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			
 		} else {
 			throw new RuntimeException("other operator not support in double operator : " + operator);
@@ -1581,7 +1583,7 @@ public class AssemblerExpression {
 	}
 
 	// 处理int型的双目运算符
-	private static void solveDoubleOperatorInt(Map<String, String> operand_a, Map<String, String> operand_b,
+	private static void solveTwoOperatorInt(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {
 		String line = null;
 		if (operator.equals("+")) {
@@ -2654,7 +2656,7 @@ public class AssemblerExpression {
 	
 
 	// 处理单目运算
-	private static void solveSingleOperator(String operator, String label) {
+	private static void solveOneOperator(String operator, String label) {
 		// 取出操作数
 		Map<String, String> operand = operandStack.pop();
 		

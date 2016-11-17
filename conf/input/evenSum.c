@@ -8,9 +8,10 @@ int main() {
     int i;
     int sum;
     int tmp;
+    double a, b;
 
 
-    scanf("%d", &n);    // read n
+    scanf("%d %f %f", &n, &a, &b);    // read n
     sum = 0;
 
     /**
@@ -29,6 +30,9 @@ int main() {
 
     i = !n;
     i = ~n;
+    if (a != b) {
+        a = a * b;
+    }
 
 
     printf("sum is %d", sum);

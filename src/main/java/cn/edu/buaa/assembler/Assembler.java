@@ -1316,7 +1316,7 @@ public class Assembler {
 		// 公共记录
 		Recorder recorder = new Recorder();
 
-		String srcPath = "conf/input/test7.c";
+		String srcPath = "conf/input/evenSum.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
