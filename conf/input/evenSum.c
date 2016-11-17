@@ -3,13 +3,12 @@
 /**
 *   a simple input
 */
-int sum;
 int main() {
     int n;
     int i;
     int sum;
     int tmp;
-    //int asdasdadadasdasdasdasdasdqweqwjjdsaljdljqwjeqkekqwheqowiudjojnajksndakjshdoqwueqwjeqwejkqwhej;
+
 
     scanf("%d", &n);    // read n
     sum = 0;

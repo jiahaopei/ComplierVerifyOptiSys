@@ -1153,6 +1153,15 @@ public class Parser {
 					operatorStack.add(tmpTree);
 				}
 				
+			} else if(getTokenType(index).equals("COMMA")) {
+				try {
+					throw new Exception(
+							"Error : [" + getTokenLabel(index) + "]The security C subset does not allowed ',' operator!");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			
 			} else {
 				recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
 				logger.info("表达式语句 : 语法非法");

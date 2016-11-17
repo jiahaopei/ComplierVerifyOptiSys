@@ -72,6 +72,7 @@ public class Lexer {
 		logger.info("词法分析开始...");
 		recorder.insertLine("词法分析开始...");
 		
+		List<String> libs = new ArrayList<>();
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(
@@ -93,7 +94,8 @@ public class Lexer {
 
 				if (line.trim().length() != 0) {
 					//String label = generateLabel(stack);
-					solveLine(line.trim(), stack);
+					List<String> tmpLibs = solveLine(line.trim(), stack);
+					libs.addAll(tmpLibs);
 					
 					line = LexerUtils.RTrim(line);
 					for (int j = line.length(); j < LexerUtils.LEN; j++) {
@@ -122,6 +124,11 @@ public class Lexer {
 					int tmp = stack.pop();
 					stack.push(tmp + 1);
 				}
+			}
+			
+			// 最后处理所有的library
+			for (String lib : libs) {
+				solveMultipleFile(lib, stack);
 			}
 			
 		} catch (IOException e) {
@@ -195,8 +202,9 @@ public class Lexer {
 		return v;
 	}
 
-	private void solveLine(String line, Stack<Integer> stack) {
-
+	private List<String> solveLine(String line, Stack<Integer> stack) {
+		
+		List<String> libs = new ArrayList<>();
 		int i = 0;
 		Token token = null;
 		while (i < line.length()) {
@@ -237,7 +245,7 @@ public class Lexer {
 						i = LexerUtils.skipBlank(i + 1, line);
 						
 						// 增加处理多个文件的逻辑
-						solveMultipleFile(lib, stack);
+						libs.add(lib);
 						
 					} else {
 						try {
@@ -385,7 +393,8 @@ public class Lexer {
 				}
 			}
 		}
-
+		
+		return libs;
 	}
 
 	// 处理多文件连编
@@ -437,19 +446,20 @@ public class Lexer {
 		handleFile(headName, tmpSources, tmpLabels, stack);
 		handleFile(libName, tmpSources, tmpLabels, stack);
 		
-		sources.addAll(0, tmpSources);
-		labels.addAll(0, tmpLabels);
+		sources.addAll(tmpSources);
+		labels.addAll(tmpLabels);
 	}
 
 
 	private void handleFile(String libName, List<String> tmpSources, List<String> tmpLabels, Stack<Integer> stack) {
-		List<String> libs = getContent(libName);
+		List<String> contents = getContent(libName);
 		BufferedWriter writer = null;
+		List<String> libs = new ArrayList<>();
 		try {
 			writer = new BufferedWriter(
 					new FileWriter(CommonsDefine.OUTPUT_PATH + "/label_" + libName));
 			
-			for (String line : libs) {
+			for (String line : contents) {
 				String label = "";
 				String tmpLine = line;
 				
@@ -460,7 +470,8 @@ public class Lexer {
 				}
 
 				if (line.trim().length() != 0) {
-					solveLine(line.trim(), stack);
+					List<String> tmpLibs = solveLine(line.trim(), stack);
+					libs.addAll(tmpLibs);
 					
 					line = LexerUtils.RTrim(line);
 					for (int j = line.length(); j < LexerUtils.LEN; j++) {
@@ -489,6 +500,10 @@ public class Lexer {
 					int tmp = stack.pop();
 					stack.push(tmp + 1);
 				}
+			}
+			
+			for (String lib : libs) {
+				solveMultipleFile(lib, stack);
 			}
 			
 		} catch (IOException e) {
@@ -544,8 +559,8 @@ public class Lexer {
 	private List<String> delComments(List<String> codes) {
 
 		int i = 0;
+		int tmp = 1;
 		while (i < codes.size()) {
-
 			String line = codes.get(i);
 			boolean isInDoubleQuote = false;
 			for (int j = 0; j < line.length(); j++) {
@@ -555,6 +570,9 @@ public class Lexer {
 					
 					// 删去 // xxx 式注释
 				} else if (ch == '/' && j + 1 < line.length() && line.charAt(j + 1) == '/' && !isInDoubleQuote) {
+					// 规则 2.2（强制）： 源代码应该使用 /*…*/ 类型的注释
+					System.err.print("Warning [" + tmp + "] : The security C subset does not allowed comments of type '//'!\n");
+					
 					line = line.substring(0, j);
 					codes.remove(i);
 					if (line.trim().length() != 0) {
@@ -563,8 +581,6 @@ public class Lexer {
 						i--;
 					}
 					
-					// 规则 2.2（强制）： 源代码应该使用 /*…*/ 类型的注释
-					System.err.print("Warning [" + i + "] : The security C subset does not allowed comments of type '//'!\n");
 					break;
 
 					// 删除 /* xxx */ 式注释
@@ -652,6 +668,7 @@ public class Lexer {
 				}
 			}
 			i++;
+			tmp++;
 		}
 
 		return codes;
@@ -808,7 +825,7 @@ public class Lexer {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		
-		String srcPath = "conf/input/test7.c";
+		String srcPath = "conf/input/evenSum.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();

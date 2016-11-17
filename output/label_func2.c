@@ -1,10 +1,10 @@
-#include <stdio.h>                                // 12
-#include "func2.h"                                // 13
+#include <stdio.h>                                // 18
+#include "func2.h"                                // 19
 
 
-int sub(int x, int y, int d) {                    // 14
-    int z;                                        // 14.1
-    z = x - y - d;                                // 14.2
-    printf("sub function %d\n", z);               // 14.3
-    return z;                                     // 14.4
-}                                                 // 15
+int sub(int x, int y, int d) {                    // 20
+    int z;                                        // 20.1
+    z = x - y - d;                                // 20.2
+    printf("sub function %d\n", z);               // 20.3
+    return z;                                     // 20.4
+}                                                 // 21

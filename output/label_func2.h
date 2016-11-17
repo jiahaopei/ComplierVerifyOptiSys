@@ -1,4 +1,4 @@
 
-#include <stdio.h>                                // 10
+#include <stdio.h>                                // 16
 
-int sub(int x, int y, int d);                     // 11
+int sub(int x, int y, int d);                     // 17
