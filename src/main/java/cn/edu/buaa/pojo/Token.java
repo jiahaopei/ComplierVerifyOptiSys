@@ -65,4 +65,14 @@ public class Token {
 		return "(" + getValue() + ", " + getType() + ", " + getLabel() + ")";
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		Token other = (Token) obj;
+		return value.equals(other.getValue());
+	}
+	
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
 }

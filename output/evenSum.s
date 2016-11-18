@@ -4,9 +4,9 @@
 	.align 2                                         # 2.6_fc
 .LC0:	                                            # 2.6_fc
 	.string	"%d %f %f"                               # 2.6_fc
-	.align 2                                         # 2.14_fc
-.LC7:	                                            # 2.14_fc
-	.string	"sum is %d"                              # 2.14_fc
+	.align 2                                         # 2.10_fc
+.LC5:	                                            # 2.10_fc
+	.string	"sum is %d"                              # 2.10_fc
 
 	.section ".text"
 	.align 2                                         # 2_fs
@@ -100,54 +100,15 @@ main:	                                            # 2_fs
 	cmpi 7,0,0,0                                     # 2.8_fo
 	bne 7,.L2                                        # 2.8_fo
 
-	lwz 0,8(31)                                      # 2.10_ex
-	cmpi 7,0,0,0                                     # 2.10_ex
-	li 0,0                                           # 2.10_ex
-	li 9,1                                           # 2.10_ex
-	isel 0,9,0,30                                    # 2.10_ex
-	stw 0,32(31)                                     # 2.10_ex
+	lis 0,.LC5@ha                                    # 2.10_fc
+	addic 0,0,.LC5@l                                 # 2.10_fc
+	mr 3,0                                           # 2.10_fc
+	lwz 4,16(31)                                     # 2.10_fc
+	crxor 6,6,6                                      # 2.10_fc
+	bl printf                                        # 2.10_fc
 
-	lwz 0,32(31)                                     # 2.10_as
-	stw 0,12(31)                                     # 2.10_as
-
-	lwz 0,8(31)                                      # 2.11_ex
-	nor 0,0,0                                        # 2.11_ex
-	stw 0,32(31)                                     # 2.11_ex
-
-	lwz 0,32(31)                                     # 2.11_as
-	stw 0,12(31)                                     # 2.11_as
-
-	lfd 13,24(31)                                    # 2.12_ex
-	lfd 0,28(31)                                     # 2.12_ex
-	fcmpu 7,0,13                                     # 2.12_ex
-	li 0,0                                           # 2.12_ex
-	li 9,1                                           # 2.12_ex
-	isel 0,9,0,28                                    # 2.12_ex
-	stw 0,32(31)                                     # 2.12_ex
-
-	lwz 0,32(31)                                     # 2.12_if
-	cmpi 7,0,0,0                                     # 2.12_if
-	beq 7,.L5                                        # 2.12_if
-
-	lfd 13,24(31)                                    # 2.12.1_ex
-	lfd 0,28(31)                                     # 2.12.1_ex
-	fmul 0,13,0                                      # 2.12.1_ex
-	stfd 0,32(31)                                    # 2.12.1_ex
-
-	lfd 0,32(31)                                     # 2.12.1_as
-	stfd 0,24(31)                                    # 2.12.1_as
-
-.L5:	                                             # 2.12_if
-
-	lis 0,.LC7@ha                                    # 2.14_fc
-	addic 0,0,.LC7@l                                 # 2.14_fc
-	mr 3,0                                           # 2.14_fc
-	lwz 4,16(31)                                     # 2.14_fc
-	crxor 6,6,6                                      # 2.14_fc
-	bl printf                                        # 2.14_fc
-
-	li 0,0                                           # 2.15_re
-	mr 3,0                                           # 2.15_re
+	li 0,0                                           # 2.11_re
+	mr 3,0                                           # 2.11_re
 	lwz 11,0(1)                                      # 2_fs
 	lwz 0,4(11)                                      # 2_fs
 	mtlr 0                                           # 2_fs

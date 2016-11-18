@@ -152,9 +152,7 @@ public class Lexer {
 	// 安全C子集集中检测，注意还有一些安全C子集规则在词法分析中检测完成
 	private void secureCheck() {
 		for (Token e : tokens) {
-//			System.out.println(e);
 			
-			// 规则 4.2（强制）： 不能使用三字母词（trigraphs）
 			if (!checkTrigraphs(e)) {
 				try {
 					throw new Exception(
@@ -191,6 +189,27 @@ public class Lexer {
 				try {
 					throw new Exception(
 							"Error [" + e.getLabel() +"] : The goto statement shall not be used! '" + e.getValue() + "'");
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					System.exit(1);
+				}
+			}
+			
+			if (e.getType().equals("UNION")) {
+				try {
+					throw new Exception(
+							"Error [" + e.getLabel() +"] : Unions shall not be used! '" + e.getValue() + "'");
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					System.exit(1);
+				}
+			}
+			
+			if (e.getValue().equals("alloc") || e.getValue().equals("malloc")
+					|| e.getValue().equals("realloc") || e.getValue().equals("free")) {
+				try {
+					throw new Exception(
+							"Error [" + e.getLabel() +"] : Dynamic heap memory allocation shall not be used! '" + e.getValue() + "'");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					System.exit(1);
@@ -253,6 +272,18 @@ public class Lexer {
 						// 找到include的头文件
 						String lib = "";
 						while (line.charAt(i) != close_flag) {
+							if (line.charAt(i) == '\'' || line.charAt(i) == ','
+									|| line.charAt(i) == '/' || line.charAt(i) == '*') {
+								try {
+									throw new Exception(
+											"Error [" + generateLabel(stack) + 
+											"] : Non-standard characters should not occur in header file names in #include directive! '" + line.charAt(i) + "'");
+								} catch (Exception e1) {
+									e1.printStackTrace();
+									System.exit(1);
+								}
+							}
+							
 							lib += line.charAt(i);
 							i++;
 						}

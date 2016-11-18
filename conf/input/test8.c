@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+int f(int a);
+int g(int b);
+
 /**
 *   a simple input
 */
@@ -28,7 +31,28 @@ int main() {
         } // end if
     }   // end for
 
+    tmp = f(n);
+
     printf("sum is %d", sum);
 
     return 0;
 }
+
+int f(int a) {
+    int tmp;
+    if (a <= 1) {
+        return 1;
+    }
+    tmp = a - 1;
+    tmp = g(tmp);
+
+    return a * tmp;
+}
+
+int g(int b) {
+    int res;
+    res = f(b);
+    return res;
+}
+
+

@@ -27,6 +27,7 @@ public class LexerDefine {
 			put("break", "BREAK");
 			put("continue", "CONTINUE");
 			put("goto", "GOTO");
+			put("union", "UNION");
 
 			put("=", "ASSIGN");
 			

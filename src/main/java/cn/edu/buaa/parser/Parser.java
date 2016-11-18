@@ -30,6 +30,8 @@ public class Parser {
 	private boolean isGlobal;
 	
 	private Map<String, String> functions;
+	private Map<Token, List<Token>> recursions;	// <函数, 调用函数>
+	private Token recur;
 	
 	private Recorder recorder;
 	
@@ -42,6 +44,7 @@ public class Parser {
 		this.variableTable = new HashMap<>();
 		this.globalVariableTable = new HashMap<>();
 		this.functions = new HashMap<>();
+		this.recursions = new HashMap<>();
 		this.recorder = recorder;
 	}
 	
@@ -144,6 +147,7 @@ public class Parser {
 				SyntaxTreeNode funcNameRoot = new SyntaxTreeNode("FunctionName");
 				funcStatementTree.addChildNode(funcNameRoot, root);
 				funcName = getTokenValue(index);
+				recur = tokens.get(index);
 				
 				HashMap<String, String> extraInfo = new HashMap<>();
 				extraInfo.put("type", "FUNCTION_NAME");
@@ -195,7 +199,7 @@ public class Parser {
 							recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法非法");
 							logger.info(funcName + "函数定义 : 语法非法");
 							try {
-								throw new Exception(funcName + "函数定义参数错误");
+								throw new Exception(funcName + "函数参数定义错误, 未给出参数的标识符");
 							} catch (Exception e) {
 								e.printStackTrace();
 								System.exit(1);
@@ -220,6 +224,8 @@ public class Parser {
 					}
 					
 				}
+				
+				recursions.put(recur, new ArrayList<>());
 				
 				// 跳过左大括号
 				index++;
@@ -1102,11 +1108,12 @@ public class Parser {
 						}
 					}
 					
-				}else {
+				} else {
 					recorder.insertLine(Recorder.TAB + "表达式语句 : 语法非法");
 					logger.info("表达式语句 : 语法非法");
 					try {
-						throw new Exception("not support identifer : " + getTokenType(index + 1));
+						throw new Exception(
+								"not support identifer ["+ getTokenLabel(index) + "] : " + getTokenValue(index + 1));
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(1);
@@ -1222,7 +1229,11 @@ public class Parser {
 									null,
 									getTokenLabel(index) + "_fc"), 
 							null);
-			
+				
+				// 封装函数调用名
+				List<Token> tmpValues = recursions.get(recur);
+				tmpValues.add(tokens.get(index));
+				
 			// 左小括号
 			} else if(tokens.get(index).getType().equals("LL_BRACKET")) {
 				index++;
@@ -1405,10 +1416,46 @@ public class Parser {
 			}
 		}
 		
+		// 安全C检查
+		for (Token entry : recursions.keySet()) {
+			Stack<Token> visits = new Stack<>();
+			visits.add(entry);
+			if (!dfs(entry, visits)) {
+				try {
+					throw new Exception(
+							"Error [" + entry.getLabel() + "] : Functions shall not call themselves, either directly or indirectly! '"+ entry.getValue() +"(..)'");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+		}
+		
 		recorder.insertLine("语法分析结束!");
 		logger.info("语法分析结束!");
 	}
 	
+	private boolean dfs(Token key, Stack<Token> visits) {
+		if (!recursions.containsKey(key)) {
+			return true;
+		}
+		
+		boolean flag = true;
+		for (Token entry : recursions.get(key)) {			
+			if (visits.contains(entry)) {
+				return false;
+			}
+			visits.push(entry);
+			if (!dfs(entry, visits)) {
+				flag = false;
+				break;
+			}
+			visits.pop();
+		}
+		
+		return flag;
+	}
+
 	// 递归输出语法树
 	private void display(SyntaxTreeNode node, BufferedWriter writer) {
 		if(null == node) return;
