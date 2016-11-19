@@ -106,7 +106,12 @@ public class Parser {
 		} else {
 			recorder.insertLine(Recorder.TAB + "include语句 : 语法非法");
 			logger.info("include语句 : 语法非法");
-			throw new RuntimeException("include语句未正确结束");
+			try {
+				throw new Exception("include语句未正确结束");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
 		
 	}
@@ -568,9 +573,13 @@ public class Parser {
 			if(getTokenType(index).equals("IDENTIFIER")) {
 				if (!variableTable.containsKey(getTokenValue(index)) 
 						&& !globalVariableTable.containsKey(getTokenValue(index))) {
-					throw new RuntimeException(
-							"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
-					
+					try {
+						throw new Exception(
+								"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
 				}
 				
 				assignTree.addChildNode(
@@ -1051,8 +1060,13 @@ public class Parser {
 					
 					if (!variableTable.containsKey(getTokenValue(index))
 							&& !globalVariableTable.containsKey(getTokenValue(index))) {
-						throw new RuntimeException(
-								"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+						try {
+							throw new Exception(
+									"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}
 					
 					SyntaxTree tmpTree = new SyntaxTree();
@@ -1248,9 +1262,14 @@ public class Parser {
 						if (getTokenType(index).equals("IDENTIFIER") 
 								&& !variableTable.containsKey(getTokenValue(index))
 								&& !globalVariableTable.containsKey(getTokenValue(index))) {
-							throw new RuntimeException(
-									"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
-							
+							try {
+								throw new Exception(
+										"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+							} catch (Exception e) {
+								e.printStackTrace();
+								System.exit(1);
+							}
+						
 						}
 						
 						funcCallTree.addChildNode(
@@ -1286,7 +1305,14 @@ public class Parser {
 					} else {
 						recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法非法");
 						logger.info("函数调用语句 : 语法非法");
-						throw new RuntimeException("functionCall statement not support : " + getTokenType(index));
+						try {
+							throw new Exception(
+									"functionCall statement not support : " + getTokenType(index));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							System.exit(1);
+						}
 						
 					}
 					index++;

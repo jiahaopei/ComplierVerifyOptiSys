@@ -140,7 +140,8 @@ public class MainWindow extends JFrame {
 			try {
 				UIManager.setLookAndFeel(new NimbusLookAndFeel());
 			} catch (UnsupportedLookAndFeelException e2) {
-				throw new RuntimeException("JDK版本过低，请把JDK升级到1.7(含)以上！");
+				throw new RuntimeException(
+						"JDK版本过低，请把JDK升级到1.7(含)以上！");
 			}
 		}
 		
