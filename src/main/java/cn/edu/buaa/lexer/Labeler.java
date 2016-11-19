@@ -1,4 +1,4 @@
-package cn.edu.buaa.templates;
+package cn.edu.buaa.lexer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -231,7 +231,7 @@ public class Labeler {
 	public static void main(String[] args) {
 
 		Labeler labeler = new Labeler();
-		String fileName = "src/main/resources/source/evenSum.c";
+		String fileName = "conf/input/evenSum.c";
 		labeler.runLabeler(fileName);
 
 	}
