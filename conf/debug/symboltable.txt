@@ -1,9 +1,0 @@
-变量名称	变量类型	内存地址
-tmp	int	20
-bss_tmp2	int	28
-.LC5	null	null
-i	int	12
-bss_tmp1	int	24
-sum	int	16
-.LC0	null	null
-n	int	8
