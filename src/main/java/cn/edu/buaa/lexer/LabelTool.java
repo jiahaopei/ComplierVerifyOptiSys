@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Stack;
 
-public class Labeler {
+public class LabelTool {
 
 	public void label1(String fileName) {
 
@@ -230,7 +230,7 @@ public class Labeler {
 
 	public static void main(String[] args) {
 
-		Labeler labeler = new Labeler();
+		LabelTool labeler = new LabelTool();
 		String fileName = "conf/input/evenSum.c";
 		labeler.runLabeler(fileName);
 
