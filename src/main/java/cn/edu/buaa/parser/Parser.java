@@ -1236,6 +1236,49 @@ public class Parser {
 		while(!getTokenType(index).equals("SEMICOLON")) {
 			// 函数名
 			if(getTokenType(index).equals("IDENTIFIER")) {
+				if (getTokenValue(index).equals("longjmp")) {
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index) + 
+								"] : The longjmp function shall not be used in the secure C! '" + getTokenValue(index) + "'");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				if (getTokenValue(index).equals("atof")
+						|| getTokenValue(index).equals("atoi")
+						|| getTokenValue(index).equals("atol")) {
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index) 
+								+ "] : The library functions atof, atoi and atol from library <stdlib.h> shall not be used! '" 
+								+ getTokenValue(index) + "'");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
+				if ( getTokenValue(index).equals("abort")
+						|| getTokenValue(index).equals("exit")
+						|| getTokenValue(index).equals("getenv")
+						|| getTokenValue(index).equals("system")) {
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index) 
+								+ "] : The library functions abort, exit, getenv and system from library <stdlib.h> shall not be used! '" 
+								+ getTokenValue(index) + "'");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.exit(1);
+					}
+					
+				}
+				
 				funcCallTree.addChildNode(
 							new SyntaxTreeNode(
 									getTokenValue(index), 
