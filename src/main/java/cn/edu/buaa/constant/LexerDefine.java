@@ -59,6 +59,8 @@ public class LexerDefine {
 			put("--", "SELF_MINUS");
 			
 			put("\"", "DOUBLE_QUOTE");
+			put("'", "SINGLE_QUOTE");
+			
 			put("#", "SHARP");
 			put(",", "COMMA");
 			put(";", "SEMICOLON");
@@ -73,7 +75,7 @@ public class LexerDefine {
 
 	// 分隔符
 	public static final String[] delimiters = { 
-			"(", ")", "{", "}", "[", "]", ",", "\"", ";" 
+			"(", ")", "{", "}", "[", "]", ",", "\"", "\'", ";" 
 	};
 
 	// 运算符

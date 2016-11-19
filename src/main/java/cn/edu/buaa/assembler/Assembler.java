@@ -468,6 +468,10 @@ public class Assembler {
 						num++;
 						assemblerDTO.insertIntoText(line, label);
 						
+					} else if (fieldType.equals("char")) { 
+						line = AssemblerUtils.PREFIX + "lbz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
 					} else {
 						logger.debug("More type will be added to printf : " + fieldType);
 
@@ -539,6 +543,17 @@ public class Assembler {
 						// long
 						if (parameter.endsWith("l") || parameter.endsWith("L")) {
 							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter.substring(0, parameter.length() - 1);
+							num++;
+							assemblerDTO.insertIntoText(line, label);
+						
+						// char
+						} else if (parameter.startsWith("'") && parameter.endsWith("'")) {
+							int pos = 1;
+							if (parameter.charAt(pos) == '\\') {
+								pos++;
+							}
+							
+							line = AssemblerUtils.PREFIX + "li " + num + "," + (int) parameter.charAt(pos);
 							num++;
 							assemblerDTO.insertIntoText(line, label);
 							
@@ -717,7 +732,9 @@ public class Assembler {
 			Map<String, String> expres = _expression(currentNode.getRight());
 
 			// 该变量的类型
-			String fieldType = assemblerDTO.getMapFromSymbolTable(currentNode.getValue()).get("field_type");
+			String fieldType = assemblerDTO.getMapFromSymbolTable(
+					currentNode.getValue()).get("field_type");
+						
 			if (fieldType.equals("int") || fieldType.equals("long")) {
 				// 常数
 				if (expres.get("type").equals("CONSTANT")) {
@@ -840,6 +857,39 @@ public class Assembler {
 
 				}
 			
+			// 处理类型
+			} else if (fieldType.equals("char")) {				
+					// 常数
+				if (expres.get("type").equals("CONSTANT")) {
+					int pos = 1;
+					String word = expres.get("value");
+					if (word.charAt(pos) == '\\') {
+						pos++;
+					}
+					
+					line = AssemblerUtils.PREFIX + "li 0," + (int) word.charAt(pos);					
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stb 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+
+					// 变量
+				} else if (expres.get("type").equals("VARIABLE")) {
+					// 把数放到r0中，再把r0总的数转到目标寄存器中, 同float
+					line = AssemblerUtils.PREFIX + "lbz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "stb 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+
+				} else {
+					try {
+						throw new Exception("_assignment only support constant and varivale : " + expres.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+
+				}
+				
 			} else {
 				try {
 					throw new Exception("Not support this type : " + fieldType);
@@ -1316,7 +1366,7 @@ public class Assembler {
 		// 公共记录
 		Recorder recorder = new Recorder();
 
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test9.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();

@@ -95,4 +95,9 @@ public class SyntaxTreeNode {
 	public void setFirstSon(SyntaxTreeNode firstSon) {
 		this.firstSon = firstSon;
 	}
+	
+	@Override
+	public String toString() {
+		return value + ", " + type + ", " + label;
+	}
 }

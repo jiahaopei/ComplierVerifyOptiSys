@@ -378,14 +378,15 @@ public class Lexer {
 
 				// 如果是分隔符
 			} else if (LexerUtils.isDelimiter(line.charAt(i))) {
-				token = new Token(4, line.charAt(i), generateLabel(stack));
-				tokens.add(token);
-
-				// 如果是字符串常量
-				if (line.charAt(i) == '\"') {
+				// 如果是字符常量
+				if (line.charAt(i) == '\'') {
 					i++;
 					String word = "";
-					while (i < line.length() && line.charAt(i) != '\"') {
+					while (i < line.length() && line.charAt(i) != '\'') {
+						if (line.charAt(i) == '\\') {
+							word += line.charAt(i);
+							i++;
+						}
 						word += line.charAt(i);
 						i++;
 					}
@@ -393,20 +394,60 @@ public class Lexer {
 					if (i >= line.length()) {
 						try {
 							String label = generateLabel(stack);
-							throw new Exception("Can't find the end character of the string constant [" + label + "]");
+							throw new Exception(
+									"Can't find the end character of the char [" + label + "] : " + word);
 						} catch (Exception e) {
 							e.printStackTrace();
 							System.exit(1);
 						}
 						
 					} else {
+						token = new Token(2,
+								"'" + word + "'",
+								generateLabel(stack));
+						tokens.add(token);
+					}
+				
+				// 字符串常量 
+				} else if (line.charAt(i) == '\"') {
+					token = new Token(4, line.charAt(i), generateLabel(stack));
+					tokens.add(token);
+					i++;
+					String word = "";
+					while (i < line.length() && line.charAt(i) != '\"') {
+						if (line.charAt(i) == '\\') {
+							word += line.charAt(i);
+							i++;
+						}
+						word += line.charAt(i);
+						i++;
+					}
+
+					if (i >= line.length()) {
+						try {
+							String label = generateLabel(stack);
+							throw new Exception(
+									"Can't find the end character of the string constant [" + label + "]");
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+
+					} else {
 						token = new Token(5, word, generateLabel(stack));
 						tokens.add(token);
 						token = new Token(4, '\"', generateLabel(stack));
 						tokens.add(token);
-						
+
 					}
+				
+				// 其它分隔符
+				} else {
+					token = new Token(4, line.charAt(i), generateLabel(stack));
+					tokens.add(token);
+					
 				}
+				
 				i = LexerUtils.skipBlank(i + 1, line);
 
 			// 如果是运算符
@@ -877,7 +918,7 @@ public class Lexer {
 		// 公共记录
 		Recorder recorder = new Recorder();
 		
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test9.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();

@@ -12,10 +12,11 @@ public class App {
 	
 	public static void main(String[] args) {
 		
-		String string = "aaaa";
-		System.out.println(string.matches(".*[a-zA-Z0-9].*"));
 		
-		System.out.println("ans : " + string.substring(0, 4));
+		
+		String string = "\n";
+		System.out.println(string.charAt(1));
+		
 		
 	}
 	

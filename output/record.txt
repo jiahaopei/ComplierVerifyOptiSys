@@ -1,4 +1,4 @@
-预处理源代码开始...(evenSum.c)
+预处理源代码开始...(test9.c)
 预处理源代码结束
 词法分析开始...
 词法分析结束!
@@ -6,27 +6,16 @@
 #include <stdio.h>
 
 int main() {
-    int n;
-    int i;
-    int sum;
-    int tmp;
-    double a, b;
+    char a;
+    char b;
+    char c;
 
 
-    scanf("%d %f %f", &n, &a, &b);    
-    sum = 0;
+    scanf("%c %c", &a, &b);
+    printf("%c = %d %c = %d\n", a, a, b, b);
 
-    for(i = 1; i <= n; i++) {
-        tmp = i % 2;
-        if(tmp == 0) {
-            sum = sum + i;
-        } else {
-            sum = sum - i * 2;
-        
-        } 
-    }   
-
-    printf("sum is %d", sum);
+    a = 'c';
+    b = '\'' + 99;
 
     return 0;
 }
@@ -35,29 +24,18 @@ int main() {
 #include <stdio.h>                                // 1
 
 int main() {                                      // 2
-    int n;                                        // 2.1
-    int i;                                        // 2.2
-    int sum;                                      // 2.3
-    int tmp;                                      // 2.4
-    double a, b;                                  // 2.5
+    char a;                                       // 2.1
+    char b;                                       // 2.2
+    char c;                                       // 2.3
 
 
-    scanf("%d %f %f", &n, &a, &b);                // 2.6
-    sum = 0;                                      // 2.7
+    scanf("%c %c", &a, &b);                       // 2.4
+    printf("%c = %d %c = %d\n", a, a, b, b);      // 2.5
 
-    for(i = 1; i <= n; i++) {                     // 2.8
-        tmp = i % 2;                              // 2.8.1
-        if(tmp == 0) {                            // 2.8.2
-            sum = sum + i;                        // 2.8.2.1
-        } else {                                  // 2.8.3
-            sum = sum - i * 2;                    // 2.8.3.1
-        
-        }                                         // 2.8.4
-    }                                             // 2.9
+    a = 'c';                                      // 2.6
+    b = '\'' + 99;                                // 2.7
 
-    printf("sum is %d", sum);                     // 2.10
-
-    return 0;                                     // 2.11
+    return 0;                                     // 2.8
 }                                                 // 3
 
 ====================Lexer==================
@@ -71,100 +49,194 @@ int main() {                                      // 2
 ((, LL_BRACKET, 2)
 (), RL_BRACKET, 2)
 ({, LB_BRACKET, 2)
-(int, INT, 2.1)
-(n, IDENTIFIER, 2.1)
+(char, CHAR, 2.1)
+(a, IDENTIFIER, 2.1)
 (;, SEMICOLON, 2.1)
-(int, INT, 2.2)
-(i, IDENTIFIER, 2.2)
+(char, CHAR, 2.2)
+(b, IDENTIFIER, 2.2)
 (;, SEMICOLON, 2.2)
-(int, INT, 2.3)
-(sum, IDENTIFIER, 2.3)
+(char, CHAR, 2.3)
+(c, IDENTIFIER, 2.3)
 (;, SEMICOLON, 2.3)
-(int, INT, 2.4)
-(tmp, IDENTIFIER, 2.4)
+(scanf, IDENTIFIER, 2.4)
+((, LL_BRACKET, 2.4)
+(", DOUBLE_QUOTE, 2.4)
+(%c %c, STRING_CONSTANT, 2.4)
+(", DOUBLE_QUOTE, 2.4)
+(,, COMMA, 2.4)
+(&, BIT_AND, 2.4)
+(a, IDENTIFIER, 2.4)
+(,, COMMA, 2.4)
+(&, BIT_AND, 2.4)
+(b, IDENTIFIER, 2.4)
+(), RL_BRACKET, 2.4)
 (;, SEMICOLON, 2.4)
-(double, DOUBLE, 2.5)
+(printf, IDENTIFIER, 2.5)
+((, LL_BRACKET, 2.5)
+(", DOUBLE_QUOTE, 2.5)
+(%c = %d %c = %d\n, STRING_CONSTANT, 2.5)
+(", DOUBLE_QUOTE, 2.5)
+(,, COMMA, 2.5)
+(a, IDENTIFIER, 2.5)
+(,, COMMA, 2.5)
 (a, IDENTIFIER, 2.5)
 (,, COMMA, 2.5)
 (b, IDENTIFIER, 2.5)
+(,, COMMA, 2.5)
+(b, IDENTIFIER, 2.5)
+(), RL_BRACKET, 2.5)
 (;, SEMICOLON, 2.5)
-(scanf, IDENTIFIER, 2.6)
-((, LL_BRACKET, 2.6)
-(", DOUBLE_QUOTE, 2.6)
-(%d %f %f, STRING_CONSTANT, 2.6)
-(", DOUBLE_QUOTE, 2.6)
-(,, COMMA, 2.6)
-(&, BIT_AND, 2.6)
-(n, IDENTIFIER, 2.6)
-(,, COMMA, 2.6)
-(&, BIT_AND, 2.6)
 (a, IDENTIFIER, 2.6)
-(,, COMMA, 2.6)
-(&, BIT_AND, 2.6)
-(b, IDENTIFIER, 2.6)
-(), RL_BRACKET, 2.6)
+(=, ASSIGN, 2.6)
+('c', DIGIT_CONSTANT, 2.6)
 (;, SEMICOLON, 2.6)
-(sum, IDENTIFIER, 2.7)
+(b, IDENTIFIER, 2.7)
 (=, ASSIGN, 2.7)
-(0, DIGIT_CONSTANT, 2.7)
+('\'', DIGIT_CONSTANT, 2.7)
+(+, PLUS, 2.7)
+(99, DIGIT_CONSTANT, 2.7)
 (;, SEMICOLON, 2.7)
-(for, FOR, 2.8)
-((, LL_BRACKET, 2.8)
-(i, IDENTIFIER, 2.8)
-(=, ASSIGN, 2.8)
-(1, DIGIT_CONSTANT, 2.8)
+(return, RETURN, 2.8)
+(0, DIGIT_CONSTANT, 2.8)
 (;, SEMICOLON, 2.8)
-(i, IDENTIFIER, 2.8)
-(<=, LET, 2.8)
-(n, IDENTIFIER, 2.8)
-(;, SEMICOLON, 2.8)
-(i, IDENTIFIER, 2.8)
-(++, SELF_PLUS, 2.8)
-(), RL_BRACKET, 2.8)
-({, LB_BRACKET, 2.8)
-(tmp, IDENTIFIER, 2.8.1)
-(=, ASSIGN, 2.8.1)
-(i, IDENTIFIER, 2.8.1)
-(%, MOD, 2.8.1)
-(2, DIGIT_CONSTANT, 2.8.1)
-(;, SEMICOLON, 2.8.1)
-(if, IF, 2.8.2)
-((, LL_BRACKET, 2.8.2)
-(tmp, IDENTIFIER, 2.8.2)
-(==, EQU, 2.8.2)
-(0, DIGIT_CONSTANT, 2.8.2)
-(), RL_BRACKET, 2.8.2)
-({, LB_BRACKET, 2.8.2)
-(sum, IDENTIFIER, 2.8.2.1)
-(=, ASSIGN, 2.8.2.1)
-(sum, IDENTIFIER, 2.8.2.1)
-(+, PLUS, 2.8.2.1)
-(i, IDENTIFIER, 2.8.2.1)
-(;, SEMICOLON, 2.8.2.1)
-(}, RB_BRACKET, 2.8.3)
-(else, ELSE, 2.8.3)
-({, LB_BRACKET, 2.8.3)
-(sum, IDENTIFIER, 2.8.3.1)
-(=, ASSIGN, 2.8.3.1)
-(sum, IDENTIFIER, 2.8.3.1)
-(-, MINUS, 2.8.3.1)
-(i, IDENTIFIER, 2.8.3.1)
-(*, MUL, 2.8.3.1)
-(2, DIGIT_CONSTANT, 2.8.3.1)
-(;, SEMICOLON, 2.8.3.1)
-(}, RB_BRACKET, 2.8.4)
-(}, RB_BRACKET, 2.9)
-(printf, IDENTIFIER, 2.10)
-((, LL_BRACKET, 2.10)
-(", DOUBLE_QUOTE, 2.10)
-(sum is %d, STRING_CONSTANT, 2.10)
-(", DOUBLE_QUOTE, 2.10)
-(,, COMMA, 2.10)
-(sum, IDENTIFIER, 2.10)
-(), RL_BRACKET, 2.10)
-(;, SEMICOLON, 2.10)
-(return, RETURN, 2.11)
-(0, DIGIT_CONSTANT, 2.11)
-(;, SEMICOLON, 2.11)
 (}, RB_BRACKET, 3)
 
+语法分析开始...
+  include语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  变量声明语句 : 语法合法
+  函数调用语句 : 语法合法
+  函数调用语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  赋值语句 : 语法合法
+  表达式语句 : 语法合法
+  return语句 : 语法合法
+  main函数定义 : 语法合法
+语法分析结束!
+====================Parser==================
+( self: Sentence null null, father: null, left: null, right: null )
+( self: Include null null, father: Sentence, left: null, right: FunctionStatement )
+( self: # SHARP 1_in, father: Include, left: null, right: include )
+( self: include INCLUDE 1_in, father: Include, left: #, right: < )
+( self: < LT 1_in, father: Include, left: include, right: stdio.h )
+( self: stdio.h IDENTIFIER 1_in, father: Include, left: <, right: > )
+( self: > GT 1_in, father: Include, left: stdio.h, right: null )
+( self: FunctionStatement null null, father: Sentence, left: Include, right: null )
+( self: Type null null, father: FunctionStatement, left: null, right: FunctionName )
+( self: int FIELD_TYPE 2_fs, father: Type, left: null, right: null )
+( self: FunctionName null null, father: FunctionStatement, left: Type, right: FunctionParameterList )
+( self: main IDENTIFIER 2_fs, father: FunctionName, left: null, right: null )
+( self: FunctionParameterList null null, father: FunctionStatement, left: FunctionName, right: Sentence )
+( self: Sentence null null, father: FunctionStatement, left: FunctionParameterList, right: null )
+( self: Statement null null, father: Sentence, left: null, right: Statement )
+( self: Type null null, father: Statement, left: null, right: a )
+( self: char FIELD_TYPE 2.1_st, father: Type, left: null, right: null )
+( self: a IDENTIFIER 2.1_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: Statement )
+( self: Type null null, father: Statement, left: null, right: b )
+( self: char FIELD_TYPE 2.2_st, father: Type, left: null, right: null )
+( self: b IDENTIFIER 2.2_st, father: Statement, left: Type, right: null )
+( self: Statement null null, father: Sentence, left: Statement, right: FunctionCall )
+( self: Type null null, father: Statement, left: null, right: c )
+( self: char FIELD_TYPE 2.3_st, father: Type, left: null, right: null )
+( self: c IDENTIFIER 2.3_st, father: Statement, left: Type, right: null )
+( self: FunctionCall null null, father: Sentence, left: Statement, right: FunctionCall )
+( self: scanf FUNCTION_NAME 2.4_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: scanf, right: null )
+( self: %c %c STRING_CONSTANT 2.4_fc, father: CallParameterList, left: null, right: & )
+( self: & BIT_AND 2.4_fc, father: CallParameterList, left: %c %c, right: a )
+( self: a IDENTIFIER 2.4_fc, father: CallParameterList, left: &, right: & )
+( self: & BIT_AND 2.4_fc, father: CallParameterList, left: a, right: b )
+( self: b IDENTIFIER 2.4_fc, father: CallParameterList, left: &, right: null )
+( self: FunctionCall null null, father: Sentence, left: FunctionCall, right: Assignment )
+( self: printf FUNCTION_NAME 2.5_fc, father: FunctionCall, left: null, right: CallParameterList )
+( self: CallParameterList null null, father: FunctionCall, left: printf, right: null )
+( self: %c = %d %c = %d\n STRING_CONSTANT 2.5_fc, father: CallParameterList, left: null, right: a )
+( self: a IDENTIFIER 2.5_fc, father: CallParameterList, left: %c = %d %c = %d\n, right: a )
+( self: a IDENTIFIER 2.5_fc, father: CallParameterList, left: a, right: b )
+( self: b IDENTIFIER 2.5_fc, father: CallParameterList, left: a, right: b )
+( self: b IDENTIFIER 2.5_fc, father: CallParameterList, left: b, right: null )
+( self: Assignment null null, father: Sentence, left: FunctionCall, right: Assignment )
+( self: a IDENTIFIER 2.6_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: a, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 'c' _Constant 2.6_ex, father: Expression, left: null, right: null )
+( self: Assignment null null, father: Sentence, left: Assignment, right: Return )
+( self: b IDENTIFIER 2.7_as, father: Assignment, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Assignment, left: b, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: Expression )
+( self: '\'' _Constant 2.7_ex, father: Expression, left: null, right: null )
+( self: Expression Constant null, father: Expression, left: Expression, right: Operator )
+( self: 99 _Constant 2.7_ex, father: Expression, left: null, right: null )
+( self: Operator Operator null, father: Expression, left: Expression, right: null )
+( self: + _Operator 2.7_ex, father: Operator, left: null, right: null )
+( self: Return null null, father: Sentence, left: Assignment, right: null )
+( self: return RETURN 2.8_re, father: Return, left: null, right: Expression )
+( self: Expression SingleOrDoubleOperand null, father: Return, left: return, right: null )
+( self: Expression Constant null, father: Expression, left: null, right: null )
+( self: 0 _Constant 2.8_ex, father: Expression, left: null, right: null )
+
+目标码生成开始...
+目标码生成结束!
+===================Assembler==================
+
+	.section .rodata
+	.align 2                                         # 2.4_fc
+.LC0:	                                            # 2.4_fc
+	.string	"%c %c"                                  # 2.4_fc
+	.align 2                                         # 2.5_fc
+.LC1:	                                            # 2.5_fc
+	.string	"%c = %d %c = %d\n"                      # 2.5_fc
+
+	.section ".text"
+	.align 2                                         # 2_fs
+	.globl main                                      # 2_fs
+	.type main, @function                            # 2_fs
+main:	                                            # 2_fs
+	stwu 1,-32(1)                                    # 2_fs
+	mflr 0                                           # 2_fs
+	stw 31,28(1)                                     # 2_fs
+	stw 0,36(1)                                      # 2_fs
+	mr 31,1                                          # 2_fs
+
+	lis 0,.LC0@ha                                    # 2.4_fc
+	addic 0,0,.LC0@l                                 # 2.4_fc
+	mr 3,0                                           # 2.4_fc
+	lbz 4,8(31)                                      # 2.4_fc
+	lbz 5,12(31)                                     # 2.4_fc
+	crxor 6,6,6                                      # 2.4_fc
+	bl __isoc99_scanf                                # 2.4_fc
+
+	lis 0,.LC1@ha                                    # 2.5_fc
+	addic 0,0,.LC1@l                                 # 2.5_fc
+	mr 3,0                                           # 2.5_fc
+	lbz 4,8(31)                                      # 2.5_fc
+	lbz 5,8(31)                                      # 2.5_fc
+	lbz 6,12(31)                                     # 2.5_fc
+	lbz 7,12(31)                                     # 2.5_fc
+	crxor 6,6,6                                      # 2.5_fc
+	bl printf                                        # 2.5_fc
+
+	li 0,99                                          # 2.6_as
+	stb 0,8(31)                                      # 2.6_as
+
+	li 9,'\''                                        # 2.7_ex
+	li 0,99                                          # 2.7_ex
+	add 0,9,0                                        # 2.7_ex
+	stw 0,20(31)                                     # 2.7_ex
+
+	lbz 0,20(31)                                     # 2.7_as
+	stb 0,12(31)                                     # 2.7_as
+
+	li 0,0                                           # 2.8_re
+	mr 3,0                                           # 2.8_re
+	lwz 11,0(1)                                      # 2_fs
+	lwz 0,4(11)                                      # 2_fs
+	mtlr 0                                           # 2_fs
+	lwz 31,-4(11)                                    # 2_fs
+	mr 1,11                                          # 2_fs
+	blr                                              # 2_fs
+	.size main,.-main                                # 2_fs

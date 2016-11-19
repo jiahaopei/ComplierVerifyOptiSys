@@ -568,7 +568,7 @@ public class Parser {
 		assignTree.setCurrent(root);
 		tree.addChildNode(root, father);
 				
-		while(!getTokenType(index).equals("SEMICOLON")) {			
+		while(!getTokenType(index).equals("SEMICOLON")) {	
 			// 被赋值的变量
 			if(getTokenType(index).equals("IDENTIFIER")) {
 				if (!variableTable.containsKey(getTokenValue(index)) 
@@ -1018,7 +1018,8 @@ public class Parser {
 		}
 		
 		// 如果是函数调用
-		if (getTokenType(index).equals("IDENTIFIER") && getTokenType(index + 1).equals("LL_BRACKET")) {
+		if (getTokenType(index).equals("IDENTIFIER") 
+				&& getTokenType(index + 1).equals("LL_BRACKET")) {
 			_functionCall(father);
 			index--;
 			return;
@@ -1384,7 +1385,7 @@ public class Parser {
 		
 		String tokenValue = getTokenValue(index);
 		String tokenType = getTokenType(index);
-		
+				
 		// include句型
 		if (tokenType.equals("SHARP") && getTokenType(index + 1).equals("INCLUDE")) {
 			return "INCLUDE";
@@ -1394,9 +1395,10 @@ public class Parser {
 			return "CONTROL";
 			
 		// 可能是声明语句或函数声明语句
-		} else if (ParserUtils.isInnerDataType(tokenValue) && getTokenType(index + 1).equals("IDENTIFIER")) {
+		} else if (ParserUtils.isInnerDataType(tokenValue) 
+				&& getTokenType(index + 1).equals("IDENTIFIER")) {
 			String index2TokenType = getTokenType(index + 2);
-			
+						
 			if(index2TokenType.equals("LL_BRACKET")) {
 				return "FUNCTION_STATEMENT";
 			} else if (index2TokenType.equals("SEMICOLON") || index2TokenType.equals("LM_BRACKET")
@@ -1582,7 +1584,7 @@ public class Parser {
 		// 公共记录
 		Recorder recorder = new Recorder();
 
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test9.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
