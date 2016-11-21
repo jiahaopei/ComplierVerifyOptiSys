@@ -2,6 +2,7 @@
 a	char	8
 b	char	12
 c	char	16
-bss_tmp1	int	20
+ans	int	20
+bss_tmp1	char	24
 .LC1	null	null
 .LC0	null	null

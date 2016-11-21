@@ -211,7 +211,9 @@ public class AssemblerExpression {
 		}
 		
 		// 转换char为Ascii码，再参与计算
-		if (aType.equals("char")) {
+		if (aType.equals("char") 
+				&& operand_a.get("operand").startsWith("'") 
+				&& operand_a.get("operand").endsWith("'")) {
 			int pos = 1;
 			String word = operand_a.get("operand");
 			if (word.charAt(pos) == '\\') {
@@ -219,7 +221,9 @@ public class AssemblerExpression {
 			}
 			operand_a.put("operand", Integer.toString((int) word.charAt(pos)));
 		}
-		if (bType.equals("char")) {
+		if (bType.equals("char")
+				&& operand_b.get("operand").startsWith("'") 
+				&& operand_b.get("operand").endsWith("'")) {
 			int pos = 1;
 			String word = operand_b.get("operand");
 			if (word.charAt(pos) == '\\') {
