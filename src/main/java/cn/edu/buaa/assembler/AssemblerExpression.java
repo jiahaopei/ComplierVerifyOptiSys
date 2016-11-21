@@ -1610,7 +1610,6 @@ public class AssemblerExpression {
 		}
 	}
 	
-	// todo
 	// 处理char型的双目运算
 	private static void solveTwoOperatorChar(Map<String, String> operand_a, Map<String, String> operand_b,
 			String operator, String label) {
