@@ -10,7 +10,7 @@ int main() {
     printf("%c = %d %c = %d\n", a, a, b, b);
 
     a = 'c';
-    b = '\'' + 99;
+    b = '\'' + a;
 
     return 0;
 }
