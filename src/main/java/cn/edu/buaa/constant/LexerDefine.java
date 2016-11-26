@@ -94,7 +94,7 @@ public class LexerDefine {
 	
 	// 关键字
 	public static final String[][] keywords = { 
-			{ "int", "float", "double", "char", "void" },
+			{ "int", "long", "short", "float", "double", "char", "void" },
 			{ "if", "for", "while", "do", "else" }, 
 			{ "include", "return", "break", "continue", "goto" } 
 	};

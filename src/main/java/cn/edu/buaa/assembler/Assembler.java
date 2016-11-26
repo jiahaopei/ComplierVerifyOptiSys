@@ -334,7 +334,13 @@ public class Assembler {
 				tmpMap.put("type", variableType);
 				tmpMap.put("field_type", variableFieldType);
 				tmpMap.put("register", Integer.toString(assemblerDTO.getMemAdress()));
-				assemblerDTO.addToMemAdress(4);
+								
+				if (variableFieldType.equals("short") || variableFieldType.equals("char")) {
+					assemblerDTO.addToMemAdress(2);
+				} else {
+					assemblerDTO.addToMemAdress(4);
+				}
+				
 				assemblerDTO.putIntoSymbolTable(variableName, tmpMap);
 
 			// 数组元素
@@ -456,7 +462,7 @@ public class Assembler {
 					assemblerDTO.insertIntoText(line, label);
 
 					// 参数为变量
-				} else if (parameterType.equals("VARIABLE")) {
+				} else if (parameterType.equals("VARIABLE") || parameterType.equals("IDENTIFIER")) {
 					String fieldType = assemblerDTO.getMapFromSymbolTable(parameter).get("field_type");
 					if (fieldType.equals("int") || fieldType.equals("long")) {
 						line = AssemblerUtils.PREFIX + "lwz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
@@ -478,6 +484,11 @@ public class Assembler {
 						num++;
 						assemblerDTO.insertIntoText(line, label);
 						
+					} else if (fieldType.equals("short")) { 
+						line = AssemblerUtils.PREFIX + "lhz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label);
+					
 					} else {
 						logger.debug("More type will be added to printf : " + fieldType);
 
@@ -563,7 +574,7 @@ public class Assembler {
 							num++;
 							assemblerDTO.insertIntoText(line, label);
 							
-						// int
+						// int or short
 						} else {
 							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter;
 							num++;
@@ -627,6 +638,11 @@ public class Assembler {
 						
 					} else if (fieldType.equals("char")) { 
 						line = AssemblerUtils.PREFIX + "lbz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label); 
+					
+					} else if (fieldType.equals("short")) { 
+						line = AssemblerUtils.PREFIX + "lhz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
 						num++;
 						assemblerDTO.insertIntoText(line, label); 
 					
@@ -715,7 +731,7 @@ public class Assembler {
 							num++;
 							assemblerDTO.insertIntoText(line, label); 
 							
-						// int
+						// int or short
 						} else {
 							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter;
 							num++;
@@ -912,6 +928,32 @@ public class Assembler {
 
 				}
 				
+			} else if (fieldType.equals("short")) {
+				// 常数
+				if (expres.get("type").equals("CONSTANT")) {
+					line = AssemblerUtils.PREFIX + "li 0," + expres.get("value");					
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "sth 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+
+					// 变量
+				} else if (expres.get("type").equals("VARIABLE")) {
+					// 把数放到r0中，再把r0总的数转到目标寄存器中, 同float
+					line = AssemblerUtils.PREFIX + "lbz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+					line = AssemblerUtils.PREFIX + "sth 0," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+					assemblerDTO.insertIntoText(line, label);
+
+				} else {
+					try {
+						throw new Exception("_assignment only support constant and varivale : " + expres.get("type"));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
+
+				}
+				
 			} else {
 				try {
 					throw new Exception("Not support this type : " + fieldType);
@@ -940,6 +982,9 @@ public class Assembler {
 			
 			}  else if (returnType.equals("char")) {
 				line = AssemblerUtils.PREFIX + "stb 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+				
+			} else if (returnType.equals("short")) {
+				line = AssemblerUtils.PREFIX + "sth 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
 				
 			} else {
 				throw new RuntimeException(" = not support type : " + returnType);
