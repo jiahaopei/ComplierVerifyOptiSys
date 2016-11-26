@@ -295,6 +295,7 @@ public class AssemblerExpression {
 			}
 			operand_a.put("operand", value);
 		}
+		
 		if (operand_b.get("type").equals("CONSTANT")) {
 			String value = operand_b.get("operand");
 			if (value.endsWith("l") || value.endsWith("L")) {

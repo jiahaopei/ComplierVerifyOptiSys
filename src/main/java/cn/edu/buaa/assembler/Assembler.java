@@ -477,13 +477,14 @@ public class Assembler {
 						line = AssemblerUtils.PREFIX + "lbz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
 						num++;
 						assemblerDTO.insertIntoText(line, label);
+						
 					} else {
 						logger.debug("More type will be added to printf : " + fieldType);
 
 					}
 				
 				// 为数字常量
-				} else if (parameterType.equals("DIGIT_CONSTANT")) { 
+				} else if (parameterType.equals("DIGIT_CONSTANT")) {
 					// 判断数字是什么类型
 					if (parameter.contains(".")) {
 						// float
@@ -624,13 +625,18 @@ public class Assembler {
 						num++;
 						assemblerDTO.insertIntoText(line, label);
 						
+					} else if (fieldType.equals("char")) { 
+						line = AssemblerUtils.PREFIX + "lbz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
+						num++;
+						assemblerDTO.insertIntoText(line, label); 
+					
 					} else {
 						logger.debug("More type will be added to printf : " + fieldType);
 
 					}
 				
 				// 为数字常量
-				} else if (parameterType.equals("DIGIT_CONSTANT")) { 
+				} else if (parameterType.equals("DIGIT_CONSTANT")) {
 					// 判断数字是什么类型
 					if (parameter.contains(".")) {
 						// float
@@ -697,6 +703,17 @@ public class Assembler {
 							line = AssemblerUtils.PREFIX + "li " + num + "," + parameter.substring(0, parameter.length() - 1);
 							num++;
 							assemblerDTO.insertIntoText(line, label);
+						
+						// char
+						} else if (parameter.startsWith("'") && parameter.endsWith("'")) {
+							int pos = 1;
+							if (parameter.charAt(pos) == '\\') {
+								pos++;
+							}
+							
+							line = AssemblerUtils.PREFIX + "li " + num + "," + (int) parameter.charAt(pos);
+							num++;
+							assemblerDTO.insertIntoText(line, label); 
 							
 						// int
 						} else {
@@ -921,6 +938,9 @@ public class Assembler {
 			} else if(returnType.equals("float")) {
 				line = AssemblerUtils.PREFIX + "stfs 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
 			
+			}  else if (returnType.equals("char")) {
+				line = AssemblerUtils.PREFIX + "stb 3," + assemblerDTO.getVariableSymbolOrNumber(currentNode.getValue()) + "(31)";
+				
 			} else {
 				throw new RuntimeException(" = not support type : " + returnType);
 				
