@@ -7,7 +7,7 @@ public class ParserDefine {
 
 	public static final String[] CONTROL_WORDS = { "if", "for", "while", "do", "else" };
 
-	public static final String[] INNER_DATAT_YPES = { "int", "float", "double", "char", "void" };
+	public static final String[] INNER_DATAT_YPES = { "int", "long", "short", "char", "float", "double", "void" };
 
 	// 运算符优先级
 	public static final Map<String, Integer> OPERATOR_PRIORITY = new HashMap<String, Integer>() {

@@ -4,6 +4,9 @@
 	.align 2                                         # 3.5_fc
 .LC0:	                                            # 3.5_fc
 	.string	"%d %d %d %d"                            # 3.5_fc
+	.align 2                                         # 3.7_fc
+.LC1:	                                            # 3.7_fc
+	.string	"%d"                                     # 3.7_fc
 
 	.section ".text"
 	.align 2                                         # 3_fs
@@ -44,8 +47,15 @@ main:	                                            # 3_fs
 	lwz 0,32(31)                                     # 3.6_as
 	stw 0,8(31)                                      # 3.6_as
 
-	li 0,0                                           # 3.7_re
-	mr 3,0                                           # 3.7_re
+	lis 0,.LC1@ha                                    # 3.7_fc
+	addic 0,0,.LC1@l                                 # 3.7_fc
+	mr 3,0                                           # 3.7_fc
+	lwz 4,8(31)                                      # 3.7_fc
+	crxor 6,6,6                                      # 3.7_fc
+	bl printf                                        # 3.7_fc
+
+	li 0,0                                           # 3.8_re
+	mr 3,0                                           # 3.8_re
 	lwz 11,0(1)                                      # 3_fs
 	lwz 0,4(11)                                      # 3_fs
 	mtlr 0                                           # 3_fs

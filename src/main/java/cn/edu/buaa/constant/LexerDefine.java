@@ -14,10 +14,14 @@ public class LexerDefine {
 		private static final long serialVersionUID = 1L;
 		{
 			put("include", "INCLUDE");
+			
 			put("char", "CHAR");
 			put("int", "INT");
+			put("long", "LONG");
+			put("short", "SHORT");
 			put("float", "FLOAT");
 			put("double", "DOUBLE");
+			
 			put("for", "FOR");
 			put("if", "IF");
 			put("else", "ELSE");

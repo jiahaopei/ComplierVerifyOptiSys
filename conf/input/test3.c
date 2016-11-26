@@ -1,18 +1,19 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int main() {
-    int a;
-    int b;
-    int c;
-    int d;
+    short a;
+    short b;
+    short c;
+    short d;
 
 
-    scanf("%d %d %d %d", &a, &b, &c, &d);
+    scanf("%hd %hd %hd %hd", &a, &b, &c, &d);
 
     //a = (a | c) || (b & c) && !d;
 
     a = b + c - d + a;
+    printf("%d", a);
+
 
     return 0;
 }
