@@ -1454,6 +1454,5 @@ public class Assembler {
 		assembler.generateAssemblerFile(srcPath);
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();	
-
 	}
 }

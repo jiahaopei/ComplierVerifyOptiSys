@@ -47,5 +47,4 @@ public class Item {
 		if(right != null) str += " = " + right;
 		return str;
 	}
-	
 }

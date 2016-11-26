@@ -925,6 +925,5 @@ public class Lexer {
 //		lexer.outputLabels();
 		lexer.outputLabelSrc();
 		lexer.outputLexer();
-	
 	}
 }

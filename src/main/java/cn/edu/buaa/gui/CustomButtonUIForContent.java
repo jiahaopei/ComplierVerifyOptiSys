@@ -25,8 +25,8 @@ public class CustomButtonUIForContent extends CustomButtonUI{
             SwingUtilities2.drawStringUnderlineCharAt(c, g,text, mnemonicIndex,
                                           textRect.x + getTextShiftOffset(),
                                           textRect.y + fm.getAscent() + getTextShiftOffset());
-        }
-        else {
+        
+        } else {
             g.setColor(b.getBackground().brighter());
             SwingUtilities2.drawStringUnderlineCharAt(c, g,text, mnemonicIndex,
                                           textRect.x, textRect.y + fm.getAscent());

@@ -155,5 +155,4 @@ public class AssemblerDTO {
 	public void setMemAdress(int memAdress) {
 		this.memAdress = memAdress;
 	}
-	
 }

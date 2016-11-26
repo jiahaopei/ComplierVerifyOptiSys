@@ -78,5 +78,4 @@ public class Recorder {
 		writeToFile(line);
 //		writeToConsole(line);
 	}
-	
 }
