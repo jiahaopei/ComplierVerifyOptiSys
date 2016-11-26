@@ -414,7 +414,12 @@ public class Assembler {
 						// 地址符号，不处理
 					} else if (tmpNode.getType().equals("BIT_AND")) {
 						logger.debug("BIT_AND : " + tmpNode.getValue());
-
+						
+						// 参数表达式
+					} else if (tmpNode.getType().equals("SingleOrDoubleOperand")) {
+						Map<String, String> expres = _expression(tmpNode);
+						parameterList.add(expres.get("value"));
+						
 					} else {
 						try {
 							throw new Exception("Error in _functionCall : " + tmpNode.getType());
@@ -586,7 +591,7 @@ public class Assembler {
 			}
 			assemblerDTO.insertIntoText(line, label);
 			
-		// 其它类型的函数, 只处理无返回值的函数类型
+		// 其它类型的函数
 		} else {
 			int num = 3;
 			for (int i = 0; i < parameterList.size(); i++) {
@@ -602,7 +607,7 @@ public class Assembler {
 					assemblerDTO.insertIntoText(line, label);
 
 					// 参数为变量
-				} else if (parameterType.equals("VARIABLE")) {
+				} else if (parameterType.equals("VARIABLE") || parameterType.equals("IDENTIFIER")) {
 					String fieldType = assemblerDTO.getMapFromSymbolTable(parameter).get("field_type");
 					if (fieldType.equals("int") || fieldType.equals("long")) {
 						line = AssemblerUtils.PREFIX + "lwz " + num + "," + assemblerDTO.getVariableSymbolOrNumber(parameter) + "(31)";
@@ -705,7 +710,7 @@ public class Assembler {
 				} else {
 					try {
 						throw new Exception("Other variable type not support : "
-								+ assemblerDTO.getMapFromSymbolTable(parameter).get("type"));
+								+ assemblerDTO.getMapFromSymbolTable(parameter).get("type") + " " + parameter);
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(1);
@@ -1320,7 +1325,8 @@ public class Assembler {
 			assemblerDTO.insertIntoText(line, label);
 
 		} else if (expres.get("type").equals("VARIABLE")) {
-			line = AssemblerUtils.PREFIX + "lwz 0," + assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
+			line = AssemblerUtils.PREFIX + "lwz 0," 
+					+ assemblerDTO.getVariableSymbolOrNumber(expres.get("value")) + "(31)";
 			assemblerDTO.insertIntoText(line, label); 
 			line = AssemblerUtils.PREFIX + "mr 3,0";
 			assemblerDTO.insertIntoText(line, label);

@@ -10,7 +10,7 @@ int main() {
     scanf("%c %c", &a, &b);
     printf("%c = %d %c = %d\n", a, a, b, b);
 
-     ans = 'c' % a;
+    ans = 'c' % a;
     ans = a % b;
     c = a % b;
    

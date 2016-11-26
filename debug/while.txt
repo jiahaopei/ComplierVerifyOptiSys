@@ -1,0 +1,55 @@
+======================结果输出=======================
+while : 3.13_wh
+
+目标码模式 :
+b .L2
+.L1:
+<STA-LIST>
+.L2:
+<LOG-EXP>
+cmpi 7,0,0,0
+bne 7,.L1
+
+目标码模式命题 :
+P1 = PC = PC + @.L2
+P2 = .L1:
+P3 = <STA-LIST>
+P4 = .L2:
+P5 = GPR[0] = <LOG-EXP>
+P6 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001
+P7 = CR[7] == b100 -> PC = PC + @.L1 || CR[7] == b010 -> PC = PC + @.L1 || CR[7] == b001 -> PC = PC + 4
+
+用户输入的语义 :
+{<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** n || <LOG-EXP> == 0 -> skip
+
+辅助前提 :
+P0 = ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** n || <LOG-EXP> == 0 -> skip)
+
+推导序列 :
+S1 = PC = PC + @.L2		P1
+S2 = .L1:		P2
+S3 = <STA-LIST>		P3
+S4 = .L2:		P4
+S5 = GPR[0] = <LOG-EXP>		P5
+S6 = GPR[0] < 0 -> CR[7] = b100 || GPR[0] > 0 -> CR[7] = b010 || GPR[0] == 0 -> CR[7] = b001		P6
+S7 = <LOG-EXP> < 0 -> CR[7] = b100 || <LOG-EXP> > 0 -> CR[7] = b010 || <LOG-EXP> == 0 -> CR[7] = b001		S5,S6,MP
+S8 = CR[7] == b100 -> PC = PC + @.L1 || CR[7] == b010 -> PC = PC + @.L1 || CR[7] == b001 -> PC = PC + 4		P7
+S9 = <LOG-EXP> < 0 -> PC = PC + @.L1 || <LOG-EXP> > 0 -> PC = PC + @.L1 || <LOG-EXP> == 0 -> PC = PC + 4		S7,S8,MP
+S10 = (PC = PC + @.L2) ∧ (.L1:) ∧ (<STA-LIST>) ∧ (.L2:) ∧ (<LOG-EXP> < 0 -> PC = PC + @.L1 || <LOG-EXP> > 0 -> PC = PC + @.L1 || <LOG-EXP> == 0 -> PC = PC + 4)		S1, S2, S3, S4, S9, CI
+S11 = (<LOG-EXP> != 0 -> <STA-LIST> || <LOG-EXP> == 0 -> null)		S10, REDUCE
+S12 = (<LOG-EXP> != 0 -> σ(<STA-LIST>) || <LOG-EXP> == 0 -> skip)		S11, σ
+S13 = ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** N || <LOG-EXP> == 0 -> skip)		P0, n = N
+S14 = ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** (N + 1) || <LOG-EXP> == 0 -> skip)		S12, S13, CI
+
+check(n == 1) :
+目标语义 : (<LOG-EXP> != 0 -> σ(<STA-LIST>) || <LOG-EXP> == 0 -> skip)
+推导序列证据 : S12
+目标语义和推理出的语义是否一致 : true
+
+check(n == N + 1) :
+目标语义 : ({<LOG-EXP> != 0 -> σ(<STA-LIST>)} ** (N + 1) || <LOG-EXP> == 0 -> skip)
+推导序列证据 : S14
+目标语义和推理出的语义是否一致 : true
+
+综上，给定的目标语义和推理出的语义是否一致 :
+true

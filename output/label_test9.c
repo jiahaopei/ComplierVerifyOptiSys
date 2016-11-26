@@ -10,7 +10,7 @@ int main() {                                      // 2
     scanf("%c %c", &a, &b);                       // 2.5
     printf("%c = %d %c = %d\n", a, a, b, b);      // 2.6
 
-     ans = 'c' % a;                               // 2.7
+    ans = 'c' % a;                                // 2.7
     ans = a % b;                                  // 2.8
     c = a % b;                                    // 2.9
    

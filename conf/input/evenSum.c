@@ -9,6 +9,7 @@ int main() {
     int sum;
     int tmp;
     double a, b;
+    char c, d;
 
 
     scanf("%d %f %f", &n, &a, &b);    // read n

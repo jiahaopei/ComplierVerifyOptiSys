@@ -23,7 +23,7 @@ int main() {
     */
     for(i = 1; i <= n; i++) {
         tmp = i % 2;
-        if(tmp == 0) {
+        if((tmp == 0)) {
             sum = sum + i;
         } else {
             sum = sum - i * 2;
@@ -43,16 +43,13 @@ int f(int a) {
     if (a <= 1) {
         return 1;
     }
-    tmp = a - 1;
-    tmp = g(tmp);
+    tmp = g(a, (a * 2));
 
     return a * tmp;
 }
 
-int g(int b) {
-    int res;
-    res = f(b);
-    return res;
+int g(int b, int c) {
+    return c + b;
 }
 
 

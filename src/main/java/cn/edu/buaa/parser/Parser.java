@@ -633,9 +633,11 @@ public class Parser {
 		if (getTokenType(index).equals("LL_BRACKET")) {
 			index++;
 			int tmpIndex = index;
-			while (!getTokenType(tmpIndex).equals("RL_BRACKET")) {
+			while (!getTokenType(tmpIndex).equals("LB_BRACKET") 
+					&& !getTokenType(tmpIndex).equals("SEMICOLON")) {
 				tmpIndex++;
 			}
+			tmpIndex--;
 			_expression(root, tmpIndex);
 			index++;
 			
@@ -708,9 +710,11 @@ public class Parser {
 			if (getTokenType(index).equals("LL_BRACKET")) {
 				index++;
 				int tmpIndex = index;
-				while (!getTokenType(tmpIndex).equals("RL_BRACKET")) {
+				while (!getTokenType(tmpIndex).equals("LB_BRACKET") 
+						&& !getTokenType(tmpIndex).equals("SEMICOLON")) {
 					tmpIndex++;
 				}
+				tmpIndex--;
 				_expression(root, tmpIndex);
 				index += 2;  // 跳过 );
 				
@@ -770,10 +774,11 @@ public class Parser {
 				
 				// 右小括号位置
 				int tmpIndex = index;
-				while(!getTokenType(tmpIndex).equals("RL_BRACKET")) {
+				while(!getTokenType(tmpIndex).equals("LB_BRACKET") 
+						&& !getTokenType(tmpIndex).equals("SEMICOLON")) {
 					tmpIndex++;
 				}
-				_expression(ifRoot, tmpIndex);
+				_expression(ifRoot, tmpIndex - 1);
 				index++;
 				
 			} else {
@@ -877,9 +882,10 @@ public class Parser {
 				
 				// 首先找到右小括号的位置
 				int tmpIndex = index;
-				while(!getTokenType(tmpIndex).equals("RL_BRACKET")) {
+				while(!getTokenType(tmpIndex).equals("LB_BRACKET")) {
 					tmpIndex++;
 				}
+				tmpIndex--;
 				
 				// for语句中的第一个分号前的部分
 				_assignment(root);
@@ -1031,7 +1037,8 @@ public class Parser {
 		List<SyntaxTree> reversePolishExpression = new ArrayList<SyntaxTree>();
 	
 		// 中缀表达式转为后缀表达式，即逆波兰表达
-		while (!getTokenType(index).equals("SEMICOLON")) {
+		while (!getTokenType(index).equals("SEMICOLON") 
+				&& !getTokenType(index).equals("COMMA")) {
 			if (ind != null && index >= ind) {
 				break;
 			}
@@ -1064,8 +1071,10 @@ public class Parser {
 						try {
 							throw new Exception(
 									"Undefined variable [" + getTokenLabel(index) + "] : " + getTokenValue(index));
+		
 						} catch (Exception e) {
 							e.printStackTrace();
+							System.exit(1);
 						}
 						
 					}
@@ -1292,14 +1301,25 @@ public class Parser {
 				List<Token> tmpValues = recursions.get(recur);
 				tmpValues.add(tokens.get(index));
 				
-			// 左小括号
+			// 左小括号， 为函数参数
 			} else if(tokens.get(index).getType().equals("LL_BRACKET")) {
 				index++;
 				SyntaxTreeNode paramsList = new SyntaxTreeNode("CallParameterList");
 				funcCallTree.addChildNode(paramsList, funcCallTree.getRoot());
 
-				while (!getTokenType(index).equals("RL_BRACKET")) {
-					if (getTokenType(index).equals("IDENTIFIER")
+				while (!getTokenType(index).equals("RL_BRACKET")) {			
+					if (getTokenType(index).equals("LL_BRACKET") ||
+							getTokenType(index).equals("IDENTIFIER") 
+							&& ParserUtils.isOperator(getTokenValue(index + 1))) {
+						int limit = index;
+						while (!getTokenType(limit).equals("LB_BRACKET") 
+								&& !getTokenType(limit).equals("SEMICOLON")) {
+							limit++;
+						}
+						_expression(paramsList, limit - 1);
+						index--;
+						
+					} else if (getTokenType(index).equals("IDENTIFIER")
 							|| getTokenType(index).equals("DIGIT_CONSTANT")
 							|| getTokenType(index).equals("STRING_CONSTANT")) {
 						
@@ -1343,6 +1363,7 @@ public class Parser {
 										null,
 										getTokenLabel(index) + "_fc"),
 								paramsList);
+						
 					} else if (getTokenType(index).equals("COMMA")) {
 						// do nothing
 						
@@ -1361,6 +1382,7 @@ public class Parser {
 					}
 					index++;
 				}
+				
 			} else {
 				recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法非法");
 				logger.info("函数调用语句 : 语法非法");
