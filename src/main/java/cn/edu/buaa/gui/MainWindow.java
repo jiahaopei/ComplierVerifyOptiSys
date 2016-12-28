@@ -19,8 +19,8 @@ import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
 import cn.edu.buaa.assembler.Assembler;
 import cn.edu.buaa.lexer.Lexer;
-import cn.edu.buaa.parser.Parser;
 import cn.edu.buaa.prover.Prover;
+import cn.edu.buaa.recognizer.Recognizer;
 import cn.edu.buaa.recorder.Recorder;
 
 import java.awt.event.KeyAdapter;
@@ -559,9 +559,9 @@ public class MainWindow extends JFrame {
 				lexer.outputLabelSrc();
 				lexer.outputLexer();
 				
-				Parser parser = new Parser(lexer.getTokens(), recorder);
-				parser.runParser();
-				parser.outputParser();
+				Recognizer parser = new Recognizer(lexer.getTokens(), recorder);
+				parser.runRecognizer();
+				parser.outputRecognizer();
 
 				Prover prover = new Prover(recorder, srcPath);
 				Assembler assembler = new Assembler(parser.getTree(), recorder, prover);

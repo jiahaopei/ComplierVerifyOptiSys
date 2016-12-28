@@ -9,16 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.lexer.Lexer;
-import cn.edu.buaa.parser.Parser;
-import cn.edu.buaa.pojo.SyntaxTree;
-import cn.edu.buaa.pojo.SyntaxTreeNode;
+import cn.edu.buaa.pojo.SyntaxUnitCollections;
+import cn.edu.buaa.pojo.SyntaxUnitNode;
 import cn.edu.buaa.prover.Prover;
+import cn.edu.buaa.recognizer.Recognizer;
 import cn.edu.buaa.recorder.Recorder;
 
 public class Assembler {
 
 	// 语法分析传过来的语法树
-	private SyntaxTree tree;
+	private SyntaxUnitCollections tree;
 
 	// 汇编代码生成过程中需要用到的公共数据
 	private AssemblerDTO assemblerDTO;
@@ -29,7 +29,7 @@ public class Assembler {
 
 	private final Logger logger = LoggerFactory.getLogger(Assembler.class);
 
-	public Assembler(SyntaxTree tree, Recorder recorder, Prover prover) {
+	public Assembler(SyntaxUnitCollections tree, Recorder recorder, Prover prover) {
 		this.tree = tree;
 		this.recorder = recorder;
 		this.prover = prover;
@@ -62,7 +62,7 @@ public class Assembler {
 	}
 	
 	// 从左向右遍历某一层的全部节点
-	private void traverse(SyntaxTreeNode node) {
+	private void traverse(SyntaxUnitNode node) {
 		while (node != null) {
 			handlerSentenceblock(node);
 			node = node.getRight();
@@ -71,7 +71,7 @@ public class Assembler {
 	}
 
 	// 处理某一种句型
-	private void handlerSentenceblock(SyntaxTreeNode node) {
+	private void handlerSentenceblock(SyntaxUnitNode node) {
 		if (node == null) {
 			return;
 		}
@@ -156,16 +156,16 @@ public class Assembler {
 	}
 
 	// include句型
-	private void _include(SyntaxTreeNode node) {
+	private void _include(SyntaxUnitNode node) {
 		// 不用处理，不会生成对应的汇编代码
 
 	}
 
 	// 函数定义句型，处理main函数和其它函数的定义
-	private void _functionStatement(SyntaxTreeNode father) {
+	private void _functionStatement(SyntaxUnitNode father) {
 		if(!checkHead(father)) return;
 		
-		SyntaxTreeNode currentNode = father.getFirstSon(); // 第一个儿子
+		SyntaxUnitNode currentNode = father.getFirstSon(); // 第一个儿子
 		String funcName = null;
 		String label = null;
 		String line = null;
@@ -263,7 +263,7 @@ public class Assembler {
 				// do nothing
 				
 			} else if (currentNode.getValue().equals("FunctionParameterList")) {
-				SyntaxTreeNode node = currentNode.getFirstSon();	// Parameter
+				SyntaxUnitNode node = currentNode.getFirstSon();	// Parameter
 				while (node != null) {
 					String variableFieldType = node.getFirstSon().getValue();
 					String variableName = node.getFirstSon().getRight().getValue();
@@ -292,8 +292,8 @@ public class Assembler {
 	}
 	
 	// 函数声明语句不应该生成目标码
-	private boolean checkHead(SyntaxTreeNode father) {
-		SyntaxTreeNode currentNode = father.getFirstSon(); // 第一个儿子
+	private boolean checkHead(SyntaxUnitNode father) {
+		SyntaxUnitNode currentNode = father.getFirstSon(); // 第一个儿子
 		while (currentNode != null) {
 			if (currentNode.getValue().equals("SEMICOLON")) {
 				return false;
@@ -304,7 +304,7 @@ public class Assembler {
 	}
 
 	// 变量声明
-	private void _statement(SyntaxTreeNode node) {
+	private void _statement(SyntaxUnitNode node) {
 		// 变量数据类型
 		String variableFieldType = null;
 
@@ -316,7 +316,7 @@ public class Assembler {
 
 		String line = null;
 		String label = null;
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			label = currentNode.getLabel();
 					
@@ -350,7 +350,7 @@ public class Assembler {
 				line = "." + variableName + ":";
 				assemblerDTO.insertIntoData(line, label);
 
-				SyntaxTreeNode tmpNode = currentNode.getFirstSon();
+				SyntaxUnitNode tmpNode = currentNode.getFirstSon();
 				while (tmpNode != null) {
 					line = "." + variableFieldType + "	" + tmpNode.getValue();
 					assemblerDTO.insertIntoData(line, tmpNode.getLabel());
@@ -366,13 +366,13 @@ public class Assembler {
 	}
 
 	// 函数调用
-	private void _functionCall(SyntaxTreeNode node) {
+	private void _functionCall(SyntaxUnitNode node) {
 		String funcName = null;
 		String label = null;
 		List<String> parameterList = new ArrayList<>();
 
 		String line = null;
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			// 函数名字
 			if (currentNode.getType() != null && currentNode.getType().equals("FUNCTION_NAME")) {
@@ -381,7 +381,7 @@ public class Assembler {
 
 			// 函数参数
 			} else if (currentNode.getValue().equals("CallParameterList")) {
-				SyntaxTreeNode tmpNode = currentNode.getFirstSon();
+				SyntaxUnitNode tmpNode = currentNode.getFirstSon();
 				while (tmpNode != null) {
 					// 字符串常量
 					if (tmpNode.getType().equals("STRING_CONSTANT")) {
@@ -760,9 +760,9 @@ public class Assembler {
 	}
 
 	// 赋值语句
-	private void _assignment(SyntaxTreeNode node) {
+	private void _assignment(SyntaxUnitNode node) {
 		String line = null;
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		String label = currentNode.getLabel();
 		if (currentNode.getType().equals("IDENTIFIER") 
 				&& currentNode.getRight().getValue().equals("Expression")) {
@@ -1001,7 +1001,7 @@ public class Assembler {
 	}
 
 	// if-else语句
-	private void _controlIfElse(SyntaxTreeNode node) {
+	private void _controlIfElse(SyntaxUnitNode node) {
 		// 暂存if-else中的标签
 		Map<String, String> labelsIfelse = new HashMap<>();
 		labelsIfelse.put("label_else", ".L" + assemblerDTO.getLabelCnt());
@@ -1013,7 +1013,7 @@ public class Assembler {
 		String ifLabel = null;
 		String elseLabel = null;
 		boolean isIfElse = false;		// 	区分if语句和if-else语句
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			if (currentNode.getValue().equals("IfControl")) {
 				// 检验if语句是否正确
@@ -1119,7 +1119,7 @@ public class Assembler {
 	}
 
 	// for语句
-	private void _controlFor(SyntaxTreeNode node) {
+	private void _controlFor(SyntaxUnitNode node) {
 		// 暂存for开始和结束的标签
 		Map<String, String> labelsFor = new HashMap<>();
 		labelsFor.put("label1", ".L" + assemblerDTO.getLabelCnt());
@@ -1132,11 +1132,11 @@ public class Assembler {
 		// 遍历的是for循环中的第2部分，即中间的条件表达式
 		int cnt = 2;
 		// 保存条件表达式的入口节点，以便后续再出处理
-		SyntaxTreeNode forCondition = null;
+		SyntaxUnitNode forCondition = null;
 
 		String line = null;
 		String label = node.getLabel();
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			// for第一部分
 			if (currentNode.getValue().equals("Assignment")) {
@@ -1212,7 +1212,7 @@ public class Assembler {
 	}
 
 	// while语句
-	private void _controlWhile(SyntaxTreeNode node) {
+	private void _controlWhile(SyntaxUnitNode node) {
 		// 暂存while开始和结束的标签
 		Map<String, String> labelsWhile = new HashMap<>();
 		labelsWhile.put("label1", ".L" + assemblerDTO.getLabelCnt());
@@ -1231,10 +1231,10 @@ public class Assembler {
 
 		}
 
-		SyntaxTreeNode whileCondition = null;
+		SyntaxUnitNode whileCondition = null;
 		String line = null;
 		String label = node.getLabel();
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			// while第一部分
 			if (currentNode.getValue().equals("Expression")) {
@@ -1293,7 +1293,7 @@ public class Assembler {
 	}
 
 	// do-while语句
-	private void _controlDoWhile(SyntaxTreeNode node) {
+	private void _controlDoWhile(SyntaxUnitNode node) {
 		// 暂存标签
 		Map<String, String> labelsDoWhile = new HashMap<>();
 		labelsDoWhile.put("label1", ".L" + assemblerDTO.getLabelCnt());
@@ -1316,7 +1316,7 @@ public class Assembler {
 		line = labelsDoWhile.get("label1") + ":";
 		assemblerDTO.insertIntoText(line, label);
 
-		SyntaxTreeNode currentNode = node.getFirstSon();
+		SyntaxUnitNode currentNode = node.getFirstSon();
 		while (currentNode != null) {
 			// do-while的循环体
 			if (currentNode.getValue().equals("Sentence")) {
@@ -1367,7 +1367,7 @@ public class Assembler {
 	}
 
 	// return语句
-	private void _return(SyntaxTreeNode node) {
+	private void _return(SyntaxUnitNode node) {
 		// return语句的语法检验
 		if (!node.getFirstSon().getValue().equals("return")
 				|| !node.getFirstSon().getRight().getValue().equals("Expression")) {
@@ -1381,7 +1381,7 @@ public class Assembler {
 		
 		String line = null;
 		String label = node.getFirstSon().getLabel();
-		SyntaxTreeNode currentNode = node.getFirstSon().getRight();
+		SyntaxUnitNode currentNode = node.getFirstSon().getRight();
 		Map<String, String> expres = _expression(currentNode);
 		if (expres.get("type").equals("CONSTANT")) {
 			line = AssemblerUtils.PREFIX + "li 0," + expres.get("value");
@@ -1408,7 +1408,7 @@ public class Assembler {
 	}
 
 	// 表达式（封装到静态类中）
-	private Map<String, String> _expression(SyntaxTreeNode node) {
+	private Map<String, String> _expression(SyntaxUnitNode node) {
 		return AssemblerExpression.handle(node, assemblerDTO);
 
 	}
@@ -1444,9 +1444,9 @@ public class Assembler {
 		lexer.outputLabelSrc();
 		lexer.outputLexer();
 
-		Parser parser = new Parser(lexer.getTokens(), recorder);
-		parser.runParser();
-		parser.outputParser();
+		Recognizer parser = new Recognizer(lexer.getTokens(), recorder);
+		parser.runRecognizer();
+		parser.outputRecognizer();
 
 		Prover prover = new Prover(recorder, srcPath);
 		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);

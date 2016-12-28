@@ -133,7 +133,7 @@ int main() {                                      // 2
 (;, SEMICOLON, 2.11)
 (}, RB_BRACKET, 3)
 
-语法分析开始...
+文法单元识别开始...
   include语句 : 语法合法
   变量声明语句 : 语法合法
   变量声明语句 : 语法合法
@@ -152,7 +152,7 @@ int main() {                                      // 2
   表达式语句 : 语法合法
   return语句 : 语法合法
   main函数定义 : 语法合法
-语法分析结束!
+文法单元识别结束!
 ====================Parser==================
 ( self: Sentence null null, father: null, left: null, right: null )
 ( self: Include null null, father: Sentence, left: null, right: FunctionStatement )

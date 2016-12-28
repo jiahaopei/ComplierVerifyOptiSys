@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.constant.AssemblerDefine;
-import cn.edu.buaa.pojo.SyntaxTreeNode;
+import cn.edu.buaa.pojo.SyntaxUnitNode;
 
 public class AssemblerExpression {
 			
@@ -28,7 +28,7 @@ public class AssemblerExpression {
 	private static int bss_tmp_cnt;
 	
 	// 处理表达式
-	public static Map<String, String> handle(SyntaxTreeNode node, AssemblerDTO assemblerDTO) {
+	public static Map<String, String> handle(SyntaxUnitNode node, AssemblerDTO assemblerDTO) {
 		// 处理常量
 		if(node.getType().equals("Constant")) {
 			Map<String, String> tmpMap = new HashMap<>();
@@ -111,7 +111,7 @@ public class AssemblerExpression {
 	}
 
 	// 从表达式中识别出操作数和操作符号
-	private static void traverseExpression(SyntaxTreeNode node) {
+	private static void traverseExpression(SyntaxUnitNode node) {
 		if (node == null) {
 			return;
 		}
@@ -147,7 +147,7 @@ public class AssemblerExpression {
 		
 		// 为非叶子节点，故需要递归遍历
 		} else {
-			SyntaxTreeNode currentNode = node.getFirstSon();
+			SyntaxUnitNode currentNode = node.getFirstSon();
 			while(currentNode != null) {
 				traverseExpression(currentNode);
 				currentNode = currentNode.getRight();
