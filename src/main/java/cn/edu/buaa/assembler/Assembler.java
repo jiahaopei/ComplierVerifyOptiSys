@@ -18,7 +18,7 @@ import cn.edu.buaa.recorder.Recorder;
 public class Assembler {
 
 	// 语法分析传过来的语法树
-	private SyntaxUnitCollections tree;
+	private SyntaxUnitCollections collections;
 
 	// 汇编代码生成过程中需要用到的公共数据
 	private AssemblerDTO assemblerDTO;
@@ -30,7 +30,7 @@ public class Assembler {
 	private final Logger logger = LoggerFactory.getLogger(Assembler.class);
 
 	public Assembler(SyntaxUnitCollections tree, Recorder recorder, Prover prover) {
-		this.tree = tree;
+		this.collections = tree;
 		this.recorder = recorder;
 		this.prover = prover;
 		
@@ -55,7 +55,7 @@ public class Assembler {
 		recorder.insertLine("目标码生成开始...");
 		
 		// 从语法树的根节点开始遍历
-		traverse(tree.getRoot());
+		traverse(collections.getRoot());
 		
 		recorder.insertLine("目标码生成结束!");
 		logger.info("目标码生成结束!");
