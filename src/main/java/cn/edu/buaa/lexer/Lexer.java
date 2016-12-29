@@ -47,7 +47,7 @@ public class Lexer {
 		tokens = new ArrayList<Token>();
 		fileNames = new HashSet<>();
 		
-		srcs = getContent(srcName);
+		srcs = preProccess(srcName);
 	}
 
 	public List<String> getSrcs() {
@@ -150,7 +150,7 @@ public class Lexer {
 	}
 	
 	// 安全C子集集中检测，注意还有一些安全C子集规则在词法分析中检测完成
-	private void secureCheck() {
+	public void secureCheck() {
 		for (Token e : tokens) {
 			
 			if (!checkTrigraphs(e)) {
@@ -242,7 +242,7 @@ public class Lexer {
 		return v;
 	}
 
-	private List<String> solveLine(String line, Stack<Integer> stack) {
+	public List<String> solveLine(String line, Stack<Integer> stack) {
 		
 		List<String> libs = new ArrayList<>();
 		int i = 0;
@@ -491,7 +491,7 @@ public class Lexer {
 	}
 
 	// 处理多文件连编
-	private void solveMultipleFile(String libName, Stack<Integer> stack) {
+	public void solveMultipleFile(String libName, Stack<Integer> stack) {
 		if (libName.contains(".")) {
 			libName = libName.substring(0, libName.indexOf("."));
 			// 是否是C语言自带的头文件
@@ -545,7 +545,7 @@ public class Lexer {
 
 
 	private void handleFile(String libName, List<String> tmpSources, List<String> tmpLabels, Stack<Integer> stack) {
-		List<String> contents = getContent(libName);
+		List<String> contents = preProccess(libName);
 		BufferedWriter writer = null;
 		List<String> libs = new ArrayList<>();
 		try {
@@ -613,7 +613,7 @@ public class Lexer {
 		
 	}
 
-	private List<String> getContent(String srcName) {
+	public List<String> preProccess(String srcName) {
 		logger.info("预处理源代码开始...(" + srcName + ")");
 		recorder.insertLine("预处理源代码开始...(" + srcName + ")");
 		

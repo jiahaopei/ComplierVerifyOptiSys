@@ -29,7 +29,7 @@ public class Main {
 		parser.outputRecognizer();
 
 		Prover prover = new Prover(recorder, srcPath);
-		Assembler assembler = new Assembler(parser.getTree(), recorder, prover);
+		Assembler assembler = new Assembler(parser.getCollections(), recorder, prover);
 		assembler.runAssembler();
 		assembler.generateAssemblerFile(srcPath);
 		assembler.generateSymbolTableFile();

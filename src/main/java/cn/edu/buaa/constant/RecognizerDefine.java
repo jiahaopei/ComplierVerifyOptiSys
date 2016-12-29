@@ -3,7 +3,7 @@ package cn.edu.buaa.constant;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParserDefine {
+public class RecognizerDefine {
 
 	public static final String[] CONTROL_WORDS = { "if", "for", "while", "do", "else" };
 

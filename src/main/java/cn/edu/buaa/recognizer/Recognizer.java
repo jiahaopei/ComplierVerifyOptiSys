@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.constant.CommonsDefine;
-import cn.edu.buaa.constant.ParserDefine;
+import cn.edu.buaa.constant.RecognizerDefine;
 import cn.edu.buaa.lexer.Lexer;
 import cn.edu.buaa.pojo.SyntaxUnitCollections;
 import cn.edu.buaa.pojo.SyntaxUnitNode;
@@ -24,7 +24,7 @@ public class Recognizer {
 		
 	private List<Token> tokens;
 	private int index;
-	private SyntaxUnitCollections tree;
+	private SyntaxUnitCollections collections;
 	private Map<String, String> variableTable;
 	private Map<String, String> globalVariableTable;
 	private boolean isGlobal;
@@ -40,7 +40,7 @@ public class Recognizer {
 	public Recognizer(List<Token> tokens, Recorder recorder) {
 		this.tokens = tokens;
 		this.index = 0;
-		this.tree = null;
+		this.collections = null;
 		this.variableTable = new HashMap<>();
 		this.globalVariableTable = new HashMap<>();
 		this.functions = new HashMap<>();
@@ -48,8 +48,8 @@ public class Recognizer {
 		this.recorder = recorder;
 	}
 	
-	public SyntaxUnitCollections getTree() {
-		return tree;
+	public SyntaxUnitCollections getCollections() {
+		return collections;
 	}
 	
 	public String getTokenValue(int i) {
@@ -68,14 +68,14 @@ public class Recognizer {
 	private void _include(SyntaxUnitNode father) {
 		
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		SyntaxUnitCollections includeTree = new SyntaxUnitCollections();
 		SyntaxUnitNode root = new SyntaxUnitNode("Include");
 		includeTree.setRoot(root);
 		includeTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		// include语句中双引号的个数
 		int cnt = 0;
@@ -119,14 +119,14 @@ public class Recognizer {
 	// 函数定义
 	private void _functionStatement(SyntaxUnitNode father) {
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		SyntaxUnitCollections funcStatementTree = new SyntaxUnitCollections();
 		SyntaxUnitNode root = new SyntaxUnitNode("FunctionStatement");
 		funcStatementTree.setRoot(root);
 		funcStatementTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		variableTable.clear();
 		String funcName = "";
 		
@@ -321,14 +321,14 @@ public class Recognizer {
 	// 声明语句(变量声明、数组声明)
 	private void _statement(SyntaxUnitNode father) {
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 				
 		SyntaxUnitCollections statementTree = new SyntaxUnitCollections();
 		SyntaxUnitNode root = new SyntaxUnitNode("Statement");
 		statementTree.setRoot(root);
 		statementTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		// 暂时用来保存当前声明语句的类型，以便于识别多个变量的声明
 		String tmpVariableType = null;
@@ -449,7 +449,7 @@ public class Recognizer {
 						SyntaxUnitCollections tmpTree = new SyntaxUnitCollections();
 						tmpTree.setRoot(new SyntaxUnitNode("Statement"));
 						tmpTree.setCurrent(tmpTree.getRoot());
-						tree.addChildNode(tmpTree.getRoot(), father);
+						collections.addChildNode(tmpTree.getRoot(), father);
 						
 						// 类型
 						SyntaxUnitNode variableType = new SyntaxUnitNode("Type");
@@ -559,14 +559,14 @@ public class Recognizer {
 	// 赋值语句
 	private void _assignment(SyntaxUnitNode father) {
 		if(father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		SyntaxUnitCollections assignTree = new SyntaxUnitCollections();
 		SyntaxUnitNode root = new SyntaxUnitNode("Assignment");
 		assignTree.setRoot(root);
 		assignTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 				
 		while(!getTokenType(index).equals("SEMICOLON")) {	
 			// 被赋值的变量
@@ -627,7 +627,7 @@ public class Recognizer {
 				);
 		whileTree.setRoot(root);
 		whileTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		index++;
 		if (getTokenType(index).equals("LL_BRACKET")) {
@@ -685,7 +685,7 @@ public class Recognizer {
 				);
 		doWhileTree.setRoot(root);
 		doWhileTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		index++;
 		// do后面必须为 {
@@ -751,7 +751,7 @@ public class Recognizer {
 		SyntaxUnitNode root = new SyntaxUnitNode("Control", "IfElseControl", null, null);
 		ifElseTree.setRoot(root);
 		ifElseTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		SyntaxUnitCollections ifTree = new SyntaxUnitCollections();
 		SyntaxUnitNode ifRoot = new SyntaxUnitNode(
@@ -978,7 +978,7 @@ public class Recognizer {
 	// return语句
 	private void _return(SyntaxUnitNode father) {
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		SyntaxUnitCollections returnTree = new SyntaxUnitCollections();
@@ -1020,7 +1020,7 @@ public class Recognizer {
 	// 表达式
 	private void _expression(SyntaxUnitNode father, Integer ind) {
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		// 如果是函数调用
@@ -1180,8 +1180,8 @@ public class Recognizer {
 				} else {
 					while (!operatorStack.empty()
 							&& !operatorStack.peek().getCurrent().getValue().equals("(")
-							&& ParserDefine.OPERATOR_PRIORITY.get(tmpTree.getCurrent().getValue())
-								< ParserDefine.OPERATOR_PRIORITY.get(operatorStack.peek().getCurrent().getValue())) {
+							&& RecognizerDefine.OPERATOR_PRIORITY.get(tmpTree.getCurrent().getValue())
+								< RecognizerDefine.OPERATOR_PRIORITY.get(operatorStack.peek().getCurrent().getValue())) {
 						reversePolishExpression.add(operatorStack.pop());
 						
 					}
@@ -1225,7 +1225,7 @@ public class Recognizer {
 		for (SyntaxUnitCollections item : reversePolishExpression) {
 			newTree.addChildNode(item.getRoot(), newRoot);
 		}
-		tree.addChildNode(newTree.getRoot(), father);
+		collections.addChildNode(newTree.getRoot(), father);
 		
 		recorder.insertLine(Recorder.TAB + "表达式语句 : 语法合法");
 		logger.info("表达式语句 : 语法合法");
@@ -1234,14 +1234,14 @@ public class Recognizer {
 	// 函数调用
 	private void _functionCall(SyntaxUnitNode father) {
 		if (father == null) {
-			father = tree.getRoot();
+			father = collections.getRoot();
 		}
 		
 		SyntaxUnitCollections funcCallTree = new SyntaxUnitCollections();
 		SyntaxUnitNode root = new SyntaxUnitNode("FunctionCall");
 		funcCallTree.setRoot(root);
 		funcCallTree.setCurrent(root);
-		tree.addChildNode(root, father);
+		collections.addChildNode(root, father);
 		
 		while(!getTokenType(index).equals("SEMICOLON")) {
 			// 函数名
@@ -1403,7 +1403,7 @@ public class Recognizer {
 	}
 	
 	// 根据一个语句的句首判断句型
-	private String judgeSentencePattern() {
+	public String judgeSentencePattern() {
 		
 		String tokenValue = getTokenValue(index);
 		String tokenType = getTokenType(index);
@@ -1474,8 +1474,8 @@ public class Recognizer {
 		
 		// 创建树的根节点
 		SyntaxUnitNode root = new SyntaxUnitNode("Sentence");
-		tree = new SyntaxUnitCollections(root);
-		tree.setCurrent(root);
+		collections = new SyntaxUnitCollections(root);
+		collections.setCurrent(root);
 		
 		// 遍历所有的token
 		while (index < tokens.size()) {
@@ -1585,7 +1585,7 @@ public class Recognizer {
 			writer.newLine();
 			
 			recorder.insertLine("====================Parser==================");
-			display(tree.getRoot(), writer);
+			display(collections.getRoot(), writer);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
