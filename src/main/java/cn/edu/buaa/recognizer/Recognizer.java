@@ -1510,6 +1510,13 @@ public class Recognizer {
 		}
 		
 		// 安全C检查
+		secureCheck();
+		
+		recorder.insertLine("文法单元识别结束!");
+		logger.info("文法单元识别结束!");
+	}
+	
+	public void secureCheck() {
 		for (Token entry : recursions.keySet()) {
 			Stack<Token> visits = new Stack<>();
 			visits.add(entry);
@@ -1523,9 +1530,6 @@ public class Recognizer {
 				}
 			}
 		}
-		
-		recorder.insertLine("文法单元识别结束!");
-		logger.info("文法单元识别结束!");
 	}
 	
 	private boolean dfs(Token key, Stack<Token> visits) {
