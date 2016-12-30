@@ -62,7 +62,7 @@ public class Assembler {
 	}
 	
 	// 从左向右遍历某一层的全部节点
-	private void traverse(SyntaxUnitNode node) {
+	public void traverse(SyntaxUnitNode node) {
 		while (node != null) {
 			handlerSentenceblock(node);
 			node = node.getRight();

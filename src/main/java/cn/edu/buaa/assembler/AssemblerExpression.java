@@ -111,7 +111,7 @@ public class AssemblerExpression {
 	}
 
 	// 从表达式中识别出操作数和操作符号
-	private static void traverseExpression(SyntaxUnitNode node) {
+	public static void traverseExpression(SyntaxUnitNode node) {
 		if (node == null) {
 			return;
 		}
@@ -258,7 +258,7 @@ public class AssemblerExpression {
 	}
 	
 	// 处理双目运算
-	private static void solveTwoOperator(String operator, String label) {
+	public static void solveTwoOperator(String operator, String label) {
 		Map<String, String> operand_b = operandStack.pop();
 		Map<String, String> operand_a = operandStack.pop();
 				
@@ -4150,7 +4150,7 @@ public class AssemblerExpression {
 	
 	
 	// 处理单目运算
-	private static void solveOneOperator(String operator, String label) {
+	public static void solveOneOperator(String operator, String label) {
 		// 取出操作数
 		Map<String, String> operand = operandStack.pop();
 		
