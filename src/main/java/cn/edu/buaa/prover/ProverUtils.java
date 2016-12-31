@@ -10,7 +10,7 @@ import java.util.Map;
 import cn.edu.buaa.pojo.Item;
 import cn.edu.buaa.pojo.Proposition;
 
-public class ProverHelper {
+public class ProverUtils {
 
 	public static Map<String, String> generateParas(String[] lines) {
 		Map<String, String> paras = new HashMap<String, String>();

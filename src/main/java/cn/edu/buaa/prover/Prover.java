@@ -118,7 +118,7 @@ public class Prover {
 		if (bufferedWriter != null) {
 			try {
 				bufferedWriter.write("目标码模式命题 :\n");
-				ProverHelper.saveAllProposition(propositions, bufferedWriter);
+				ProverUtils.saveAllProposition(propositions, bufferedWriter);
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
 			} catch (IOException e) {
@@ -131,7 +131,7 @@ public class Prover {
 				sequences.write(name + " : " + label);
 				sequences.newLine();
 				sequences.write("目标码模式命题 :\n");
-				ProverHelper.saveAllProposition(propositions, sequences);
+				ProverUtils.saveAllProposition(propositions, sequences);
 				sequences.flush();
 				
 				for (Proposition proposition : propositions) {
@@ -201,7 +201,7 @@ public class Prover {
 			if (bufferedWriter != null) {
 				try {
 					bufferedWriter.write("给定的目标语义为 :\n");
-					ProverHelper.saveAllProposition(goals, bufferedWriter);
+					ProverUtils.saveAllProposition(goals, bufferedWriter);
 					bufferedWriter.flush();
 				} catch (IOException e) {
 					e.printStackTrace();

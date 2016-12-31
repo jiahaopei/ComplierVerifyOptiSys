@@ -29,7 +29,7 @@ public class LoopInteractiveProvingAlgorithm {
 		// 拷贝一个副本
 		List<Proposition> propositions = new ArrayList<>();
 		for (Proposition proposition : srcPropositions) {
-			Proposition tmp = ProverHelper.cloneProposition(proposition);
+			Proposition tmp = ProverUtils.cloneProposition(proposition);
 			propositions.add(tmp);
 		}
 		
@@ -234,7 +234,7 @@ public class LoopInteractiveProvingAlgorithm {
 		
 		List<Proposition> goals = new ArrayList<>();
 		for (Proposition proposition : srcGoals) {
-			goals.add(ProverHelper.cloneProposition(proposition));
+			goals.add(ProverUtils.cloneProposition(proposition));
 		}
 		
 		return goals;

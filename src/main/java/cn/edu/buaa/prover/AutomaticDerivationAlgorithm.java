@@ -19,7 +19,7 @@ public class AutomaticDerivationAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AutomaticDerivationAlgorithm.class);
 	
-	// 记录两个命题时候发生了关联
+	// 记录两个命题是否发生了关联
 	private static boolean flag;
 	
 	public static DerivationDTO process(List<Proposition> srcPropositions) {
@@ -28,7 +28,7 @@ public class AutomaticDerivationAlgorithm {
 		
 		List<Proposition> propositions = new ArrayList<>();
 		for (Proposition proposition : srcPropositions) {
-			Proposition tmp = ProverHelper.cloneProposition(proposition);
+			Proposition tmp = ProverUtils.cloneProposition(proposition);
 			propositions.add(tmp);
 		}
 		
@@ -260,7 +260,7 @@ public class AutomaticDerivationAlgorithm {
 	}
 
 	// p : 为待加入的； q : 为已加入的
-	private static boolean applyDerivationRuleToTwoPropositions(Proposition p, Proposition q) {
+	public static boolean applyDerivationRuleToTwoPropositions(Proposition p, Proposition q) {
 
 		if (!checkBoundary(p, q))
 			return false;
@@ -300,7 +300,7 @@ public class AutomaticDerivationAlgorithm {
 		return isDeleteP;
 	}
 
-	private static boolean checkBoundary(Proposition p, Proposition q) {
+	public static boolean checkBoundary(Proposition p, Proposition q) {
 
 		if (p.size() == 0) {
 			return false;

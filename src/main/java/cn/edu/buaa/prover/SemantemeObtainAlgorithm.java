@@ -13,7 +13,7 @@ public class SemantemeObtainAlgorithm {
 		List<Proposition> standards = new ArrayList<>();
 		
 		for (Proposition proposition : semantemes) {
-			Proposition tmp = ProverHelper.cloneProposition(proposition);
+			Proposition tmp = ProverUtils.cloneProposition(proposition);
 			applySigma(tmp);
 			standards.add(tmp);
 		}
@@ -70,9 +70,9 @@ public class SemantemeObtainAlgorithm {
 		// 复制一份新的
 		List<Proposition> semantemes = new ArrayList<>();
 		for (Proposition proposition : simplifiedPropositions) {
-			Proposition tmp = ProverHelper.cloneProposition(proposition);
+			Proposition tmp = ProverUtils.cloneProposition(proposition);
 			if (tmp.size() == 3) {
-				ProverHelper.reducePropositionOfThree(tmp);
+				ProverUtils.reducePropositionOfThree(tmp);
 			}
 			semantemes.add(tmp);
 		}
@@ -94,7 +94,7 @@ public class SemantemeObtainAlgorithm {
 			}
 			
 			if (ind >= 0) {
-				Proposition tmp = ProverHelper.cloneProposition(semantemes.get(i));
+				Proposition tmp = ProverUtils.cloneProposition(semantemes.get(i));
 				semantemes.add(ind, tmp);
 				ind++;
 				i++;

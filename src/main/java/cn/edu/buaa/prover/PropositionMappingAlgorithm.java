@@ -48,7 +48,7 @@ public class PropositionMappingAlgorithm {
 				prop.setItems(items);
 				propositions.add(prop);
 			} else {
-				Map<String, String> paras = ProverHelper.generateParas(lines);
+				Map<String, String> paras = ProverUtils.generateParas(lines);
 				Proposition prop = createProposition(lines[0], paras, axioms);
 				propositions.add(prop);
 			}
@@ -57,7 +57,7 @@ public class PropositionMappingAlgorithm {
 		return propositions;
 	}
 
-	private static Proposition createProposition(String name, Map<String, String> paras,
+	public static Proposition createProposition(String name, Map<String, String> paras,
 			Map<String, Proposition> axioms) {
 
 		if (!axioms.containsKey(name)) {
@@ -68,8 +68,8 @@ public class PropositionMappingAlgorithm {
 			}
 		}
 
-		Proposition prop = ProverHelper.cloneProposition(axioms.get(name));
-		ProverHelper.updatePropositionWithParas(name, prop, paras);
+		Proposition prop = ProverUtils.cloneProposition(axioms.get(name));
+		ProverUtils.updatePropositionWithParas(name, prop, paras);
 
 		for (String key : paras.keySet()) {
 			String value = paras.get(key);
@@ -94,7 +94,7 @@ public class PropositionMappingAlgorithm {
 		return prop;
 	}
 
-	private static String[] filterOtherSignal(String[] lines) {
+	public static String[] filterOtherSignal(String[] lines) {
 
 		List<String> tmp = new ArrayList<String>();
 		for (String line : lines) {
