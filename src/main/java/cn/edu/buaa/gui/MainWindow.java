@@ -785,7 +785,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
-	private boolean isParentAndSon(DefaultMutableTreeNode cur, DefaultMutableTreeNode newNode) {
+	public boolean isParentAndSon(DefaultMutableTreeNode cur, DefaultMutableTreeNode newNode) {
 		Node a = (Node) cur.getUserObject();
 		Node b = (Node) newNode.getUserObject();
 		
