@@ -30,10 +30,9 @@ int main() {
         
         } // end if
     }   // end for
+    printf("sum is %d", sum);
 
     tmp = f(n);
-
-    printf("sum is %d", sum);
 
     return 0;
 }
