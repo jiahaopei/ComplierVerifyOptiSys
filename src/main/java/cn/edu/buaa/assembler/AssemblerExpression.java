@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import cn.edu.buaa.constant.AssemblerDefine;
 import cn.edu.buaa.pojo.SyntaxUnitNode;
+import cn.edu.buaa.prover.Prover;
 
 public class AssemblerExpression {
 			
@@ -28,12 +29,17 @@ public class AssemblerExpression {
 	private static int bss_tmp_cnt;
 	
 	// 处理表达式
-	public static Map<String, String> handle(SyntaxUnitNode node, AssemblerDTO assemblerDTO) {
+	public static Map<String, String> handle(SyntaxUnitNode node, AssemblerDTO assemblerDTO, Prover prover) {
+		SyntaxUnitNode t = node;
+		while (t.getLabel() == null || t.getLabel().trim().length() == 0) {
+			t = t.getFirstSon();
+		}
+		
 		// 处理常量
-		if(node.getType().equals("Constant")) {
+		if (t.getType().equals("_Constant")) {
 			Map<String, String> tmpMap = new HashMap<>();
 			tmpMap.put("type", "CONSTANT");
-			tmpMap.put("value", node.getFirstSon().getValue());
+			tmpMap.put("value", t.getValue());
 			return tmpMap;
 		}
 		
@@ -106,6 +112,8 @@ public class AssemblerExpression {
 			result.put("type", "");
 			result.put("value", "");
 		}
+		
+		prover.runProver("expression", t.getLabel());
 		
 		return result;
 	}

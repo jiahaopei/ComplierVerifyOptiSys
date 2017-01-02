@@ -158,7 +158,7 @@ public class Assembler {
 	// include句型
 	private void _include(SyntaxUnitNode node) {
 		// 不用处理，不会生成对应的汇编代码
-
+		
 	}
 
 	// 函数定义句型，处理main函数和其它函数的定义
@@ -288,7 +288,8 @@ public class Assembler {
 
 			currentNode = currentNode.getRight();
 		}
-
+		prover.runProver("functionStatement", label);
+		
 	}
 	
 	// 函数声明语句不应该生成目标码
@@ -757,6 +758,7 @@ public class Assembler {
 		}
 
 		assemblerDTO.insertIntoText("", null);  // 增加一个空行
+		prover.runProver("functionCall", label);
 	}
 
 	// 赋值语句
@@ -998,6 +1000,8 @@ public class Assembler {
 		}
 
 		assemblerDTO.insertIntoText("", null);
+		prover.runProver("assignment", label);
+		
 	}
 
 	// if-else语句
@@ -1404,13 +1408,14 @@ public class Assembler {
 				System.exit(1);
 			}
 		}
-
+		
+		prover.runProver("return", label);
 	}
 
 	// 表达式（封装到静态类中）
 	private Map<String, String> _expression(SyntaxUnitNode node) {
-		return AssemblerExpression.handle(node, assemblerDTO);
-
+		return AssemblerExpression.handle(node, assemblerDTO, prover);
+		
 	}
 
 	public void generateAssemblerFile(String srcPath) {

@@ -455,7 +455,7 @@ public class MainWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				sourceModel.reload(sourceRoot.getLastChild());
 				goalModel.reload(goalRoot.getLastChild());
-				proveModel.reload(goalRoot.getLastChild());
+				proveModel.reload(proveRoot.getLastChild());
 			}
 		});
 

@@ -73,8 +73,14 @@ public class Prover {
 
 	public boolean runProver(String key, String label) {		
 		List<String> objectCodePatterns = getObjectCodePatterns(key);
-		createOutputFile(key);
-		return proveProcess(objectCodePatterns, key, label);
+		if (objectCodePatterns != null) {
+			createOutputFile(key);
+			return proveProcess(objectCodePatterns, key, label);
+		} else {
+			proves.add("Semantic verify correct");
+			proveLabels.add(label);
+			return true;
+		}
 		
 	}
 	
@@ -246,7 +252,7 @@ public class Prover {
 			}
 			
 		}
-		
+
 		return isSame;
 	}
 	
