@@ -1584,11 +1584,11 @@ public class Recognizer {
 	public void outputRecognizer() {
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + "parser.txt"));
-			writer.write("====================Parser==================");
+			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH + "recognizer.txt"));
+			writer.write("====================Recognizer==================");
 			writer.newLine();
 			
-			recorder.insertLine("====================Parser==================");
+			recorder.insertLine("====================Recognizer==================");
 			display(collections.getRoot(), writer);
 			
 		} catch (IOException e) {

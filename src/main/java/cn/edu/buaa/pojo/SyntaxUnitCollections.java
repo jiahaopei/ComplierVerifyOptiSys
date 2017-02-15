@@ -2,9 +2,8 @@ package cn.edu.buaa.pojo;
 
 public class SyntaxUnitCollections {
 
-	// 树的根节点
 	private SyntaxUnitNode root;
-	// 现在遍历到的节点
+
 	private SyntaxUnitNode current;
 	
 	public SyntaxUnitCollections() {
@@ -33,14 +32,12 @@ public class SyntaxUnitCollections {
 
 	// 添加一个子节点
 	public void addChildNode(SyntaxUnitNode newNode, SyntaxUnitNode father) {
-		// 未指定父节点，就设为当前节点
 		if (null == father) {
 			father = current;
 		}
 
 		// 认祖归宗
 		newNode.setFather(father);
-		// 如果father节点没有儿子，则将其赋值为其第一个儿子
 		if (null == father.getFirstSon()) {
 			father.setFirstSon(newNode);
 		} else {
@@ -54,7 +51,7 @@ public class SyntaxUnitCollections {
 		current = newNode;
 	}
 
-	// 交换相邻的两棵兄弟子树
+	// 交换
 	public void switchTwoSubTree(SyntaxUnitNode left, SyntaxUnitNode right) {
 		SyntaxUnitNode left_left = left.getLeft();
 		SyntaxUnitNode right_right = right.getRight();

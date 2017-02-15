@@ -79,6 +79,11 @@ public class Prover {
 		} else {
 			proves.add("Semantic verify correct");
 			proveLabels.add(label);
+			
+			recorder.insertLine(key + " : " + label);
+			recorder.insertLine("\tSemantic verify correct");
+			recorder.insertLine("");
+			
 			return true;
 		}
 		

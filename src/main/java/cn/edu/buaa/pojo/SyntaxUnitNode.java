@@ -13,7 +13,6 @@ public class SyntaxUnitNode {
 	// token的标号
 	private String label;
 	
-	// 构造语法树的相关信息
 	private SyntaxUnitNode father;
 	private SyntaxUnitNode left;
 	private SyntaxUnitNode right;
