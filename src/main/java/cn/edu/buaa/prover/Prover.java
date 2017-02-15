@@ -70,9 +70,9 @@ public class Prover {
 	public List<String> getProveLabels() {
 		return proveLabels;
 	}
-
-	public boolean runProver(String key, String label) {		
-		List<String> objectCodePatterns = getObjectCodePatterns(key);
+	
+	public boolean runProver(String key, String label, List<String> segments) {
+		List<String> objectCodePatterns = getObjectCodePatterns(key, segments);
 		if (objectCodePatterns != null) {
 			createOutputFile(key);
 			return proveProcess(objectCodePatterns, key, label);
@@ -88,6 +88,7 @@ public class Prover {
 		}
 		
 	}
+	
 	
 	/**
 	 * 对输入的目标码模式进行证明： 1) 目标码映射 2) 推理证明 3) 获得语义
@@ -271,8 +272,13 @@ public class Prover {
 		}
 	}
 
-	public List<String> getObjectCodePatterns(String key) {
-		return allObjectCodePatterns.get(key);
+	public List<String> getObjectCodePatterns(String key, List<String> segments) {
+		
+		if (segments != null) {
+			return allObjectCodePatterns.get(key);
+		} else {
+			return null;
+		}
 	}
 
 	public void loadAxioms(String path) {
@@ -521,6 +527,6 @@ public class Prover {
 	public static void main(String[] args) {
 		Recorder recorder = new Recorder();
 		Prover prover = new Prover(recorder, null);
-		prover.runProver("for", "9.4");
+		prover.runProver("for", "9.4", new ArrayList<>());
 	}
 }

@@ -113,7 +113,7 @@ public class AssemblerExpression {
 			result.put("value", "");
 		}
 		
-		prover.runProver("expression", t.getLabel());
+		prover.runProver("expression", t.getLabel(), null);
 		
 		return result;
 	}
