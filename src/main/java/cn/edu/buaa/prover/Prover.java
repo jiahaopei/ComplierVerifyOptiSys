@@ -84,6 +84,15 @@ public class Prover {
 			recorder.insertLine("\tSemantic verify correct");
 			recorder.insertLine("");
 			
+			try {
+				sequences.write(key + " : " + label);
+				sequences.newLine();
+				sequences.write("\tSemantic verify correct\n\n");
+				sequences.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			return true;
 		}
 		

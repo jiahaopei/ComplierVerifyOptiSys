@@ -17,7 +17,7 @@ public class Main {
 		// 公共记录
 		Recorder recorder = new Recorder();
 
-		String srcPath = "conf/input/evenSum.c";
+		String srcPath = "conf/input/test2.c";
 		Lexer lexer = new Lexer(srcPath, recorder);
 		lexer.runLexer();
 		lexer.outputSrc();
@@ -35,8 +35,8 @@ public class Main {
 		assembler.generateSymbolTableFile();
 		assembler.outputAssembler();
 		
-		System.out.println(prover.getProves());
-		System.out.println(prover.getProveLabels());
-		System.out.println(prover.getProves().size() + " " + prover.getProveLabels().size());
+//		System.out.println(prover.getProves());
+//		System.out.println(prover.getProveLabels());
+//		System.out.println(prover.getProves().size() + " " + prover.getProveLabels().size());
 	}
 }

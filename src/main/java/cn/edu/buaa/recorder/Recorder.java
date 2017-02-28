@@ -76,6 +76,6 @@ public class Recorder {
 	
 	public void insertLine(String line) {
 		writeToFile(line);
-//		writeToConsole(line);
+		writeToConsole(line);
 	}
 }
