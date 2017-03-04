@@ -559,12 +559,12 @@ public class MainWindow extends JFrame {
 				lexer.outputLabelSrc();
 				lexer.outputLexer();
 				
-				Recognizer parser = new Recognizer(lexer.getTokens(), recorder);
-				parser.runRecognizer();
-				parser.outputRecognizer();
+				Recognizer recognizer = new Recognizer(lexer.getTokens(), recorder);
+				recognizer.runRecognizer();
+				recognizer.outputRecognizer();
 
 				Prover prover = new Prover(recorder, srcPath);
-				Assembler assembler = new Assembler(parser.getCollections(), recorder, prover);
+				Assembler assembler = new Assembler(recognizer.getCollections(), recorder, prover);
 				assembler.runAssembler();
 				assembler.generateAssemblerFile(srcPath);
 				assembler.generateSymbolTableFile();

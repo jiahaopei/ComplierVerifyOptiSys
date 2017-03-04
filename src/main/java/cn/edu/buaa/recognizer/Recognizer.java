@@ -1472,7 +1472,7 @@ public class Recognizer {
 		logger.info("文法单元识别开始...");
 		recorder.insertLine("文法单元识别开始...");
 		
-		// 创建树的根节点
+		// 创建根节点
 		SyntaxUnitNode root = new SyntaxUnitNode("Sentence");
 		collections = new SyntaxUnitCollections(root);
 		collections.setCurrent(root);
@@ -1617,8 +1617,8 @@ public class Recognizer {
 		lexer.outputLabelSrc();
 		lexer.outputLexer();
 
-		Recognizer parser = new Recognizer(lexer.getTokens(), recorder);
-		parser.runRecognizer();
-		parser.outputRecognizer();	
+		Recognizer recognizer = new Recognizer(lexer.getTokens(), recorder);
+		recognizer.runRecognizer();
+		recognizer.outputRecognizer();	
 	}
 }
