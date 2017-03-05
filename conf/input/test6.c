@@ -1,39 +1,54 @@
 #include <stdio.h>
 
-int add(int x, int y) {
-    int z;
-    z = x + y;
-    printf("add function %d\n", z);
-    printf("add x %d, y %d\n", x, y);
-    printf("addd addd\n");
-    return z;
-}
+int f(int a);
+int g(int b);
 
-int sub(int x, int y, int d) {
-    int z;
-    z = x - y - d;
-    printf("sub function %d\n", z);
-    return z;
-}
-
-int inc(int x) {
-    int z;
-    z = x + 1;
-    return z;
-}
-
+/**
+*   a simple input
+*/
 int main() {
-    int a, b, c;
-    int d;
-    int e;
+    int n;
+    int i;
+    int sum;
+    int tmp;
+    double a, b;
 
-    a = 1;
-    b = 2;
-    c = add(a, 3);
-    d = sub(a, c, b);
-    e = inc(4);
 
-    printf("The add result is : %d\n", c);
-    printf("The sub result is : %d\n", d);
+    scanf("%d %f %f", &n, &a, &b);    // read n
+    sum = 0;
+
+    /**
+    * if i is even, then add to sum,
+    * otherwise substract i * 2
+    */
+    for(i = 1; i <= n; i++) {
+        tmp = i % 2;
+        if((tmp == 0)) {
+            sum = sum + i;
+        } else {
+            sum = sum - i * 2;
+        
+        } // end if
+    }   // end for
+    printf("sum is %d", sum);
+
+    tmp = f(n);
+
     return 0;
 }
+
+int f(int a) {
+    int tmp;
+    if (a <= 1) {
+        return 1;
+    }
+    tmp = g(a, (a * 2));
+
+    return a * tmp;
+}
+
+int g(int b, int c) {
+    return c + b;
+}
+
+

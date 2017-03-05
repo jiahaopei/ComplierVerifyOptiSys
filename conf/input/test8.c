@@ -1,54 +1,27 @@
 #include <stdio.h>
 
-int f(int a);
-int g(int b);
-
 /**
-*   a simple input
+* 测试short类型
 */
 int main() {
-    int n;
-    int i;
-    int sum;
-    int tmp;
-    double a, b;
+    short a;
+    short b;
+    short c;
+    short d;
 
+    scanf("%hd %hd %hd %hd", &a, &b, &c, &d);
 
-    scanf("%d %f %f", &n, &a, &b);    // read n
-    sum = 0;
-
-    /**
-    * if i is even, then add to sum,
-    * otherwise substract i * 2
-    */
-    for(i = 1; i <= n; i++) {
-        tmp = i % 2;
-        if((tmp == 0)) {
-            sum = sum + i;
+    // 复杂表达式
+    a = (a | c) || (b & c) && !d;
+    for (a = 1; a < b; a++) {
+        if (a % 3 == 1) {
+            d = d + c;
         } else {
-            sum = sum - i * 2;
-        
-        } // end if
-    }   // end for
-    printf("sum is %d", sum);
+            d = d * a;
+        }
+    }
 
-    tmp = f(n);
+    printf("%hd %hd hd", a, b, c);
 
     return 0;
 }
-
-int f(int a) {
-    int tmp;
-    if (a <= 1) {
-        return 1;
-    }
-    tmp = g(a, (a * 2));
-
-    return a * tmp;
-}
-
-int g(int b, int c) {
-    return c + b;
-}
-
-

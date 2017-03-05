@@ -1,31 +1,32 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <ctype.h>
+#include "func1.h"
+#include "func2.h"
+
+/**
+* 测试多文件处理
+**/
+
+int inc(int x);
 
 int main() {
-    float a, b, c;
-    float d;
+    int a, b, c;
+    int d;
+    int e;
 
-    scanf("%f %f %f %f", &a, &b, &c, &d);
-    printf("%f %f %f %f", a, b, c, d);
+    a = 1;
+    b = 2;
+    c = add(a, 3);
+    d = sub(a, c, b);
+    e = inc(4);
 
-     a = 1.2f;
-    b = 1.3F;
-    c = a * b + a;
-
-    a > 1;
-
-
+    printf("The add result is : %d\n", c);
+    printf("The sub result is : %d\n", d);
     return 0;
 }
 
-int add() {
-
-}
-
-int sub() {
-
-}
-
-int mul() {
-	
+int inc(int x) {
+    int z;
+    z = x + 1;
+    return z;
 }

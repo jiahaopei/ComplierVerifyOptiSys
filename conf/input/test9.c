@@ -1,19 +1,27 @@
 #include <stdio.h>
+#include <stdlib.h>
 
+/** 
+* 计算输入double类型数据的倒数
+*/
 int main() {
-    char a;
-    char b;
-    char c;
-    int ans;
+    int i;
+    int count;
+    double number;
+    double x;
+    double sum;
 
+     printf("请输入5个double值：");
+     for (i = 0; i < count; i++) {
+     	printf("%2d>",i+1);
+     	scanf("%lf",&number);
+        x = 1.0 / number;
+        printf("%f\n",x);
 
-    scanf("%c %c", &a, &b);
-    printf("%c = %d %c = %d\n", a, a, b, b);
+        sum = sum + number;
+     }
 
-    ans = 'c' % a;
-    ans = a % b;
-    c = a % b;
-   
+     printf("SUM = %0.2f\n",sum);
 
     return 0;
 }

@@ -1,22 +1,42 @@
 #include <stdio.h>
 
+/**
+* 强制规则：测试函数应当具有原型声明
+*/
+int add(int x, int y) {
+    int z;
+    z = x + y;
+    printf("add function %d\n", z);
+    printf("add x %d, y %d\n", x, y);
+    printf("addd addd\n");
+    return z;
+}
+
+int sub(int x, int y, int d) {
+    int z;
+    z = x - y - d;
+    printf("sub function %d\n", z);
+    return z;
+}
+
+int inc(int x) {
+    int z;
+    z = x + 1;
+    return z;
+}
+
 int main() {
-    short a;
-    short b;
-    short c;
-    short d;
+    int a, b, c;
+    int d;
+    int e;
 
-    scanf("%hd %hd %hd %hd", &a, &b, &c, &d);
+    a = 1;
+    b = 2;
+    c = add(a, 3);
+    d = sub(a, c, b);
+    e = inc(4);
 
-    //a = (a | c) || (b & c) && !d;
-
-    a = 34 + b;
-    c = a + b;
-    a = 12 + 12;
-    
-    printf("%hd", a);
-    printf("%hd", b + 23);
-
-
+    printf("The add result is : %d\n", c);
+    printf("The sub result is : %d\n", d);
     return 0;
 }
