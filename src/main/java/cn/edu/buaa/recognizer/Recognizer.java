@@ -30,13 +30,15 @@ public class Recognizer {
 	private boolean isGlobal;
 	
 	private Map<String, String> functions;
+	private Map<String,Integer> functionLen;
+	private Map<String,Integer> functionBlock;
 	private Map<Token, List<Token>> recursions;	// <函数, 调用函数>
 	private Token recur;
 	
 	private Recorder recorder;
 	
 	private final Logger logger = LoggerFactory.getLogger(Recognizer.class);
-	
+
 	public Recognizer(List<Token> tokens, Recorder recorder) {
 		this.tokens = tokens;
 		this.index = 0;
@@ -44,6 +46,8 @@ public class Recognizer {
 		this.variableTable = new HashMap<>();
 		this.globalVariableTable = new HashMap<>();
 		this.functions = new HashMap<>();
+		this.functionLen = new HashMap<>();
+		this.functionBlock = new HashMap<>();
 		this.recursions = new HashMap<>();
 		this.recorder = recorder;
 	}
@@ -129,7 +133,10 @@ public class Recognizer {
 		collections.addChildNode(root, father);
 		variableTable.clear();
 		String funcName = "";
-		
+
+		//String funcDefine = "";
+		int blockLen=index;
+		int temp = 0;
 		while (index < tokens.size()) {
 			// 如果是函数返回类型
 			if (RecognizerUtils.isInnerDataType(getTokenValue(index))) {
@@ -138,6 +145,9 @@ public class Recognizer {
 				
 				HashMap<String, String> extraInfo = new HashMap<>();
 				extraInfo.put("type", getTokenValue(index));
+
+				//funcDefine+=getTokenType(index);
+
 				funcStatementTree.addChildNode(
 						new SyntaxUnitNode(
 								getTokenValue(index), 
@@ -153,7 +163,7 @@ public class Recognizer {
 				funcStatementTree.addChildNode(funcNameRoot, root);
 				funcName = getTokenValue(index);
 				recur = tokens.get(index);
-				
+				//funcDefine+=funcName;
 				HashMap<String, String> extraInfo = new HashMap<>();
 				extraInfo.put("type", "FUNCTION_NAME");
 				funcStatementTree.addChildNode(
@@ -175,10 +185,11 @@ public class Recognizer {
 					if (RecognizerUtils.isInnerDataType(getTokenValue(index))) {
 						SyntaxUnitNode param = new SyntaxUnitNode("Parameter");
 						funcStatementTree.addChildNode(param, paramsList);
-						
+
 						// extra_info
 						HashMap<String, String> extraInfo = new HashMap<>();
 						extraInfo.put("type", getTokenValue(index));
+						//funcDefine+=getTokenValue(index);
 						funcStatementTree.addChildNode(
 								new SyntaxUnitNode(
 										getTokenValue(index), 
@@ -234,6 +245,7 @@ public class Recognizer {
 				
 				// 跳过左大括号
 				index++;
+				temp = index;
 				_block(funcStatementTree);
 				break;
 			
@@ -257,9 +269,18 @@ public class Recognizer {
 				
 			}
 		}
-		
-		recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法合法");
-		logger.info(funcName + "函数定义 : 语法合法");
+		/*if(getTokenType(index).equals("SEMICOLON")){
+			recorder.insertLine(Recorder.TAB + funcName + "函数声明 : 语法合法");
+			logger.info(funcName + "函数声明 : 语法合法");
+		}else {*/
+			recorder.insertLine(Recorder.TAB + funcName + "函数定义 : 语法合法");
+			blockLen = index-blockLen;
+			functionLen.put(funcName,blockLen);
+			functionBlock.put(funcName,temp);
+			logger.info(funcName + "函数定义 : 语法合法");
+			//index++;
+		//}
+
 	}
 	
 	// 处理大括号里的部分
@@ -1241,8 +1262,8 @@ public class Recognizer {
 		SyntaxUnitNode root = new SyntaxUnitNode("FunctionCall");
 		funcCallTree.setRoot(root);
 		funcCallTree.setCurrent(root);
-		collections.addChildNode(root, father);
-		
+
+		String funcName = "";
 		while(!getTokenType(index).equals("SEMICOLON")) {
 			// 函数名
 			if(getTokenType(index).equals("IDENTIFIER")) {
@@ -1288,7 +1309,33 @@ public class Recognizer {
 					}
 					
 				}
-				
+
+				if(getTokenValue(index).equals(recur.getValue())){
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index)
+										+ "] : functions shall not call itself! '"
+										+ getTokenValue(index) + "'");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.exit(1);
+					}
+				}
+
+				/*if(!functions.containsKey(getTokenValue(index))){
+					try {
+						throw new Exception(
+								"Error [" + getTokenLabel(index)
+										+ "] : functions shall be declare first! '"
+										+ getTokenValue(index) + "'");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.exit(1);
+					}
+				}*/
+
+				funcName += getTokenValue(index);
+
 				funcCallTree.addChildNode(
 							new SyntaxUnitNode(
 									getTokenValue(index), 
@@ -1397,7 +1444,15 @@ public class Recognizer {
 			index++;
 		}
 		index++;
-		
+
+		/*if(functionLen.containsKey(funcName)){
+			if(functionLen.get(funcName)<80){
+
+			}
+		}else{
+
+		}*/
+
 		recorder.insertLine(Recorder.TAB + "函数调用语句 : 语法合法");
 		logger.info("函数调用语句 : 语法合法");
 	}

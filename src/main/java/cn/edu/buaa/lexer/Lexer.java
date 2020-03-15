@@ -39,8 +39,9 @@ public class Lexer {
 
 	public Lexer(String srcPath, Recorder recorder) {
 		this.recorder = recorder;
-		this.srcDir = srcPath.substring(0, srcPath.lastIndexOf("/") + 1);
-		this.srcName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
+		System.out.println("testsrcPath"+srcPath);
+		this.srcDir = srcPath.substring(0, srcPath.lastIndexOf("\\") + 1);
+		this.srcName = srcPath.substring(srcPath.lastIndexOf("\\") + 1);
 		
 		sources = new ArrayList<>();
 		labels = new ArrayList<>();
@@ -75,8 +76,10 @@ public class Lexer {
 		List<String> libs = new ArrayList<>();
 		BufferedWriter writer = null;
 		try {
+			//writer = new BufferedWriter(
+			//		new FileWriter(CommonsDefine.OUTPUT_PATH + "label_" + srcName));
 			writer = new BufferedWriter(
-					new FileWriter(CommonsDefine.OUTPUT_PATH + "label_" + srcName));
+							new FileWriter(srcName));
 			fileNames.add(srcName.substring(0, srcName.indexOf(".")));
 			
 			Stack<Integer> stack = new Stack<>();
@@ -359,7 +362,7 @@ public class Lexer {
 						word += line.charAt(i);
 						
 					} else if (!suffix && line.charAt(i) == 'f' || line.charAt(i) == 'F'
-							|| line.charAt(i) == 'l' || line.charAt(i) == 'F') {
+							|| line.charAt(i) == 'l' || line.charAt(i) == 'L') {
 						suffix = true;
 						word += line.charAt(i);
 					
@@ -513,6 +516,7 @@ public class Lexer {
 		
 		// 找不到头文件
 		String headName = libName + ".h";
+		System.out.println("testSrcDir"+srcDir);
 		File file = new File(srcDir + libName + ".h");
 		if (!file.exists()) {
 			try {
@@ -838,7 +842,8 @@ public class Lexer {
 	public void outputLabelSrc() {
 		recorder.insertLine("====================Labeled C Code==================");
 		
-		String path = CommonsDefine.OUTPUT_PATH + "label_" + srcName;
+		//String path = CommonsDefine.OUTPUT_PATH + "label_" + srcName;
+		String path = srcName;
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(path));

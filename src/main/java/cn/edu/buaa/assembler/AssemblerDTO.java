@@ -115,7 +115,10 @@ public class AssemblerDTO {
 	public void generateAssemblerFile(String fileName) {
 		assFileHandler.generateAssemblerFile(fileName);
 	}
-	
+
+	public void generateOptiAssemblerFile(String fileName) {
+		assFileHandler.generateOptiAssemblerFile(fileName);
+	}
 	/**
 	 * 保存符号表中的内容
 	 */
@@ -123,7 +126,11 @@ public class AssemblerDTO {
 		assFileHandler.generateSymbolTableFile(symbolTable);
 		
 	}
-	
+
+	public void generateOptiSymbolTableFile() {
+		assFileHandler.generateOptiSymbolTableFile(symbolTable);
+
+	}
 	/**
 	 * 在控制台打印汇编结果
 	 */

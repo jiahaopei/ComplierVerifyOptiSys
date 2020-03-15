@@ -1462,6 +1462,17 @@ public class Assembler {
 
 	}
 
+	public void generateOptiAssemblerFile(String srcPath) {
+		String fileName = srcPath.substring(srcPath.lastIndexOf("/") + 1);
+		assemblerDTO.generateOptiAssemblerFile(fileName);
+
+	}
+
+	public void generateOptiSymbolTableFile() {
+		assemblerDTO.generateOptiSymbolTableFile();
+
+	}
+
 	public void outputAssembler() {
 		recorder.insertLine("===================Assembler==================");
 		List<String> result = assemblerDTO.getResult();

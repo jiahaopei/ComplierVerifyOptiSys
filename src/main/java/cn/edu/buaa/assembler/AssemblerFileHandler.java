@@ -101,9 +101,12 @@ public class AssemblerFileHandler {
 	public void generateAssemblerFile(String fileName) {
 		BufferedWriter writer = null; 
 		try {
+			//writer = new BufferedWriter(
+			//		new FileWriter(
+			//				CommonsDefine.OUTPUT_PATH + fileName.substring(0, fileName.lastIndexOf(".")) + ".s"));
 			writer = new BufferedWriter(
 					new FileWriter(
-							CommonsDefine.OUTPUT_PATH + fileName.substring(0, fileName.lastIndexOf(".")) + ".s"));
+							fileName.substring(0, fileName.lastIndexOf(".")) + ".s"));
 			writer.write("	.file	\"" + fileName + "\"");
 			writer.newLine();
 			
@@ -112,9 +115,43 @@ public class AssemblerFileHandler {
 				writer.newLine();
 			}
 			writer.newLine();
-			writer.write("	.ident	\"powerpc-e500v2-linux-gnuspe-gcc\"");
+			writer.write("	.ident	\"riscv-linux-gnuspe-gcc\"");
 			writer.newLine();
 			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void generateOptiAssemblerFile(String fileName) {
+		BufferedWriter writer = null;
+		try {
+			//writer = new BufferedWriter(
+			//		new FileWriter(
+			//				CommonsDefine.OUTPUT_PATH + fileName.substring(0, fileName.lastIndexOf(".")) + ".s"));
+			writer = new BufferedWriter(
+					new FileWriter(
+							fileName.substring(0, fileName.lastIndexOf(".")) +"Opti"+ ".s"));
+			writer.write("	.file	\"" + fileName + "\"");
+			writer.newLine();
+
+			for (String item : result) {
+				writer.write(item);
+				writer.newLine();
+			}
+			writer.newLine();
+			writer.write("	.ident	\"riscv-linux-gnuspe-gcc\"");
+			writer.newLine();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -154,5 +191,31 @@ public class AssemblerFileHandler {
 			}
 		}
 		
+	}
+
+	public void generateOptiSymbolTableFile(Map<String, Map<String, String>> symbolTable) {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(CommonsDefine.DEBUG_PATH +"Opti"+ "symboltable.txt"));
+			writer.write("变量名称\t" + "变量类型\t" + "内存地址");
+			writer.newLine();
+			for(String variableName : symbolTable.keySet()) {
+				Map<String, String> value = symbolTable.get(variableName);
+				writer.write(variableName + "\t" + value.get("field_type") + "\t" + value.get("register"));
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 	}
 }

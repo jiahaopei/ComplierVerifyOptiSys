@@ -29,6 +29,8 @@ public class SyntaxUnitCollections {
 	public void setCurrent(SyntaxUnitNode current) {
 		this.current = current;
 	}
+	
+
 
 	// 添加一个子节点
 	public void addChildNode(SyntaxUnitNode newNode, SyntaxUnitNode father) {

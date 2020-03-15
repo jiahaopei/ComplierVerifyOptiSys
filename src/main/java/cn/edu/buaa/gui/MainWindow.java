@@ -15,6 +15,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import cn.edu.buaa.optimize.RecogOptimize;
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
 import cn.edu.buaa.assembler.Assembler;
@@ -97,7 +98,13 @@ public class MainWindow extends JFrame {
 	private JTree proveTree;
 	private CustomTreeCellRenderer proveRenderer;
 	private JScrollPane proveScrollPane;
-	
+
+	private DefaultTreeModel optimicModel;
+	private DefaultMutableTreeNode optimicRoot;
+	private JTree optimicTree;
+	private CustomTreeCellRenderer optimicRenderer;
+	private JScrollPane optimicScrollPane;
+
 	/**
 	 * System
 	 */
@@ -108,7 +115,8 @@ public class MainWindow extends JFrame {
 	private List<String> goalLabels;
 	private List<String> proves;
 	private List<String> proveLabels;
-	
+	private List<String> optimics;
+	private List<String> optimicLabels;
 	
 	/**
 	 * Launch the application.
@@ -204,7 +212,11 @@ public class MainWindow extends JFrame {
 		proveScrollPane = new JScrollPane();
 		proveScrollPane.setOpaque(false);
 		proveScrollPane.setBackground(Color.DARK_GRAY);
-		
+
+		optimicScrollPane = new JScrollPane();
+		optimicScrollPane.setOpaque(false);
+		optimicScrollPane.setBackground(Color.DARK_GRAY);
+
 		// 树
 		sourceRoot = new DefaultMutableTreeNode(new Node("SourceCode"));
 		sourceModel = new DefaultTreeModel(sourceRoot);
@@ -223,14 +235,17 @@ public class MainWindow extends JFrame {
                 sourceRenderer.keys.clear();
                 goalRenderer.keys.clear();
                 proveRenderer.keys.clear();
+                optimicRenderer.keys.clear();
                 goalModel.reload(goalRoot.getLastChild());
                 proveModel.reload(proveRoot.getLastChild());
+                optimicModel.reload(optimicRoot.getLastChild());
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	Node user = (Node) node.getUserObject();
                 	
                 	goalRenderer.keys.add(user);
                 	proveRenderer.keys.add(user);
+                	optimicRenderer.keys.add(user);
                 	
                 	Enumeration<DefaultMutableTreeNode> gs = goalRoot.breadthFirstEnumeration();
                     while (gs.hasMoreElements()) {
@@ -254,10 +269,23 @@ public class MainWindow extends JFrame {
                     		proveTree.scrollPathToVisible(treePath);
                     	}
                     }
+
+					Enumeration<DefaultMutableTreeNode> os = optimicRoot.breadthFirstEnumeration();
+					while (os.hasMoreElements()) {
+						DefaultMutableTreeNode cur = os.nextElement();
+						if (user.equals(cur.getUserObject())) {
+							// 高亮显示
+							TreeNode[] nodes = optimicModel.getPathToRoot(cur);
+							TreePath treePath = new TreePath(nodes);
+							optimicTree.makeVisible(treePath);
+							optimicTree.scrollPathToVisible(treePath);
+						}
+					}
                 }
                 sourceTree.repaint();
                 goalTree.repaint();
                 proveTree.repaint();
+                optimicTree.repaint();
             }
         });
 		sourceScrollPane.setViewportView(sourceTree);
@@ -279,14 +307,17 @@ public class MainWindow extends JFrame {
                 sourceRenderer.keys.clear();
                 goalRenderer.keys.clear();
                 proveRenderer.keys.clear();
+                optimicRenderer.keys.clear();
                 sourceModel.reload(sourceRoot.getLastChild());
                 proveModel.reload(proveRoot.getLastChild());
+                optimicModel.reload(optimicRoot.getLastChild());
                 for (TreePath path : paths) {
                 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 	Node user = (Node) node.getUserObject();
                 	
                 	sourceRenderer.keys.add(user);
                 	proveRenderer.keys.add(user);
+                	optimicRenderer.keys.add(user);
                 	
                 	Enumeration<DefaultMutableTreeNode> ss = sourceRoot.breadthFirstEnumeration();
                     while (ss.hasMoreElements()) {
@@ -309,10 +340,23 @@ public class MainWindow extends JFrame {
                     		proveTree.scrollPathToVisible(treePath);
                     	}
                     }
+
+					Enumeration<DefaultMutableTreeNode> os = optimicRoot.breadthFirstEnumeration();
+					while (os.hasMoreElements()) {
+						DefaultMutableTreeNode cur = os.nextElement();
+						if (user.equals(cur.getUserObject())) {
+							// 高亮显示
+							TreeNode[] nodes = optimicModel.getPathToRoot(cur);
+							TreePath treePath = new TreePath(nodes);
+							optimicTree.makeVisible(treePath);
+							optimicTree.scrollPathToVisible(treePath);
+						}
+					}
                 }
                 sourceTree.repaint();
                 goalTree.repaint();
                 proveTree.repaint();
+                optimicTree.repaint();
             }
         });
 		goalScrollPane.setViewportView(goalTree);
@@ -334,14 +378,17 @@ public class MainWindow extends JFrame {
                  sourceRenderer.keys.clear();
                  goalRenderer.keys.clear();
                  proveRenderer.keys.clear();
+                 optimicRenderer.keys.clear();
                  sourceModel.reload(sourceRoot.getLastChild());
                  goalModel.reload(goalRoot.getLastChild());
+                 optimicModel.reload(optimicRoot.getLastChild());
                  for (TreePath path : paths) {
                  	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                  	Node user = (Node) node.getUserObject();
                  	
                  	sourceRenderer.keys.add(user);
                  	goalRenderer.keys.add(user);
+                 	optimicRenderer.keys.add(user);
                  	
                  	Enumeration<DefaultMutableTreeNode> ss = sourceRoot.breadthFirstEnumeration();
                     while (ss.hasMoreElements()) {
@@ -365,14 +412,98 @@ public class MainWindow extends JFrame {
                      		goalTree.scrollPathToVisible(treePath);
                      	}
                      }
+
+					 Enumeration<DefaultMutableTreeNode> os = optimicRoot.breadthFirstEnumeration();
+					 while (os.hasMoreElements()) {
+						 DefaultMutableTreeNode cur = os.nextElement();
+						 if (user.equals(cur.getUserObject())) {
+							 // 高亮显示
+							 TreeNode[] nodes = optimicModel.getPathToRoot(cur);
+							 TreePath treePath = new TreePath(nodes);
+							 optimicTree.makeVisible(treePath);
+							 optimicTree.scrollPathToVisible(treePath);
+						 }
+					 }
                  }
                  sourceTree.repaint();
                  goalTree.repaint();
                  proveTree.repaint();
+                 optimicTree.repaint();
             }
         });
 		proveScrollPane.setViewportView(proveTree);
-		
+
+		optimicRoot = new DefaultMutableTreeNode(new Node("OptimicCode"));;
+		optimicModel = new DefaultTreeModel(optimicRoot);
+		optimicTree = new JTree(optimicModel);
+		optimicTree.putClientProperty("JTree.lineStyle", "None");
+		optimicTree.setBackground(Color.LIGHT_GRAY);
+		optimicTree.setRootVisible(false);
+		optimicRenderer = new CustomTreeCellRenderer(optimicTree.getCellRenderer());
+		optimicTree.setCellRenderer(optimicRenderer);
+		optimicTree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				TreePath[] paths = optimicTree.getSelectionPaths();
+				if (paths == null) return;
+
+				sourceRenderer.keys.clear();
+				goalRenderer.keys.clear();
+				proveRenderer.keys.clear();
+				optimicRenderer.keys.clear();
+				sourceModel.reload(sourceRoot.getLastChild());
+				goalModel.reload(goalRoot.getLastChild());
+				proveModel.reload(proveRoot.getLastChild());
+				for (TreePath path : paths) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+					Node user = (Node) node.getUserObject();
+
+					sourceRenderer.keys.add(user);
+					goalRenderer.keys.add(user);
+					proveRenderer.keys.add(user);
+
+					Enumeration<DefaultMutableTreeNode> ss = sourceRoot.breadthFirstEnumeration();
+					while (ss.hasMoreElements()) {
+						DefaultMutableTreeNode cur = ss.nextElement();
+						if (user.equals(cur.getUserObject())) {
+							TreeNode[] nodes = sourceModel.getPathToRoot(cur);
+							TreePath treePath = new TreePath(nodes);
+							sourceTree.makeVisible(treePath);
+							sourceTree.scrollPathToVisible(treePath);
+						}
+					}
+
+					Enumeration<DefaultMutableTreeNode> gs = goalRoot.breadthFirstEnumeration();
+					while (gs.hasMoreElements()) {
+						DefaultMutableTreeNode cur = gs.nextElement();
+						if (user.equals(cur.getUserObject())) {
+							// 高亮显示
+							TreeNode[] nodes = goalModel.getPathToRoot(cur);
+							TreePath treePath = new TreePath(nodes);
+							goalTree.makeVisible(treePath);
+							goalTree.scrollPathToVisible(treePath);
+						}
+					}
+
+					Enumeration<DefaultMutableTreeNode> ps = proveRoot.breadthFirstEnumeration();
+					while (ps.hasMoreElements()) {
+						DefaultMutableTreeNode cur = ps.nextElement();
+						if (user.equals(cur.getUserObject())) {
+							TreeNode[] nodes = proveModel.getPathToRoot(cur);
+							TreePath treePath = new TreePath(nodes);
+							proveTree.makeVisible(treePath);
+							proveTree.scrollPathToVisible(treePath);
+						}
+					}
+				}
+				sourceTree.repaint();
+				goalTree.repaint();
+				proveTree.repaint();
+				optimicTree.repaint();
+			}
+		});
+		optimicScrollPane.setViewportView(optimicTree);
+
 		// 设置标题
 		lblNewLabel = new JLabel();
 		lblNewLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -425,12 +556,12 @@ public class MainWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 
 				Icon icon = new ImageIcon(
-						this.getClass().getResource("/picture/buaa.jpg")); 
-				String content = "Compiler Verification System\n"
+						this.getClass().getResource("/buaa.jpg"));
+				String content = "Compiler  System\n"
 								+ "Version : 1.0.1\n"
-								+ "Author : Chen Zhiwei\n"
-								+ "E-Mail : chen476328361@163.com\n"
-								+ "Copyright © 2016-2018 BUAA. All rights reserved.";
+								+ "Author : PJH\n"
+								+ "E-Mail : 353821299@qq.com\n"
+								+ "Copyright © 2017-2019 BUAA. All rights reserved.";
 				JOptionPane.showMessageDialog(MainWindow.this, content, null, JOptionPane.PLAIN_MESSAGE, icon);	
 			}
 		});
@@ -498,6 +629,8 @@ public class MainWindow extends JFrame {
 					.addComponent(goalScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
 					.addGap(28)
 					.addComponent(proveScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+					.addGap(21)
+					.addComponent(optimicScrollPane, GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
 					.addGap(21))
 		);
 		gl_contentPane.setVerticalGroup(
@@ -508,9 +641,10 @@ public class MainWindow extends JFrame {
 					.addComponent(menuPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(30)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(proveScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(goalScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-						.addComponent(sourceScrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+							.addComponent(optimicScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+							.addComponent(proveScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						    .addComponent(goalScrollPane, GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+						    .addComponent(sourceScrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(statusPanel, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
 		);
@@ -563,13 +697,23 @@ public class MainWindow extends JFrame {
 				recognizer.runRecognizer();
 				recognizer.outputRecognizer();
 
+				RecogOptimize optiRecognizer = new RecogOptimize(lexer.getTokens(),recorder);
+				optiRecognizer.runRecognizer();
+				optiRecognizer.outputRecognizer();
+
 				Prover prover = new Prover(recorder, srcPath);
 				Assembler assembler = new Assembler(recognizer.getCollections(), recorder, prover);
 				assembler.runAssembler();
 				assembler.generateAssemblerFile(srcPath);
 				assembler.generateSymbolTableFile();
 				assembler.outputAssembler();
-				
+
+				Assembler optiAssembler = new Assembler(optiRecognizer.getCollections(),recorder,prover);
+				optiAssembler.runAssembler();
+				optiAssembler.generateOptiAssemblerFile(srcPath);
+				optiAssembler.generateOptiSymbolTableFile();
+				optiAssembler.outputAssembler();
+
 				sources = lexer.getSources();
 				sourceLabels = lexer.getLabels();
 				
@@ -578,7 +722,10 @@ public class MainWindow extends JFrame {
 				
 				proves = prover.getProves();
 				proveLabels = prover.getProveLabels();
-				
+
+				optimics = optiAssembler.getValues();
+				optimicLabels = optiAssembler.getLabels();
+
 				return new ArrayList<>();
 			}
 			
@@ -605,6 +752,7 @@ public class MainWindow extends JFrame {
 				sourceRenderer.keys.clear();
                 goalRenderer.keys.clear();
                 proveRenderer.keys.clear();
+                optimicRenderer.keys.clear();
 				
 				/**
 				 * 绘制sourceTree
@@ -652,14 +800,68 @@ public class MainWindow extends JFrame {
 				if (!tmp.isLeaf()) {
 					TreeNode[] nodes = proveModel.getPathToRoot(tmp.getLastChild());
 					proveTree.makeVisible(new TreePath(nodes));
-				}		
+				}
+
+				/**
+				 * 绘制optimicTree
+				 */
+				children = optimicRoot.children();
+				while (children.hasMoreElements()) {
+					DefaultMutableTreeNode cur = children.nextElement();
+					optimicModel.removeNodeFromParent(cur);		// 删除旧的节点
+				}
+				tmp = makeOptimicTree(getSrcFileName() + "_opt" +".s");
+				optimicModel.insertNodeInto(tmp, optimicRoot, 0);		// 增加新的节点
+				optimicModel.reload();
+				if (!tmp.isLeaf()) {
+					TreeNode[] nodes = optimicModel.getPathToRoot(tmp.getLastChild());
+					optimicTree.makeVisible(new TreePath(nodes));
+				}
 				
 				lblStatus.setText("Status : (Completed)");
 			}
 			
 		}.execute();
 	}
-	
+
+	/**
+	 * 绘制优化树
+	 * @param topName
+	 * @return
+	 */
+	protected DefaultMutableTreeNode makeOptimicTree(String topName) {
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Node(topName));
+		for (int i = 0; i < optimics.size(); i++) {
+			String value = optimics.get(i);
+			String label = optimicLabels.get(i);
+			if (label == null || label.trim().length() == 0) {
+				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+						new Node(value));
+				DefaultMutableTreeNode parentNode = top;
+				optimicModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+			} else {
+				DefaultMutableTreeNode father = new DefaultMutableTreeNode(new Node("# " + label, label, true));
+				while (i < optimics.size()) {
+					String subValue = optimics.get(i);
+					String subLabel = optimicLabels.get(i);
+					if (subLabel == null || subLabel.trim().length() == 0 || !subLabel.equals(label)) {
+						break;
+					}
+					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+							new Node(subValue, subLabel));
+					DefaultMutableTreeNode parentNode = father;
+					optimicModel.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+
+					i++;
+				}
+				i--;
+				optimicModel.insertNodeInto(father, top, top.getChildCount());
+			}
+		}
+
+		return top;
+	}
+
 	/**
 	 * 绘制证明树
 	 * @param topName

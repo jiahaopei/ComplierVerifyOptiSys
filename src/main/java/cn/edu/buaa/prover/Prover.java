@@ -1,11 +1,6 @@
 package cn.edu.buaa.prover;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,13 +43,13 @@ public class Prover {
 	private final Logger logger = LoggerFactory.getLogger(Prover.class);
 	
 	public Prover(Recorder recorder, String srcPath) {
-		loadAxioms("/axiom/ppcAxiom.xls");
+		loadAxioms("/conf/axiom/ppcAxiom.xls");
 		// showAxioms();
 
-		loadAllObjectCodePatterns("/statement/");
+		loadAllObjectCodePatterns("/conf/statement/");
 		// showAllObjectCodePatterns();
 		
-		loadPrecoditions("/precodition/");
+		loadPrecoditions("/conf/precodition/");
 		// showAllLoopInvariants();
 		
 		this.recorder = recorder;
@@ -294,9 +289,12 @@ public class Prover {
 		axioms = new HashMap<>();
 
 		Workbook readwb = null;
-		try {			
-			readwb = Workbook.getWorkbook(
-					this.getClass().getResourceAsStream(path));
+		try {
+			File fil = new File("C:/Users/pjh/Desktop/CompilerVerificationSystem"+path);
+			System.out.println(path);
+			//readwb = Workbook.getWorkbook(
+					//this.getClass().getResourceAsStream("C:/Users/pjh/Desktop/CompilerVerificationSystem"+path));
+			readwb = Workbook.getWorkbook(fil);
 			Sheet readsheet = readwb.getSheet(0);
 
 			// 读取xls文档
@@ -373,9 +371,13 @@ public class Prover {
 		List<Proposition> singleLoopInvariants = new ArrayList<>();
 		BufferedReader in = null;
 		try {
-			in =  new BufferedReader(
+			FileInputStream fls = new FileInputStream("C:/Users/pjh/Desktop/CompilerVerificationSystem"+path);
+			/*in =  new BufferedReader(
 					new InputStreamReader(
-							this.getClass().getResourceAsStream(path)));
+							this.getClass().getResourceAsStream(path)));*/
+			in = new BufferedReader(
+					new InputStreamReader(fls)
+			);
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				Proposition proposition = LoopInteractiveProvingAlgorithm.analyzeString(line);
@@ -433,9 +435,12 @@ public class Prover {
 		List<String> objectCodePatterns = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			reader =  new BufferedReader(
+			FileInputStream fls = new FileInputStream("C:/Users/pjh/Desktop/CompilerVerificationSystem"+path);
+			/*reader =  new BufferedReader(
 					new InputStreamReader(
-							this.getClass().getResourceAsStream(path)));
+							this.getClass().getResourceAsStream(path)));*/
+			reader =  new BufferedReader(
+					new InputStreamReader(fls));
 			String line = null;
 			while (null != (line = reader.readLine())) {
 				line = line.trim();
@@ -515,7 +520,8 @@ public class Prover {
 			int end = fileName.indexOf(".");
 			fileName = fileName.substring(0, end);
 			try {
-				bw = new BufferedWriter(new FileWriter(CommonsDefine.OUTPUT_PATH + fileName + ".v"));
+				//bw = new BufferedWriter(new FileWriter(CommonsDefine.OUTPUT_PATH + fileName + ".v"));
+				bw = new BufferedWriter(new FileWriter( fileName + ".v"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

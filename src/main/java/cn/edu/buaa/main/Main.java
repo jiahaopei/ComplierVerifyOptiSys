@@ -8,7 +8,7 @@ import cn.edu.buaa.recorder.Recorder;
 
 /**
  * 程序运行入口
- * @author destiny
+ * @author
  *
  */
 public class Main {
